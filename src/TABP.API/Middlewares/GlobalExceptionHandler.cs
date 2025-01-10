@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics;
+using TABP.API.Constants;
 using TABP.Domain.Exceptions;
 
 namespace TABP.API.Middlewares;
@@ -44,8 +45,7 @@ public class GlobalExceptionHandler : IExceptionHandler
     {
         var (statusCode, title, detail) = exception is CustomException customException
             ? MapCustomException(customException)
-            : (StatusCodes.Status500InternalServerError, "Internal Server Error", "An unexpected error occurred.");
-                // make a constants class and add em into it later.
+            : (StatusCodes.Status500InternalServerError, DefaultErrorMessages.Title, DefaultErrorMessages.Details);
 
         return Results.Problem(
             statusCode: statusCode,
@@ -64,6 +64,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         var statusCode = exception switch
         {
             BadRequestException => StatusCodes.Status400BadRequest,
+            NotFoundException => StatusCodes.Status404NotFound,
             _ => StatusCodes.Status500InternalServerError
         };
 
