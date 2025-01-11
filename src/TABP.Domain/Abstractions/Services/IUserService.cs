@@ -4,9 +4,7 @@ namespace TABP.Domain.Abstractions.Services;
 
 public interface IUserService
 {
-    Task<Guid> AddUserAsync(UserDTO newUser);
-
-    Task<bool> ExistsAsync(Guid Id);
+    Task<Guid> CreateUserAsync(UserDTO newUser);
 
     Task<string> AuthenticateAsync(UserLoginDTO userLoginCredentials);
 }
