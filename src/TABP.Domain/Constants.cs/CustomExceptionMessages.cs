@@ -13,4 +13,9 @@ public static class CustomExceptionMessages
     {
         public static string Title => "Not Found";
     }
+
+    public static class ConfigurationException
+    {
+        public static string Title => "Configuration Error";
+    }
 }
