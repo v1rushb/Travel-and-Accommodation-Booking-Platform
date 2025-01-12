@@ -1,3 +1,5 @@
+using TABP.Domain.Abstractions;
+
 namespace TABP.Domain.Entities;
 
 public class City : Entity
