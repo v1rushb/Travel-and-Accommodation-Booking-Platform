@@ -3,7 +3,7 @@ using TABP.Domain.Enums;
 
 namespace TABP.Domain.Entities;
 
-public class Rooms : Entity
+public class Room : Entity
 {
     public int Number { get; set; }
     public RoomType Type { get; set; }
