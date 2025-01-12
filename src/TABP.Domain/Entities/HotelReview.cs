@@ -3,7 +3,7 @@ using TABP.Domain.Enums;
 
 namespace TABP.Domain.Entities;
 
-public class HotelReviews : Entity
+public class HotelReview : Entity
 {
     public string Feedback { get; set; }
     public HotelRating Rating { get; set; }
