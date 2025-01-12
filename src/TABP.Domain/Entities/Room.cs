@@ -13,4 +13,10 @@ public class Room : Entity
     public bool IsAvailable { get; set; }
     public DateTime CreationDate { get; set; }
     public DateTime ModificationDate { get; set; }
+
+    public Guid HotelId { get; set; }
+    public Hotel Hotel { get; set; }
+
+    public ICollection<RoomBooking> RoomBookings { get; set; } = new List<RoomBooking>();
+    public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 }
