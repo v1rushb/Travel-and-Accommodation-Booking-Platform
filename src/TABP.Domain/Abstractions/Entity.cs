@@ -1,4 +1,4 @@
-namespace TABP.Domain.Models;
+namespace TABP.Domain.Abstractions;
 
 public class Entity
 {
