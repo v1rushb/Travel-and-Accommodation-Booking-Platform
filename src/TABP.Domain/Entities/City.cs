@@ -9,4 +9,6 @@ public class City : Entity
     // add timezone, popularity score later and look for other things to add.
     public DateTime CreationDate { get; set; }
     public DateTime ModificationDate { get; set; }
+
+    public ICollection<Hotel> Hotels { get; set; } = new List<Hotel>();
 }
