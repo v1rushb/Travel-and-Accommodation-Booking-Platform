@@ -1,3 +1,5 @@
+using TABP.Domain.Abstractions;
+
 namespace TABP.Domain.Models.User;
 
 public class UserDTO : Entity
