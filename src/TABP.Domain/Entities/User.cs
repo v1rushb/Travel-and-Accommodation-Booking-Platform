@@ -12,4 +12,10 @@ public class User : Entity
 
     public DateTime LastLogin { get; set; }
 
+    public ICollection<Role> Roles { get; set; } = new List<Role>();
+    public ICollection<RoomBooking> RoomBookings { get; set; } = new List<RoomBooking>();
+    public ICollection<HotelReview> HotelReviews { get; set; } = new List<HotelReview>();
+    public ICollection<HotelVisit> HotelVisits { get; set; } = new List<HotelVisit>();
+    public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
 }
