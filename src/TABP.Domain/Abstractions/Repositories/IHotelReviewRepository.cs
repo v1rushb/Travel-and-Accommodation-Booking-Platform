@@ -4,7 +4,7 @@ namespace TABP.Domain.Abstractions.Repositories;
 
 public interface IHotelReviewRepository
 {
-    Task<HotelReview> AddAsync(HotelReview newReview);
+    Task<Guid> AddAsync(HotelReview newReview);
 
     Task<HotelReview?> GetByIdAsync(Guid reviewId);
 
