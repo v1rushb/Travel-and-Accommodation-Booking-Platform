@@ -28,9 +28,7 @@ public class AuthenticationController : ControllerBase
     [HttpPost("user-register")]
     public async Task<IActionResult> RegisterUserAsync(UserRegisterationDTO newUser)
     {
-        await _userService.CreateUserAsync(_mapper.Map<UserDTO>(newUser));
-
-        _logger.LogInformation("User created"); // meeh?
+        await _userService.CreateAsync(_mapper.Map<UserDTO>(newUser));
 
         return Created();
     }
