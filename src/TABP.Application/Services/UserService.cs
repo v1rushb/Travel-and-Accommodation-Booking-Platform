@@ -26,7 +26,7 @@ public class UserService : IUserService
         _passwordHasher = passwordHasher;
     }
 
-    public async Task<Guid> CreateUserAsync(UserDTO newUser)
+    public async Task<Guid> CreateAsync(UserDTO newUser)
     {
         if(await _userRepository.ExistsAsync(newUser.Id)) // do something more proper
         {
@@ -38,7 +38,7 @@ public class UserService : IUserService
             newUser.Password
         );
 
-        return await _userRepository.CreateUserAsync(newUser);
+        return await _userRepository.AddAsync(newUser);
     }
 
     public async Task<string> AuthenticateAsync(UserLoginDTO userLoginCredentials)

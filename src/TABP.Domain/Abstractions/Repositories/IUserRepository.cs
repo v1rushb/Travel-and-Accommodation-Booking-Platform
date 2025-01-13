@@ -4,7 +4,7 @@ namespace TABP.Domain.Abstractions.Repositories;
 
 public interface IUserRepository
 {
-    Task<Guid> CreateUserAsync(UserDTO newUser);
+    Task<Guid> AddAsync(UserDTO newUser);
 
     Task<UserDTO> GetByIdAsync(Guid Id);
 
