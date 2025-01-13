@@ -1,16 +1,21 @@
 using Microsoft.AspNetCore.Diagnostics;
+using TABP.API.Extensions;
 using TABP.API.Middlewares;
+using TABP.Domain.Entities;
 using TABP.Domain.Exceptions;
+using TABP.Infrastructure;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // builder.Services.AddSingleton<IExceptionHandler, GlobalExceptionHandler>();
+
+builder.Services.BindConfiguration(builder.Configuration);
+
+builder.Services.AddDbContext<HotelBookingDbContext>();
 
 builder.Services.AddProblemDetails()
     .AddExceptionHandler<GlobalExceptionHandler>();
