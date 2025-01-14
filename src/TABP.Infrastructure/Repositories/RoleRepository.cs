@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using TABP.Abstractions.Repositories;
 using TABP.Domain.Entities;
@@ -11,20 +12,27 @@ internal class RoleRepository : IRoleRepository
     {
         _context = context;
     }
-
-    public async Task<Guid> AddAsync(Role newRole)
+    public async Task<Role> GetByNameAsync(string roleName)
     {
-        var newRoleRow = new Role
-        {
-            Name = newRole.Name,
-            Description = newRole.Description
-        };
-        var entityEntry = await _context.Roles.AddAsync(newRoleRow);
-        await _context.SaveChangesAsync();
-
-        return entityEntry.Entity.Id;
+        var role = await _context.Roles
+            .FirstOrDefaultAsync(role => role.Name == roleName);
+        
+        return role ?? await AddAsync(roleName);
     }
 
-    public async Task<Role?> GetByNameAsync(string roleName) =>
-        await _context.Roles.FirstOrDefaultAsync(role => role.Name.Equals(roleName, StringComparison.OrdinalIgnoreCase));
+    private async Task<Role> AddAsync(string roleName)
+    {
+        var newRole = new Role
+        {
+            Name = roleName,
+            Description = String.Empty // empty for now.
+        };
+
+        _context.Roles.Add(newRole);
+        await _context.SaveChangesAsync();
+
+        return newRole;
+    }
+
+
 }
