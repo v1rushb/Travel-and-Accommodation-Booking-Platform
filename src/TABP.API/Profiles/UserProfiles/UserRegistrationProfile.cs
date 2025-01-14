@@ -7,6 +7,7 @@ internal class UserRegisterationProfile : Profile
 {
     public UserRegisterationProfile()
     {
-        CreateMap<UserRegisterationProfile, UserDTO>();
+        CreateMap<UserRegisterationDTO, UserDTO>();
+        CreateMap<UserDTO, UserRegisterationDTO>();
     }
 }

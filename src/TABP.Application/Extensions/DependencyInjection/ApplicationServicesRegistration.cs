@@ -10,6 +10,7 @@ public static class ApplicationServicesRegistration
     public static IServiceCollection RegisterApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<IUserService, UserService>();
+        AddUserServiceDependencies(services);
         
         return services;
     }

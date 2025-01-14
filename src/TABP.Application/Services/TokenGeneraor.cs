@@ -28,7 +28,7 @@ public class TokenGenerator : ITokenGenerator
     {
         var signingCredentials = GetSigningCredentials();
         var claims = GetTokenClaims(user);
-
+        
         var token = new JwtSecurityToken(
             issuer: _jwtConfig.Issuer,
             audience: _jwtConfig.Audience,

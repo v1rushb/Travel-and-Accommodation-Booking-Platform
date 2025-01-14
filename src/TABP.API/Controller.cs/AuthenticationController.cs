@@ -18,10 +18,12 @@ public class AuthenticationController : ControllerBase
 
     public AuthenticationController(
         IUserService userService,
-        ILogger<AuthenticationController> logger)
+        ILogger<AuthenticationController> logger,
+        IMapper mapper)
     {
         _userService = userService;
         _logger = logger;
+        _mapper = mapper;
     }
     
     //Incomplete

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
+using TABP.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Entities;
 using TABP.Domain.Exceptions;
 using TABP.Domain.Models.User;
 
@@ -13,17 +15,20 @@ namespace TABP.Appllication.Services;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRoleRepository _roleRepository;
     private readonly ITokenGenerator _tokenGenerator;
     private readonly IPasswordHasher<string> _passwordHasher;
 
     public UserService(
         IUserRepository userRepository,
         ITokenGenerator tokenGenerator,
-        IPasswordHasher<string> passwordHasher)
+        IPasswordHasher<string> passwordHasher,
+        IRoleRepository roleRepository)
     {
         _userRepository = userRepository;
         _tokenGenerator = tokenGenerator;
         _passwordHasher = passwordHasher;
+        _roleRepository = roleRepository;
     }
 
     public async Task<Guid> CreateAsync(UserDTO newUser)
@@ -37,6 +42,9 @@ public class UserService : IUserService
             newUser.Username,
             newUser.Password
         );
+        
+        var role = await _roleRepository.GetByNameAsync("User"); // add contanst for that later.
+        newUser.Roles.Add(role); // should never be null
 
         return await _userRepository.AddAsync(newUser);
     }
@@ -46,7 +54,7 @@ public class UserService : IUserService
         var storedUser = await ValidateUsername(userLoginCredentials.Username);
         ValidatePassword(
             userLoginCredentials.Password,
-            userLoginCredentials.Password,
+            storedUser.Password,
             userLoginCredentials.Username);
 
         return _tokenGenerator.GenerateToken(storedUser);
@@ -64,8 +72,8 @@ public class UserService : IUserService
     {
         var validationResult = _passwordHasher.VerifyHashedPassword( 
             username,
-            loginPassword,
-            storedPassword
+            storedPassword,
+            loginPassword
         );
 
         if(validationResult == PasswordVerificationResult.Failed)
