@@ -40,7 +40,7 @@ public class DiscountRepository : IDiscountRepository
         _logger.LogInformation($"Discount with discount Id: {Id} has been deleted");
     }
 
-    public async Task<Discount?> GetByIdAsync(Guid Id) =>
+    public async Task<DiscountDTO?> GetByIdAsync(Guid Id) =>
         _mapper.Map<DiscountDTO>(await _context.Discounts.FirstOrDefaultAsync(discount => discount.Id == Id));
 
     public async Task UpdateAsync(DiscountDTO updatedDiscount)
