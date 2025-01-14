@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using TABP.Domain.Entities;
 
 namespace TABP.Appllication.Services;
 
@@ -51,11 +52,22 @@ public class TokenGenerator : ITokenGenerator
 
     private List<Claim> GetTokenClaims(UserDTO user) // make some dto
     {
-         return new List<Claim>
+
+        var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Name, user.Id.ToString())
+            };
+
+        var userRoles = user.Roles;
+        if(userRoles != null)
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email)
-        };
+            foreach(var role in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role.Name));
+            }
+        }
+
+         return claims;
     }
 
     // create some validations for the secret key and other options
