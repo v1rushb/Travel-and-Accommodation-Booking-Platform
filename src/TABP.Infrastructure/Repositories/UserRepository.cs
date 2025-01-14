@@ -5,10 +5,11 @@ using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.User;
+using TABP.Domain.Models.Users;
 
 namespace TABP.Infrastructure.Repositories;
 
-internal class UserRepository : IUserRepository
+public class UserRepository : IUserRepository
 {
     private readonly HotelBookingDbContext _context;
     private readonly IMapper _mapper;
@@ -44,6 +45,8 @@ internal class UserRepository : IUserRepository
     public async Task<bool> UsernameExistsAsync(string username) =>
         await _context.Users.AnyAsync(user => user.Username == username);
 
-    public async Task<UserDTO> GetByUsernameAsync(string username) =>
-       _mapper.Map<UserDTO>(await _context.Users.FirstOrDefaultAsync(user => user.Username == username));
+    public async Task<UserDTO> GetByUsernameWithRolesAsync(string username) =>
+       _mapper.Map<UserDTO>(await _context.Users
+            .Include(users => users.Roles)
+            .FirstOrDefaultAsync(user => user.Username == username));
 }
