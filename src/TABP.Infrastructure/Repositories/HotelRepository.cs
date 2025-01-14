@@ -1,32 +1,57 @@
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
+using TABP.Domain.Models.Hotels;
 
 namespace TABP.Infrastructure.Repositories;
 
 public class HotelRepository : IHotelRepository
 {
-    public Task<Guid> AddAsync(Hotel newHotel)
+    private readonly HotelBookingDbContext _context;
+    private readonly ILogger<HotelRepository> _logger;
+    private readonly IMapper _mapper;
+
+    public HotelRepository(
+        HotelBookingDbContext context,
+        ILogger<HotelRepository> logger,
+        IMapper mapper)
     {
-        throw new NotImplementedException();
+        _context = context;
+        _logger = logger;
+        _mapper = mapper;
     }
 
-    public Task DeleteAsync(Guid Id)
+    public async Task<Guid> AddAsync(HotelDTO newHotel)
     {
-        throw new NotImplementedException();
+        var hotel = _mapper.Map<Hotel>(newHotel);
+        var entityEntry =  _context.Hotels.Add(hotel);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation($"Created Hotel with Name: {hotel.Name}");
+        return entityEntry.Entity.Id;
     }
 
-    public Task<bool> ExistsAsync(Guid Id)
+    public async Task DeleteAsync(Guid Id)
     {
-        throw new NotImplementedException();
+        _context.Hotels.Remove(new Hotel { Id = Id});
+
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation($"Hotel with Id: {Id} has been deleted");
     }
 
-    public Task<Hotel?> GetByIdAsync(Guid Id)
-    {
-        throw new NotImplementedException();
-    }
+    public async Task<bool> ExistsAsync(Guid Id) =>
+        await _context.Hotels.AnyAsync(hotel => hotel.Id == Id);
 
-    public Task UpdateAsync(Guid Id)
+    public async Task<Hotel?> GetByIdAsync(Guid Id) =>
+        await _context.Hotels.FirstOrDefaultAsync(hotel => hotel.Id == Id);
+        
+    public async Task UpdateAsync(HotelDTO updatedHotel)
     {
-        throw new NotImplementedException();
+        var hotel = _mapper.Map<Hotel>(updatedHotel);
+        _context.Hotels.Update(hotel);
+        await _context.SaveChangesAsync();
     }
 }
