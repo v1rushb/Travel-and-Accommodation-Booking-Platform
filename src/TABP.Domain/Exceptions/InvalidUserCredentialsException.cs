@@ -1,6 +1,7 @@
 namespace TABP.Domain.Exceptions;
 
-public class InvalidUserCredentialsException : Exception
+public class InvalidUserCredentialsException : CustomException
 {
-    public InvalidUserCredentialsException() { }
+    public InvalidUserCredentialsException() 
+        : base("Invalid credentials provided.") { }
 }

@@ -65,6 +65,9 @@ public class GlobalExceptionHandler : IExceptionHandler
         {
             BadRequestException => StatusCodes.Status400BadRequest,
             NotFoundException => StatusCodes.Status404NotFound,
+            InvalidUserCredentialsException => StatusCodes.Status401Unauthorized,
+            ConfigurationException => StatusCodes.Status500InternalServerError,
+            UserDuplicateException => StatusCodes.Status409Conflict,
             _ => StatusCodes.Status500InternalServerError
         };
 
