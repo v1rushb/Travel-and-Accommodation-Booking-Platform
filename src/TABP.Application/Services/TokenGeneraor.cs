@@ -15,11 +15,9 @@ namespace TABP.Appllication.Services;
 public class TokenGenerator : ITokenGenerator
 {
     private readonly JWTConfigurations _jwtConfig;
-    private readonly SymmetricAlgorithm _securityKey;
 
     public TokenGenerator(
-        IOptions<JWTConfigurations> jwtOptions,
-        SymmetricAlgorithm securityKey
+        IOptions<JWTConfigurations> jwtOptions
         )
     {
         _jwtConfig = jwtOptions.Value ??
