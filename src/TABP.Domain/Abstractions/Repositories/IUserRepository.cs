@@ -1,4 +1,6 @@
+using TABP.Domain.Entities;
 using TABP.Domain.Models.User;
+using TABP.Domain.Models.Users;
 
 namespace TABP.Domain.Abstractions.Repositories;
 
@@ -12,5 +14,6 @@ public interface IUserRepository
 
     Task<bool> UsernameExistsAsync(string username);
 
-    Task<UserDTO> GetByUsernameAsync(string username);
+    Task<UserDTO> GetByUsernameWithRolesAsync(string username);
+
 }

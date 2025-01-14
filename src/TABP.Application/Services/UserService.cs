@@ -54,7 +54,7 @@ public class UserService : IUserService
 
     private async Task<UserDTO> ValidateUsername(string loginUsername)
     {
-        var storedUser = await _userRepository.GetByUsernameAsync(loginUsername);
+        var storedUser = await _userRepository.GetByUsernameWithRolesAsync(loginUsername);
 
         return storedUser ?? 
             throw new InvalidUserCredentialsException();
