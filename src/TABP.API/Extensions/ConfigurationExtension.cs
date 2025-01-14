@@ -8,7 +8,12 @@ public static class ConfigurationExtensions
         this IServiceCollection services, IConfiguration config)
     {
         services.Configure<ConnectionStrings>(
-            config.GetSection(nameof(ConnectionStrings)));
+            config.GetSection(nameof(ConnectionStrings))
+        );
+
+        services.Configure<JWTConfigurations>(
+            config.GetSection(nameof(JWTConfigurations))   
+        );
         
         return services;
     }
