@@ -1,13 +1,20 @@
 using Microsoft.AspNetCore.Diagnostics;
 using TABP.API.Extensions;
+using TABP.API.Extensions.DependencyInjection;
 using TABP.API.Middlewares;
+using TABP.Application.Extensions.DependencyInjection;
 using TABP.Domain.Entities;
 using TABP.Domain.Exceptions;
 using TABP.Infrastructure;
+using TABP.Infrastructure.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -15,10 +22,15 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.BindConfiguration(builder.Configuration);
 
-builder.Services.AddDbContext<HotelBookingDbContext>();
+builder.Services.RegisterInfrastructure();
+builder.Services.RegisterAuthentication(builder.Configuration);
+builder.Services.RegisterApplicationServices();
+builder.Services.RegisterUtilites();
 
 builder.Services.AddProblemDetails()
     .AddExceptionHandler<GlobalExceptionHandler>();
+
+
 
 var app = builder.Build();
 
@@ -31,38 +43,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseExceptionHandler();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
 
-app.MapGet("/error-test", () =>
-{
-    throw new CustomException("This is a test exception.");
-})
-.WithName("TestErrorEndpoint");
+app.MapControllers();
+
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
