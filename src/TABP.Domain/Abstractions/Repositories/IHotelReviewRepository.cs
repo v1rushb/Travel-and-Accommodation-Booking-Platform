@@ -15,4 +15,8 @@ public interface IHotelReviewRepository
 
     Task UpdateAsync(HotelReviewDTO updatedReview);
     Task DeleteAsync(Guid reviewId);
+    Task<double> GetAverageRatingByHotelAsync(Guid hotelId);
+    Task<IEnumerable<HotelReview>> GetReviewsByHotelAsync(Guid hotelId);
+    Task<IEnumerable<HotelReview>> GetReviewsByUserAsync(Guid userId);
+    Task<bool> ExistsAsync(Guid Id);
 }
