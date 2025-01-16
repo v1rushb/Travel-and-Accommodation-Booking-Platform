@@ -25,9 +25,14 @@ public class DiscountRepository : IDiscountRepository
 
     public async Task<Guid> AddAsync(DiscountDTO newDiscount)
     {
-        var entityEntry = _context.Discounts.Add(_mapper.Map<Discount>(newDiscount));
+        var discount = _mapper.Map<Discount>(newDiscount);
+        discount.CreationDate = DateTime.UtcNow;
+        discount.ModificationDate = DateTime.UtcNow;
 
+        var entityEntry = _context.Discounts.Add(discount);
         await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Created Discount with Id: {Id}, HotelId: {HotelId}", entityEntry.Entity.Id, entityEntry.Entity.HotelId);
 
         return entityEntry.Entity.Id;
     }
@@ -40,16 +45,23 @@ public class DiscountRepository : IDiscountRepository
         _logger.LogInformation($"Discount with discount Id: {Id} has been deleted");
     }
 
-    public async Task<DiscountDTO?> GetByIdAsync(Guid Id) =>
-        _mapper.Map<DiscountDTO>(await _context.Discounts.FirstOrDefaultAsync(discount => discount.Id == Id));
+    public async Task<Discount?> GetByIdAsync(Guid Id) =>
+        await _context.Discounts.FirstOrDefaultAsync(discount => discount.Id == Id);
 
     public async Task UpdateAsync(DiscountDTO updatedDiscount)
     {
-        
-        _context.Discounts.Update(_mapper.Map<Discount>(updatedDiscount));
+        var discount = _mapper.Map<Discount>(updatedDiscount);
+        discount.ModificationDate = DateTime.UtcNow;
+
+        _context.Discounts.Update(discount);
         await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Updated Discount with Id: {Id}", updatedDiscount.Id);
     }
 
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _context.Discounts.AnyAsync(discount => discount.Id == Id);
+
+    public async Task<IEnumerable<Discount>> GetByHotelAsync(Guid hotelId) =>
+        await _context.Discounts.Where(discount => discount.HotelId == hotelId).ToListAsync();
 }
