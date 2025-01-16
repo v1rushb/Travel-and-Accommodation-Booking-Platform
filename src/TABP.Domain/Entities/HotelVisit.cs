@@ -5,8 +5,8 @@ namespace TABP.Domain.Entities;
 // consider doing some enhancements to this entity.
 public class HotelVisit : Entity
 {
-    public DateTime VisitDate { get; set; } // maybe consider using "Date" instead of VisitDate?
-    public DateTime TimeSpent { get; set; }
+    public DateTime Date { get; set; }
+    public TimeSpan TimeSpent { get; set; } // idk if this is the best way to do this.
     public DateTime CreationDate { get; set; }
     public DateTime ModificationDate { get; set; }
 
