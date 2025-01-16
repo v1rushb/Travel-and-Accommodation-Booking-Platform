@@ -1,4 +1,3 @@
-using TABP.Domain.Entities;
 using TABP.Domain.Models.City;
 
 namespace TABP.Domain.Abstractions.Services;
