@@ -43,7 +43,7 @@ public class DiscountService : IDiscountService
 
     public async Task UpdateAsync(DiscountDTO updatedDiscount)
     {
-        // do validation here.
+        await ValidateId(updatedDiscount.Id);
 
         await _discountRepository.UpdateAsync(updatedDiscount);
     }
@@ -56,4 +56,7 @@ public class DiscountService : IDiscountService
         if(! await ExistsAsync(Id))
             throw new KeyNotFoundException($"Id {Id} Does not exist.");
     }
+
+    public async Task<IEnumerable<Discount>> GetByHotelAsync(Guid hotelId) => // do some validations?
+        await _discountRepository.GetByHotelAsync(hotelId);
 }
