@@ -23,6 +23,7 @@ public class HotelBookingDbContext : DbContext
     public DbSet<HotelReview> HotelReviews { get; set; }
     public DbSet<HotelVisit> HotelVisits { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
+    public DbSet<RoomBooking> RoomBookings { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
