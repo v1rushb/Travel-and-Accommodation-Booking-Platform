@@ -95,11 +95,17 @@ namespace TABP.Infrastructure.Migrations
                     b.Property<decimal>("AmountPercentage")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("EndingDate")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("HotelId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ModificationDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Reason")
                         .IsRequired()
@@ -206,20 +212,20 @@ namespace TABP.Infrastructure.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
                     b.Property<Guid>("HotelId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("ModificationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("TimeSpent")
-                        .HasColumnType("datetime2");
+                    b.Property<TimeSpan>("TimeSpent")
+                        .HasColumnType("time");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("VisitDate")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -295,10 +301,13 @@ namespace TABP.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreationDate")
+                    b.Property<DateTime>("CheckInDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("EndingDate")
+                    b.Property<DateTime>("CheckOutDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("ModificationDate")
@@ -308,17 +317,14 @@ namespace TABP.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<Guid>("RoomId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("StartingDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -329,7 +335,7 @@ namespace TABP.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RoomBooking");
+                    b.ToTable("RoomBookings");
                 });
 
             modelBuilder.Entity("TABP.Domain.Entities.User", b =>
