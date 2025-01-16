@@ -32,7 +32,7 @@ public class RoomBookingService : IRoomBookingService
 
         if(isRoomBooked)
         {
-            throw new ConflictException("The room is already booked for the selected dates"); // add later. or change name to unavailable.
+            throw new Exception("The room is already booked for the selected dates"); // add later. or change name to unavailable.
         }
 
 
