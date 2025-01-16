@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
@@ -21,7 +22,21 @@ public class RoomBookingService : IRoomBookingService
     
     public async Task<Guid> AddAsync(RoomBookingDTO newBooking)
     {
-        // do some validations later here.
+        if (newBooking.CheckInDate >= newBooking.CheckOutDate)
+        {
+            throw new ValidationException("Check-in date must be earlier than check-out date");
+        }
+
+        var isRoomBooked = await _roomBookingRepository.RoomIsBookedBetween(
+            newBooking.RoomId, newBooking.CheckInDate, newBooking.CheckOutDate);
+
+        if(isRoomBooked)
+        {
+            throw new ConflictException("The room is already booked for the selected dates"); // add later. or change name to unavailable.
+        }
+
+
+
 
         var bookingId = await _roomBookingRepository.AddAsync(newBooking);
         _logger.LogInformation("Booking with Id: {Id} has been added", bookingId);
@@ -48,6 +63,8 @@ public class RoomBookingService : IRoomBookingService
 
     public async Task UpdateAsync(RoomBookingDTO updatedBooking)
     {
+        await ValidateId(updatedBooking.Id);
+
         updatedBooking.ModificationDate = DateTime.UtcNow;
         await _roomBookingRepository.UpdateAsync(updatedBooking);
 
@@ -58,9 +75,9 @@ public class RoomBookingService : IRoomBookingService
 
     private async Task ValidateId(Guid Id)
     {
-        if (await ExistsAsync(Id))
+        if (!await ExistsAsync(Id))
         {
-            throw new ArgumentException("Booking with Id already exists");
+            throw new KeyNotFoundException("Booking with Id already exists");
         }
     }
 }
