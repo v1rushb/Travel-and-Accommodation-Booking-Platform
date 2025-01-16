@@ -6,5 +6,6 @@ public interface IRoomBookingRepository
 {
     Task<Guid> AddAsync(RoomBooking newBooking);
 
-    bool RoomIsBookedBetween(Guid roomId, DateTime StartingDate, DateTime EndingDate);
+    Task<bool> RoomIsBookedBetween(Guid roomId, DateTime StartingDate, DateTime EndingDate);
+    Task<RoomBooking?> GetByIdAsync(Guid Id);
 }
