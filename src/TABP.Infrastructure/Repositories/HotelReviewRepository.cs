@@ -32,7 +32,7 @@ public class HotelReviewsRepository : IHotelReviewRepository
         var entityEntry = _context.HotelReviews.Add(review);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Created Review with Id: {ReviewId}, HotelId: {HotelId}, UserId: {UserId}", review.Id, review.HotelId, review.UserId) // who?
+        _logger.LogInformation("Created Review with Id: {ReviewId}, HotelId: {HotelId}, UserId: {UserId}", review.Id, review.HotelId, review.UserId); // who?
         
         return entityEntry.Entity.Id;
     }

@@ -47,7 +47,7 @@ public class CartItemRepository : ICartItemRepository
     public async Task<CartItem?> GetByIdAsync(Guid Id) =>
         await _context.CartItems.FirstOrDefaultAsync(cartItem => cartItem.Id == Id);
 
-    public async Task ExistsAsync(Guid Id) =>
+    public async Task<bool> ExistsAsync(Guid Id) =>
         await _context.CartItems.AnyAsync(cartItem => cartItem.Id == Id);
 
     public async Task<bool> ExistsBetweenUserAndRoomAsync(Guid userId, Guid roomId) =>
