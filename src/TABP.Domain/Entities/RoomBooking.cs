@@ -5,9 +5,9 @@ namespace TABP.Domain.Entities;
 
 public class RoomBooking : Entity
 {
-    public DateTime StartingDate { get; set; }
-    public DateTime EndingDate { get; set; }
-    public decimal Price { get; set; }
+    public DateTime CheckInDate { get; set; }
+    public DateTime CheckOutDate { get; set; }
+    public decimal TotalPrice { get; set; }
     public BookingStatus Status { get; set; }
     public string Notes { get; set; }
     public DateTime CreationDate { get; set; }
