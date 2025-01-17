@@ -12,6 +12,13 @@ public static class InfrastructureServicesRegistration
         services.AddDbContext<HotelBookingDbContext>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<ICartItemRepository, CartItemRepository>();
+        services.AddScoped<IDiscountRepository, DiscountRepository>();
+        services.AddScoped<IHotelRepository, HotelRepository>();
+        services.AddScoped<IHotelReviewRepository, HotelReviewsRepository>();
+        services.AddScoped<IHotelVisitRepository, HotelVisitRepository>();
+        services.AddScoped<IRoomBookingRepository, RoomBookingRepository>();
+        services.AddScoped<IRoomRepository, RoomRepository>();
 
         return services;
     }
