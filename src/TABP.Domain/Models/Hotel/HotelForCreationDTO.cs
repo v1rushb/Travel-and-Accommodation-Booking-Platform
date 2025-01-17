@@ -10,7 +10,5 @@ public class HotelForCreationDTO
     public decimal StarRating { get; set; }
     public string OwnerName { get; set; }
     public string Geolocation { get; set; }
-    public DateTime CreationDate { get; set; }
-    public DateTime ModificationDate { get; set; }
     public Guid CityId { get; set; }
 }
