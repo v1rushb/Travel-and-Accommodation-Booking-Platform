@@ -1,6 +1,9 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using TABP.API.Utilities.Injectable;
 using TABP.Domain.Models.Configurations;
 
 namespace TABP.API.Extensions.DependencyInjection;
@@ -18,6 +21,10 @@ internal static class APIServices
             {
                 SetTokenValidationParameters(options, jwtConfig);
             });
+            
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
+
         return services;
     }
 
@@ -27,6 +34,8 @@ internal static class APIServices
     {
         options.TokenValidationParameters = new()
         {
+            NameClaimType = JwtRegisteredClaimNames.Name,
+            RoleClaimType = ClaimTypes.Role,
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
