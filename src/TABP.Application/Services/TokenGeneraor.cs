@@ -9,6 +9,7 @@ using System.Text;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using TABP.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace TABP.Appllication.Services;
 
@@ -17,8 +18,7 @@ public class TokenGenerator : ITokenGenerator
     private readonly JWTConfigurations _jwtConfig;
 
     public TokenGenerator(
-        IOptions<JWTConfigurations> jwtOptions
-        )
+        IOptions<JWTConfigurations> jwtOptions)
     {
         _jwtConfig = jwtOptions.Value ??
             throw new MissingConfigurationException(nameof(JWTConfigurations));
@@ -53,9 +53,8 @@ public class TokenGenerator : ITokenGenerator
 
         var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Name, user.Id.ToString())
+                new(JwtRegisteredClaimNames.Name, user.Id.ToString())
             };
-
         var userRoles = user.Roles;
         if(userRoles != null)
         {
