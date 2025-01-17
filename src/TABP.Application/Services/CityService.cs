@@ -8,7 +8,7 @@ namespace TABP.Application.Services;
 
 public class CityService : ICityService
 {
-     private readonly ICityRepository _cityRepository;
+    private readonly ICityRepository _cityRepository;
     private readonly ILogger<CityService> _logger;
 
     public CityService(
@@ -44,7 +44,7 @@ public class CityService : ICityService
     public async Task UpdateAsync(CityDTO updatedCity)
     {
         // do validations here.
-        
+
         updatedCity.ModificationDate = DateTime.UtcNow;
 
         await _cityRepository.UpdateAsync(updatedCity);
