@@ -1,15 +1,8 @@
-using Microsoft.AspNetCore.Diagnostics;
 using TABP.API.Extensions;
 using TABP.API.Extensions.DependencyInjection;
 using TABP.API.Middlewares;
 using TABP.Application.Extensions.DependencyInjection;
-using TABP.Domain.Entities;
-using TABP.Domain.Exceptions;
-using TABP.Infrastructure;
 using TABP.Infrastructure.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
