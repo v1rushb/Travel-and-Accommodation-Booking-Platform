@@ -11,5 +11,4 @@ public class RoomBookingForCreationDTO
     public string Notes { get; set; }
     public BookingStatus Status { get; set; }
     public Guid RoomId { get; set; }
-    public Guid UserId { get; set; }
 }

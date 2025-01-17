@@ -10,6 +10,7 @@ public interface IRoomBookingService
     Task DeleteAsync(Guid Id);
     Task<RoomBooking?> GetByIdAsync(Guid Id);
     Task<bool> ExistsAsync(Guid Id);
-    Task<IEnumerable<RoomBooking>> GetByUserAsync(Guid userId);
+    Task<IEnumerable<RoomBooking>> GetByUserAsync();
     Task<IEnumerable<RoomBooking>> GetByRoomAsync(Guid roomId);
+    Task<bool> RoomIsBookedBetween(Guid roomId, DateTime StartingDate, DateTime EndingDate);
 }
