@@ -81,4 +81,7 @@ public class UserService : IUserService
             throw new InvalidUserCredentialsException();
         }
     }
+    
+    public async Task<bool> ExistsAsync(Guid Id) =>
+        await _userRepository.ExistsAsync(Id);
 }

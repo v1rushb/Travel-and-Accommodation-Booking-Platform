@@ -7,4 +7,5 @@ public interface IUserService
     Task<Guid> CreateAsync(UserDTO newUser);
 
     Task<string> AuthenticateAsync(UserLoginDTO userLoginCredentials);
+    Task<bool> ExistsAsync(Guid Id);
 }
