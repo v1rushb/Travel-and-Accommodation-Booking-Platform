@@ -9,7 +9,7 @@ public interface IRoomRepository
     Task<bool> ExistsAsync(Guid Id);
     Task DeleteAsync(Guid Id);
     Task UpdateAsync(RoomDTO updatedRoom);
-    Task<Room> GetByIdAsync(Guid Id); 
+    Task<RoomDTO> GetByIdAsync(Guid Id); 
 
     Task<IEnumerable<Room>> GetRoomsByHotelAsync(Guid HotelId);
 

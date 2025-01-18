@@ -48,8 +48,9 @@ public class RoomRepository : IRoomRepository
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _context.Rooms.AnyAsync(room => room.Id == Id);
 
-    public async Task<Room?> GetByIdAsync(Guid Id) =>
-        await _context.Rooms.FirstOrDefaultAsync(room => room.Id == Id);
+    public async Task<RoomDTO> GetByIdAsync(Guid Id) =>
+        _mapper.Map<RoomDTO>(await _context.Rooms
+            .FirstOrDefaultAsync(room => room.Id == Id));
 
     public async Task<IEnumerable<Room>> GetRoomsByHotelAsync(Guid HotelId) =>
         await _context.Rooms.Where(room => room.HotelId == HotelId).ToListAsync();

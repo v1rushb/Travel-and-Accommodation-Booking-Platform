@@ -1,4 +1,5 @@
 using System.Xml.Serialization;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
@@ -11,18 +12,22 @@ public class RoomService : IRoomService
 {
     private readonly IRoomRepository _roomRepository;
     private readonly ILogger<RoomService> _logger;
+    private readonly IValidator<RoomDTO> _roomValidator;
 
     public RoomService(
         IRoomRepository roomRepository,
-        ILogger<RoomService> logger)
+        ILogger<RoomService> logger,
+        IValidator<RoomDTO> roomValidator)
     {
         _roomRepository = roomRepository;
         _logger = logger;
+        _roomValidator = roomValidator;
     }
 
     public async Task<Guid> AddAsync(RoomDTO newRoom) 
     {
-        // do validations here. (confilct and stuff)
+        await _roomValidator.ValidateAndThrowAsync(newRoom);
+        
         var roomId = await _roomRepository.AddAsync(newRoom);
 
         _logger.LogInformation("Added Room: {Number}, HotelId: {HotelId}, Id: {Id}", newRoom.Number, newRoom.HotelId, roomId);
@@ -38,7 +43,7 @@ public class RoomService : IRoomService
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _roomRepository.ExistsAsync(Id);
 
-    public async Task<Room?> GetByIdAsync(Guid Id)
+    public async Task<RoomDTO?> GetByIdAsync(Guid Id)
     {
         await ValidateId(Id);
 
