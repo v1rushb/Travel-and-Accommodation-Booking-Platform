@@ -10,5 +10,6 @@ public interface IDiscountService
     Task UpdateAsync(DiscountDTO updatedDiscount);
     Task DeleteAsync(Guid Id);
     Task<bool> ExistsAsync(Guid Id);
-    Task<IEnumerable<Discount>> GetByHotelAsync(Guid hotelId); 
+    Task<IEnumerable<Discount>> GetByHotelAsync(Guid hotelId);
+    Task<DiscountDTO> GetHighestDiscountActiveForHotelAsync(Guid hotelId);
 }

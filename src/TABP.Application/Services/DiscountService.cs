@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 using TABP.Abstractions.Services;
 using TABP.Domain.Abstractions.Repositories;
@@ -10,17 +11,20 @@ public class DiscountService : IDiscountService
 {
     private readonly IDiscountRepository _discountRepository;
     private readonly ILogger<DiscountService> _logger;
+    private readonly IValidator<DiscountDTO> _discountValidator;
 
     public DiscountService(
        IDiscountRepository discountRepository,
-       ILogger<DiscountService> logger)
+       ILogger<DiscountService> logger,
+       IValidator<DiscountDTO> discountValidator)
     {
         _discountRepository = discountRepository;
         _logger = logger;
+        _discountValidator = discountValidator;
     }
     public async Task<Guid> AddAsync(DiscountDTO newDiscount)
     {
-        // do validtion
+        await _discountValidator.ValidateAndThrowAsync(newDiscount);
 
         return await _discountRepository.AddAsync(newDiscount);
     }
@@ -59,4 +63,8 @@ public class DiscountService : IDiscountService
 
     public async Task<IEnumerable<Discount>> GetByHotelAsync(Guid hotelId) => // do some validations?
         await _discountRepository.GetByHotelAsync(hotelId);
+
+    public async Task<DiscountDTO> GetHighestDiscountActiveForHotelAsync(Guid hotelId) =>
+        await _discountRepository.GetHighestDiscountActiveForHotelAsync(hotelId);
+    
 }

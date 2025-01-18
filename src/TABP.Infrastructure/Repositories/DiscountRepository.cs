@@ -64,4 +64,10 @@ public class DiscountRepository : IDiscountRepository
 
     public async Task<IEnumerable<Discount>> GetByHotelAsync(Guid hotelId) =>
         await _context.Discounts.Where(discount => discount.HotelId == hotelId).ToListAsync();
+
+    public async Task<DiscountDTO> GetHighestDiscountActiveForHotelAsync(Guid hotelId) => // there always should be one.
+        _mapper.Map<DiscountDTO>(await _context.Discounts
+            .Where(discount => discount.HotelId == hotelId && discount.EndingDate > DateTime.UtcNow)
+            .OrderByDescending(discount => discount.AmountPercentage)
+            .FirstAsync());
 }
