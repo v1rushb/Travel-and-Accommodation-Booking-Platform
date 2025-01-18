@@ -18,5 +18,6 @@ public interface IHotelReviewRepository
     Task<double> GetAverageRatingByHotelAsync(Guid hotelId);
     Task<IEnumerable<HotelReview>> GetReviewsByHotelAsync(Guid hotelId);
     Task<IEnumerable<HotelReview>> GetReviewsByUserAsync(Guid userId);
-    Task<bool> ExistsAsync(Guid Id);
+    Task<bool> ExistsAsync(Guid reviewId, Guid? userId = null);
+    Task<HotelReview?> GetByUserAndHotelAsync(Guid userId, Guid hotelId);
 }

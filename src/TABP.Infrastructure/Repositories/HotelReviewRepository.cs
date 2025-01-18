@@ -78,6 +78,12 @@ public class HotelReviewsRepository : IHotelReviewRepository
             .Where(review => review.UserId == userId)
             .ToListAsync();
     
-    public async Task<bool> ExistsAsync(Guid Id) =>
-        await _context.HotelReviews.AnyAsync(review => review.Id == Id);
+    public async Task<bool> ExistsAsync(Guid Id, Guid? userId = null) =>
+        await _context.HotelReviews
+            .AnyAsync(review => (review.Id == Id) && (!userId.HasValue || (review.UserId == userId.Value)));
+
+    public async Task<HotelReview?> GetByUserAndHotelAsync(Guid userId, Guid hotelId) =>
+        await _context.HotelReviews
+            .FirstOrDefaultAsync(review => (review.UserId == userId) && (review.HotelId == hotelId));
+        
 }
