@@ -1,13 +1,13 @@
 using FluentValidation;
 using TAB.Domain.Constants.Discount;
-using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Models.Discount;
 
 namespace TABP.Application.Validators.Discount;
 
 internal class DiscountValidator : AbstractValidator<DiscountDTO>
 {
-    public DiscountValidator(IHotelReviewService hotelService)
+    public DiscountValidator(IHotelReviewRepository hotelReviewRepository)
     {
         RuleFor(discount => discount.Reason)
             .NotNull()
@@ -24,7 +24,7 @@ internal class DiscountValidator : AbstractValidator<DiscountDTO>
 
         RuleFor(discount => discount.HotelId)
             .NotNull()
-            .MustAsync(async (hotelId, cancellation) => await hotelService.ExistsAsync(hotelId))
+            .MustAsync(async (hotelId, cancellation) => await hotelReviewRepository.ExistsAsync(hotelId))
             .WithMessage("{PropertyName} does not exist.");
 
     }

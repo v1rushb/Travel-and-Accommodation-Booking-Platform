@@ -1,6 +1,7 @@
 using System.Data;
 using FluentValidation;
 using TABP.Application.Services;
+using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Constants.Review;
 using TABP.Domain.Models.HotelReview;
@@ -10,9 +11,9 @@ namespace TABP.Application.Validators.Review;
 public class HotelReviewValidator : AbstractValidator<HotelReviewDTO>
 {
     public HotelReviewValidator(
-        IUserService userService,
-        IHotelService hotelService,
-        IHotelReviewService hotelReviewService)
+        IUserRepository userRepository,
+        IHotelRepository hotelRepository,
+        IHotelReviewRepository hotelReviewRepository)
     {
         RuleFor(review => review.Feedback)
             .NotNull()
@@ -21,18 +22,18 @@ public class HotelReviewValidator : AbstractValidator<HotelReviewDTO>
         RuleFor(review => review.UserId)
             .NotNull()
             .MustAsync(async (userId, cancellation) =>
-                 await userService.ExistsAsync(userId))
+                 await userRepository.ExistsAsync(userId))
             .WithMessage("{PropertyName} does not exist.");
         
         RuleFor(review => review.HotelId)
             .NotNull()
             .MustAsync(async (hotelId, cancellation) => 
-                await hotelService.ExistsAsync(hotelId))
+                await hotelRepository.ExistsAsync(hotelId))
             .WithMessage("{PropertyName} does not exist.");
 
         RuleFor(review => review)
             .MustAsync(async (review, cancellation) => 
-                !await hotelReviewService.ExistsByUserAndHotelAsync(review.UserId, review.HotelId))
+                !await hotelReviewRepository.ExistsByUserAndHotelAsync(review.UserId, review.HotelId))
             .WithMessage("The user has already submitted a review for this hotel.")
             .WithName("HotelReview");
     }
