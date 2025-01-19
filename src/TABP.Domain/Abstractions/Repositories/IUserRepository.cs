@@ -12,7 +12,7 @@ public interface IUserRepository
 
     Task<bool> ExistsAsync(Guid Id);
 
-    Task<bool> UsernameExistsAsync(string username);
+    Task<bool> ExistsByUsernameAsync(string username);
 
     Task<UserDTO> GetByUsernameWithRolesAsync(string username);
 

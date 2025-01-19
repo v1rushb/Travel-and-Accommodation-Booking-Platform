@@ -42,7 +42,7 @@ public class UserRepository : IUserRepository
         return _mapper.Map<UserDTO>(await _context.Users.FirstOrDefaultAsync(user => user.Id == Id));
     }
 
-    public async Task<bool> UsernameExistsAsync(string username) =>
+    public async Task<bool> ExistsByUsernameAsync(string username) =>
         await _context.Users.AnyAsync(user => user.Username == username);
 
     public async Task<UserDTO> GetByUsernameWithRolesAsync(string username) =>
