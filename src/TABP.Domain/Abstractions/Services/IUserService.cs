@@ -8,4 +8,5 @@ public interface IUserService
 
     Task<string> AuthenticateAsync(UserLoginDTO userLoginCredentials);
     Task<bool> ExistsAsync(Guid Id);
+    Task<bool> ExistsByUsernameAsync(string username);
 }
