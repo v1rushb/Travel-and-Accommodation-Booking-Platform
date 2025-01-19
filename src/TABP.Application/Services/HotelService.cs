@@ -1,3 +1,4 @@
+using FluentValidation;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
@@ -8,19 +9,21 @@ namespace TABP.Application.Services;
 public class HotelService : IHotelService
 {
     private readonly IHotelRepository _hotelRepository;
+    private readonly IValidator<HotelDTO> _hotelValidator;
 
     public HotelService(
-        IHotelRepository hotelRepository)
+        IHotelRepository hotelRepository,
+        IValidator<HotelDTO> hotelValidator)
     {
         _hotelRepository = hotelRepository;
+        _hotelValidator = hotelValidator;
     }
     public async Task<Guid> AddAsync(HotelDTO newHotel)
     {
-        //  do validtion.
+        await _hotelValidator.ValidateAndThrowAsync(newHotel);
 
         newHotel.CreationDate = DateTime.UtcNow;
         newHotel.ModificationDate = DateTime.UtcNow;
-        newHotel.Geolocation = "Yoink";
 
         return await _hotelRepository.AddAsync(newHotel);
     }
@@ -42,7 +45,7 @@ public class HotelService : IHotelService
 
     public async Task UpdateAsync(HotelDTO updatedHotel)
     {
-        // do validation
+        await _hotelValidator.ValidateAndThrowAsync(updatedHotel);
         
         updatedHotel.ModificationDate = DateTime.UtcNow;
         await _hotelRepository.UpdateAsync(updatedHotel);
