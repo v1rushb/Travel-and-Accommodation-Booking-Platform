@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
@@ -10,17 +11,20 @@ public class CityService : ICityService
 {
     private readonly ICityRepository _cityRepository;
     private readonly ILogger<CityService> _logger;
+    private readonly IValidator<CityDTO> _cityValidator;
 
     public CityService(
        ICityRepository cityRepository,
-       ILogger<CityService> logger)
+       ILogger<CityService> logger,
+       IValidator<CityDTO> cityValidator)
     {
         _cityRepository = cityRepository;
         _logger = logger;
+        _cityValidator = cityValidator;
     }
     public async Task<Guid> AddAsync(CityDTO newCity)
     {
-        //validation here.
+        await _cityValidator.ValidateAndThrowAsync(newCity);
 
         newCity.CreationDate = DateTime.UtcNow;
         newCity.ModificationDate = DateTime.UtcNow;
@@ -38,12 +42,15 @@ public class CityService : ICityService
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _cityRepository.ExistsAsync(Id);
 
-    public async Task<CityDTO?> GetByIdAsync(Guid Id) =>
-        await _cityRepository.GetByIdAsync(Id);
+    public async Task<CityDTO> GetByIdAsync(Guid Id){
+        await ValidateId(Id);
+
+        return await _cityRepository.GetByIdAsync(Id);
+    }
 
     public async Task UpdateAsync(CityDTO updatedCity)
     {
-        // do validations here.
+        await ValidateId(updatedCity.Id);
 
         updatedCity.ModificationDate = DateTime.UtcNow;
 
