@@ -45,7 +45,7 @@ public class RoomController : ControllerBase
     }
 
     [HttpPatch("{roomId:guid}")]
-    public async Task<IActionResult> PatchHotelAsync(
+    public async Task<IActionResult> PatchRoomAsync(
         Guid roomId,
         [FromBody] JsonPatchDocument<RoomForUpdateDTO> patchDoc)
     {
@@ -65,9 +65,9 @@ public class RoomController : ControllerBase
 
     private RoomForUpdateDTO GetRoomForPartialUpdate(
         JsonPatchDocument<RoomForUpdateDTO> patchDoc,
-        RoomDTO city)
+        RoomDTO room)
     {
-        var roomToUpdate = _mapper.Map<RoomForUpdateDTO>(city);
+        var roomToUpdate = _mapper.Map<RoomForUpdateDTO>(room);
         patchDoc.ApplyTo(roomToUpdate, ModelState);
 
         return roomToUpdate;
