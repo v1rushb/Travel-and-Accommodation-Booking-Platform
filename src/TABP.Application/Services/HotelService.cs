@@ -76,4 +76,7 @@ public class HotelService : IHotelService
         var expression = HotelForAdminExpressionBuilder.Build(query);
         return await _hotelRepository.SearchAdminAsync(expression, pagination.PageNumber, pagination.PageSize);
     }
+
+    public async Task<int> GetNextRoomNumberAsync(Guid hotelId) =>
+        await _hotelRepository.GetNextRoomNumberAsync(hotelId);
 }

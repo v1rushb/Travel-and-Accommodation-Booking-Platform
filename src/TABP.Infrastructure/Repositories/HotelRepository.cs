@@ -82,4 +82,11 @@ public class HotelRepository : IHotelRepository
             .PaginateAsync(pageNumber: 1, pageSize: 4);
         return _mapper.Map<IEnumerable<HotelAdminResponseDTO>>(hotels);
     }
+
+    public async Task<int> GetNextRoomNumberAsync(Guid hotelId) =>
+        await _context.Hotels
+            .Where(hotel => hotel.Id == hotelId)
+            .Select(hotel => hotel.Rooms
+                .Max(room => room.Number))
+            .FirstOrDefaultAsync() + 1;
 }
