@@ -28,7 +28,8 @@ public class HotelBookingDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder
-            .UseSqlServer(_connectionStrings.SQLString);
+            .UseSqlServer(_connectionStrings.SQLString)
+            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
