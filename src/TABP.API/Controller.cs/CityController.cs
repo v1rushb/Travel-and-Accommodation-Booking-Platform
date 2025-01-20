@@ -70,7 +70,9 @@ public class CityController : ControllerBase
         return NoContent();
     }
 
-    private CityForUpdateDTO GetCityForPartialUpdate(JsonPatchDocument<CityForUpdateDTO> patchDoc, CityDTO city)
+    private CityForUpdateDTO GetCityForPartialUpdate(
+        JsonPatchDocument<CityForUpdateDTO> patchDoc,
+        CityDTO city)
     {
         var cityToUpdate = _mapper.Map<CityForUpdateDTO>(city);
         patchDoc.ApplyTo(cityToUpdate, ModelState);
