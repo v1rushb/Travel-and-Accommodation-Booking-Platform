@@ -2,10 +2,13 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using TABP.Abstractions.Services;
+using TABP.API.Extensions;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Models.Discount;
+using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotels;
+using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Room;
 
 namespace TABP.API.Controllers;
@@ -42,7 +45,7 @@ public class HotelController : ControllerBase
     }
 
     [HttpGet("{Id:guid}")]
-    public async Task<IActionResult> GetByIdAsync(Guid hotelId)
+    public async Task<IActionResult> GetHotelAsync(Guid hotelId)
     {
         var hotel = await _hotelService.GetByIdAsync(hotelId);
         return Ok(hotel);
@@ -149,4 +152,18 @@ public class HotelController : ControllerBase
         await _discountService.DeleteAsync(discountId);
         return NoContent();
     }
+
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchAndFilterHotelsAsync(
+        [FromQuery] PaginationDTO pagination,
+        [FromQuery] HotelSearchQuery query)
+    {
+        var result = await _hotelService.SearchAsync(query, pagination); // maybe SearchAndFilterAsync(query)?
+        var hotelSize = result.Count();
+
+        Response.Headers.AddPaginationHeaders(hotelSize, pagination);
+
+        return Ok(result);
+    }
+
 }
