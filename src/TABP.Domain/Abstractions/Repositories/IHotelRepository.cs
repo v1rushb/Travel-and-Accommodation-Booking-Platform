@@ -11,6 +11,7 @@ public interface IHotelRepository
     Task<bool> ExistsAsync(Guid Id);
     Task DeleteAsync(Guid Id);
     Task UpdateAsync(HotelDTO updatedHotel);
-    Task<Hotel?> GetByIdAsync(Guid Id);
+    Task<HotelDTO> GetByIdAsync(Guid Id);
     Task<IEnumerable<HotelUserResponseDTO>> SearchAsync(Expression<Func<Hotel, bool>> predicate, int pageNumber, int pageSize);
+    Task<IEnumerable<HotelAdminResponseDTO>> SearchAdminAsync(Expression<Func<Hotel, bool>> predicate, int pageNumber, int pageSize);
 }

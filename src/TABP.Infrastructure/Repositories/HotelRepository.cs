@@ -48,8 +48,10 @@ public class HotelRepository : IHotelRepository
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _context.Hotels.AnyAsync(hotel => hotel.Id == Id);
 
-    public async Task<Hotel?> GetByIdAsync(Guid Id) =>
-        await _context.Hotels.FirstOrDefaultAsync(hotel => hotel.Id == Id);
+    public async Task<HotelDTO> GetByIdAsync(Guid Id) =>
+        _mapper.Map<HotelDTO>(
+            await _context.Hotels
+            .FirstOrDefaultAsync(hotel => hotel.Id == Id));
         
     public async Task UpdateAsync(HotelDTO updatedHotel)
     {
@@ -69,4 +71,15 @@ public class HotelRepository : IHotelRepository
 
             return _mapper.Map<IEnumerable<HotelUserResponseDTO>>(hotels);
         }
+
+    public async Task<IEnumerable<HotelAdminResponseDTO>> SearchAdminAsync(
+        Expression<Func<Hotel, bool>> predicate,
+        int pageNumber,
+        int pageSize)
+    {
+        var hotels =  await _context.Hotels
+            .Where(predicate)
+            .PaginateAsync(pageNumber: 1, pageSize: 4);
+        return _mapper.Map<IEnumerable<HotelAdminResponseDTO>>(hotels);
+    }
 }
