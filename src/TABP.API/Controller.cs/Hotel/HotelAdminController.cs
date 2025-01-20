@@ -67,10 +67,10 @@ public class HotelAdminController : ControllerBase
         JsonPatchDocument<HotelForUpdateDTO> patchDoc,
         HotelDTO city)
     {
-        var cityToUpdate = _mapper.Map<HotelForUpdateDTO>(city);
-        patchDoc.ApplyTo(cityToUpdate, ModelState);
+        var hotelToUpdate = _mapper.Map<HotelForUpdateDTO>(city);
+        patchDoc.ApplyTo(hotelToUpdate, ModelState);
 
-        return cityToUpdate;
+        return hotelToUpdate;
     }
 
     [HttpDelete("{hotelId:guid}")]
