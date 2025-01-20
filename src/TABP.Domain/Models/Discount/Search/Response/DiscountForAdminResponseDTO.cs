@@ -1,8 +1,9 @@
 using TABP.Domain.Abstractions;
 using TABP.Domain.Enums;
 
-namespace TABP.Domain.Models.Discount;
-public class DiscountDTO : Entity
+namespace TABP.Domain.Models.Discount.Search.Response;
+
+public class DiscountForAdminResponseDTO : Entity
 {
     public string Reason { get; set; }
     public DateTime StartingDate { get; set; }
