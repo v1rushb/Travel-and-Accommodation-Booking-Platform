@@ -1,5 +1,8 @@
 using TABP.Domain.Entities;
+using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Room;
+using TABP.Domain.Models.Room.Search;
+using TABP.Domain.Models.Room.Search.Response;
 
 namespace TABP.Domain.Abstractions.Services;
 
@@ -12,4 +15,5 @@ public interface IRoomService
     Task<RoomDTO> GetByIdAsync(Guid Id);
     Task<IEnumerable<Room>> GetRoomsByHotelAsync(Guid hotelId);
     Task<bool> RoomNumberExistsForHotelAsync(Guid hotelId, Guid RoomId);
+    Task<IEnumerable<RoomAdminResponseDTO>> SearchAdminAsync(RoomSearchQuery query, PaginationDTO pagination);
 }

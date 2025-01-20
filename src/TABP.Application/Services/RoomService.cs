@@ -1,10 +1,15 @@
 using System.Xml.Serialization;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
+using TABP.Domain.Models.Hotels;
+using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Room;
+using TABP.Domain.Models.Room.Search;
+using TABP.Domain.Models.Room.Search.Response;
 
 namespace TABP.Application.Services;
 
@@ -13,21 +18,26 @@ public class RoomService : IRoomService
     private readonly IRoomRepository _roomRepository;
     private readonly ILogger<RoomService> _logger;
     private readonly IValidator<RoomDTO> _roomValidator;
+    private readonly IHotelService _hotelService;
 
     public RoomService(
         IRoomRepository roomRepository,
         ILogger<RoomService> logger,
-        IValidator<RoomDTO> roomValidator)
+        IValidator<RoomDTO> roomValidator,
+        IHotelService hotelService)
     {
         _roomRepository = roomRepository;
         _logger = logger;
         _roomValidator = roomValidator;
+        _hotelService = hotelService;
     }
 
     public async Task<Guid> AddAsync(RoomDTO newRoom) 
     {
         await _roomValidator.ValidateAndThrowAsync(newRoom);
-        
+
+        var nextRoomNumber = await _hotelService.GetNextRoomNumberAsync(newRoom.HotelId);
+        newRoom.Number = nextRoomNumber;
         var roomId = await _roomRepository.AddAsync(newRoom);
 
         _logger.LogInformation("Added Room: {Number}, HotelId: {HotelId}, Id: {Id}", newRoom.Number, newRoom.HotelId, roomId);
@@ -62,6 +72,15 @@ public class RoomService : IRoomService
 
         updatedRoom.ModificationDate = DateTime.UtcNow;
         await _roomRepository.UpdateAsync(updatedRoom);
+    }
+
+    public async Task<IEnumerable<RoomAdminResponseDTO>> SearchAdminAsync(RoomSearchQuery query, PaginationDTO pagination)
+    {
+        var expression = RoomForAdminExpressionBuilder.Build(query);
+        return await _roomRepository.SearchAdminAsync(
+            expression,
+            pagination.PageNumber,
+            pagination.PageSize);
     }
 
     private async Task ValidateId(Guid Id)
