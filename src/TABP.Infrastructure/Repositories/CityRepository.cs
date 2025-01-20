@@ -1,9 +1,13 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.City;
+using TABP.Domain.Models.City.Response;
+using TABP.Domain.Models.City.Search;
+using TABP.Infrastructure.Extensions.Helpers;
 
 namespace TABP.Infrastructure.Repositories;
 
@@ -54,4 +58,32 @@ public class CityRepository : ICityRepository
         _context.Cities.Update(_mapper.Map<City>(updatedCity));
         await _context.SaveChangesAsync();
     }
+    public async Task<IEnumerable<CitySearchResponseDTO>> SearchAsync(
+        Expression<Func<City, bool>> predicate)
+        {
+            var cities = await _context.Cities
+                .Include(city => city.Hotels)
+                .Where(predicate)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<CitySearchResponseDTO>>(cities);
+        }
+
+    public async Task<IEnumerable<CityAdminResponseDTO>> SearchForAdminAsync(
+        Expression<Func<City, bool>> predicate,
+        int pageNumber,
+        int pageSize) 
+    {
+        var cities = await _context.Cities
+            .Where(predicate)
+            .PaginateAsync(pageNumber, pageSize);
+
+        return _mapper.Map<IEnumerable<CityAdminResponseDTO>>(cities);
+    }
+
+    public async Task<bool> ExistsByNameAndCountryAsync(string name, string country) => // check if could be replaced later.
+        await _context.Cities
+            .AnyAsync(city => EF.Functions.Like(city.Name, name) 
+                && EF.Functions.Like(city.CountryName, country));
+
 }
