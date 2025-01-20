@@ -22,7 +22,7 @@ public class HotelReviewValidator : AbstractValidator<HotelReviewDTO>
         RuleFor(review => review.UserId)
             .NotNull()
             .MustAsync(async (userId, cancellation) =>
-                 await userRepository.ExistsAsync(userId))
+                !await userRepository.ExistsAsync(userId))
             .WithMessage("{PropertyName} does not exist.");
         
         RuleFor(review => review.HotelId)
@@ -36,5 +36,9 @@ public class HotelReviewValidator : AbstractValidator<HotelReviewDTO>
                 !await hotelReviewRepository.ExistsByUserAndHotelAsync(review.UserId, review.HotelId))
             .WithMessage("The user has already submitted a review for this hotel.")
             .WithName("HotelReview");
+        
+        RuleFor(review => (int)review.Rating)
+            .NotNull()
+            .InclusiveBetween(HotelReviewConstants.MinRating, HotelReviewConstants.MaxRating);
     }
 }
