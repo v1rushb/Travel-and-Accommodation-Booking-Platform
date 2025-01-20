@@ -11,7 +11,8 @@ public interface IHotelService
     Task<Guid> AddAsync(HotelDTO newHotel);
     Task UpdateAsync(HotelDTO updatedHotel);
     Task DeleteAsync(Guid Id);
-    Task<Hotel> GetByIdAsync(Guid Id);
+    Task<HotelDTO> GetByIdAsync(Guid Id);
     Task<bool> ExistsAsync(Guid Id);
-    Task<IEnumerable<HotelUserResponseDTO>> SearchAsync(HotelSearchQuery query, PaginationDTO pagination); 
+    Task<IEnumerable<HotelUserResponseDTO>> SearchAsync(HotelSearchQuery query, PaginationDTO pagination);
+    Task<IEnumerable<HotelAdminResponseDTO>> SearchAdminAsync(HotelSearchQuery query, PaginationDTO pagination);
 }

@@ -42,7 +42,7 @@ public class HotelService : IHotelService
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _hotelRepository.ExistsAsync(Id);
 
-    public async Task<Hotel> GetByIdAsync(Guid Id) {
+    public async Task<HotelDTO> GetByIdAsync(Guid Id) {
         await ValidateId(Id);
         return await _hotelRepository.GetByIdAsync(Id);
     }
@@ -67,5 +67,13 @@ public class HotelService : IHotelService
     {
         if(!await ExistsAsync(Id))
             throw new KeyNotFoundException($"Id {Id} Does not exist.");
+    }
+
+    public async Task<IEnumerable<HotelAdminResponseDTO>> SearchAdminAsync(
+        HotelSearchQuery query,
+        PaginationDTO pagination)
+    {
+        var expression = HotelForAdminExpressionBuilder.Build(query);
+        return await _hotelRepository.SearchAdminAsync(expression, pagination.PageNumber, pagination.PageSize);
     }
 }
