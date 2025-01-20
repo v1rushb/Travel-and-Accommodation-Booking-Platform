@@ -1,9 +1,12 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Room;
+using TABP.Domain.Models.Room.Search.Response;
+using TABP.Infrastructure.Extensions.Helpers;
 
 namespace TABP.Infrastructure.Repositories;
 
@@ -66,4 +69,16 @@ public class RoomRepository : IRoomRepository
 
     public async Task<bool> RoomExistsForHotelAsync(Guid HotelId, Guid RoomId) =>
         await _context.Rooms.AnyAsync(room => room.HotelId == HotelId && room.Id == RoomId);
+
+    public async Task<IEnumerable<RoomAdminResponseDTO>> SearchAdminAsync(
+        Expression<Func<Room, bool>> predicate,
+        int pageNumber,
+        int pageSize)
+    {
+        var rooms = await _context.Rooms
+            .Where(predicate)
+            .PaginateAsync(pageNumber, pageSize);
+
+        return _mapper.Map<IEnumerable<RoomAdminResponseDTO>>(rooms);
+    }
 }
