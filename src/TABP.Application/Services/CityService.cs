@@ -1,9 +1,13 @@
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.City;
+using TABP.Domain.Models.City.Response;
+using TABP.Domain.Models.City.Search;
+using TABP.Domain.Models.Pagination;
 
 namespace TABP.Application.Services;
 
@@ -61,5 +65,20 @@ public class CityService : ICityService
     {
         if(! await ExistsAsync(Id))
             throw new KeyNotFoundException($"Id {Id} Does not exist.");
+    }
+
+    public async Task<IEnumerable<CitySearchResponseDTO>> SearchAsync(CitySearchQuery query)
+    {
+        var expression = CityExpressionBuilder.Build(query);
+        return await _cityRepository.SearchAsync(expression);
+    }
+
+    public async Task<IEnumerable<CityAdminResponseDTO>> SearchForAdminAsync(CitySearchQuery query, PaginationDTO pagination)
+    {
+        var expression = CityExpressionBuilder.Build(query);
+        return await _cityRepository.SearchForAdminAsync(
+            expression,
+            pagination.PageNumber,
+            pagination.PageSize);
     }
 }
