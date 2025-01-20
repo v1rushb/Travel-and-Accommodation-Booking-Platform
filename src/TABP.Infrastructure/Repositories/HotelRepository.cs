@@ -1,9 +1,12 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
+using TABP.Domain.Models.Hotel.Search.Response;
 using TABP.Domain.Models.Hotels;
+using TABP.Infrastructure.Extensions.Helpers;
 
 namespace TABP.Infrastructure.Repositories;
 
@@ -54,4 +57,16 @@ public class HotelRepository : IHotelRepository
         _context.Hotels.Update(hotel);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<IEnumerable<HotelUserResponseDTO>> SearchAsync(
+        Expression<Func<Hotel, bool>> predicate,
+        int pageNumber,
+        int pageSize)
+        {
+            var hotels =  await _context.Hotels
+                .Where(predicate)
+                .PaginateAsync(pageNumber, pageSize);
+
+            return _mapper.Map<IEnumerable<HotelUserResponseDTO>>(hotels);
+        }
 }
