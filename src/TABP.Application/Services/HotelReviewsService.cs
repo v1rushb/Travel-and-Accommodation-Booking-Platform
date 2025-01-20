@@ -1,9 +1,13 @@
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.HotelReview;
+using TABP.Domain.Models.HotelReview.Search;
+using TABP.Domain.Models.HotelReview.Search.Response;
+using TABP.Domain.Models.Pagination;
 
 namespace TABP.Application.Services;
 
@@ -28,7 +32,11 @@ public class HotelReviewService : IHotelReviewService
 
     public async Task<Guid> AddAsync(HotelReviewDTO newReview)
     {
-        _reviewValidator.ValidateAndThrowAsync(newReview);
+        var currentUserId = _currentUserService.GetUserId();
+        System.Console.WriteLine(currentUserId);
+        await _reviewValidator.ValidateAndThrowAsync(newReview);
+
+        newReview.UserId = currentUserId;
 
         var reviewId = await _hotelReviewRepository.AddAsync(newReview);
 
@@ -52,7 +60,7 @@ public class HotelReviewService : IHotelReviewService
     public async Task<double> GetAverageRatingByHotelAsync(Guid hotelId) =>
         await _hotelReviewRepository.GetAverageRatingByHotelAsync(hotelId);
 
-    public async Task<HotelReview> GetByIdAsync(Guid Id)
+    public async Task<HotelReviewDTO> GetByIdAsync(Guid Id)
     {
         await ValidateId(Id);
 
@@ -71,7 +79,10 @@ public class HotelReviewService : IHotelReviewService
     public async Task UpdateAsync(HotelReviewDTO updatedReview)
     {
         await ValidateId(updatedReview.Id);
-        await ValidateOwnership(updatedReview.Id, updatedReview.UserId);
+        var currentUserId = _currentUserService.GetUserId();
+        
+        await ValidateOwnership(updatedReview.Id, currentUserId); // maybe move to fluentvalidation?
+
         updatedReview.ModificationDate = DateTime.UtcNow;
 
         await _hotelReviewRepository.UpdateAsync(updatedReview);
@@ -97,5 +108,18 @@ public class HotelReviewService : IHotelReviewService
         await ValidateId(hotelId);
 
         return await _hotelReviewRepository.GetByUserAndHotelAsync(userId, hotelId);
+    }
+
+    public async Task<IEnumerable<HotelReviewUserResponseDTO>> SearchReviewsAsync(
+        ReviewSearchQuery query,
+        PaginationDTO pagination)
+    {
+        var currentUserId = _currentUserService.GetUserId();
+        var expression = ReviewExpressionBuilder.Build(query, currentUserId);
+
+        return await _hotelReviewRepository.SearchReviewsAsync(
+            expression,
+            pagination.PageNumber,
+            pagination.PageSize);
     }
 }
