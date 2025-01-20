@@ -1,6 +1,7 @@
 using AutoMapper;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Discount;
+using TABP.Domain.Models.Discount.Search.Response;
 
 namespace TABP.Infrastructure.Profiles;
 
@@ -10,5 +11,7 @@ internal class DiscountProfile : Profile
     {
         CreateMap<DiscountDTO, Discount>();
         CreateMap<Discount, DiscountDTO>();
+
+        CreateMap<Discount, DiscountForAdminResponseDTO>();
     }
 }
