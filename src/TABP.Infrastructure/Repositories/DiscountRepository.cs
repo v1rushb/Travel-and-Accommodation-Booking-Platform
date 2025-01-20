@@ -1,9 +1,12 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Discount;
+using TABP.Domain.Models.Discount.Search.Response;
+using TABP.Infrastructure.Extensions.Helpers;
 
 namespace TABP.Infrastructure.Repositories;
 
@@ -45,8 +48,9 @@ public class DiscountRepository : IDiscountRepository
         _logger.LogInformation($"Discount with discount Id: {Id} has been deleted");
     }
 
-    public async Task<Discount?> GetByIdAsync(Guid Id) =>
-        await _context.Discounts.FirstOrDefaultAsync(discount => discount.Id == Id);
+    public async Task<DiscountDTO> GetByIdAsync(Guid Id) =>
+        _mapper.Map<DiscountDTO>(await _context.Discounts
+            .FirstOrDefaultAsync(discount => discount.Id == Id));
 
     public async Task UpdateAsync(DiscountDTO updatedDiscount)
     {
@@ -70,4 +74,16 @@ public class DiscountRepository : IDiscountRepository
             .Where(discount => discount.HotelId == hotelId && discount.EndingDate > DateTime.UtcNow)
             .OrderByDescending(discount => discount.AmountPercentage)
             .FirstAsync());
+
+    public async Task<IEnumerable<DiscountForAdminResponseDTO>> SearchForAdminAsync(
+        Expression<Func<Discount, bool>> predicate,
+        int pageNumber,
+        int pageSize)
+    {
+        var discounts = await _context.Discounts
+            .Where(predicate)
+            .PaginateAsync(pageNumber, pageSize);
+
+        return _mapper.Map<IEnumerable<DiscountForAdminResponseDTO>>(discounts);
+    }
 }

@@ -1,9 +1,13 @@
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using TABP.Abstractions.Services;
+using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Discount;
+using TABP.Domain.Models.Discount.Search;
+using TABP.Domain.Models.Discount.Search.Response;
+using TABP.Domain.Models.Pagination;
 
 namespace TABP.Application.Services;
 
@@ -36,13 +40,11 @@ public class DiscountService : IDiscountService
         await _discountRepository.DeleteAsync(Id);
     }
 
-    public async Task<Discount> GetByIdAsync(Guid Id)
+    public async Task<DiscountDTO> GetByIdAsync(Guid Id)
     {
         await ValidateId(Id);
 
-        var discount = await _discountRepository.GetByIdAsync(Id);
-        
-        return discount;
+        return await _discountRepository.GetByIdAsync(Id);
     }
 
     public async Task UpdateAsync(DiscountDTO updatedDiscount)
@@ -66,5 +68,13 @@ public class DiscountService : IDiscountService
 
     public async Task<DiscountDTO> GetHighestDiscountActiveForHotelAsync(Guid hotelId) =>
         await _discountRepository.GetHighestDiscountActiveForHotelAsync(hotelId);
-    
+
+    public async Task<IEnumerable<DiscountForAdminResponseDTO>> SearchForAdminAsync(DiscountSearchQuery query, PaginationDTO pagination)
+    {
+        var expression = DiscountForAdminExpressionBuilder.Build(query);
+        return await _discountRepository.SearchForAdminAsync(
+            expression,
+            pagination.PageNumber,
+            pagination.PageSize);
+    }
 }
