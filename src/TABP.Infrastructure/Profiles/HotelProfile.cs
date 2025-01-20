@@ -14,5 +14,7 @@ internal class HotelProfile : Profile
     
         CreateMap<Hotel, HotelUserResponseDTO>();
         CreateMap<HotelUserResponseDTO, Hotel>();
+
+        CreateMap<Hotel, HotelAdminResponseDTO>();
     }
 }
