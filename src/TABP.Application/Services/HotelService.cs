@@ -1,8 +1,12 @@
 using FluentValidation;
+using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
+using TABP.Domain.Models.Hotel;
+using TABP.Domain.Models.Hotel.Search.Response;
 using TABP.Domain.Models.Hotels;
+using TABP.Domain.Models.Pagination;
 
 namespace TABP.Application.Services;
 
@@ -49,6 +53,14 @@ public class HotelService : IHotelService
         
         updatedHotel.ModificationDate = DateTime.UtcNow;
         await _hotelRepository.UpdateAsync(updatedHotel);
+    }
+
+    public async Task<IEnumerable<HotelUserResponseDTO>> SearchAsync(
+        HotelSearchQuery query,
+        PaginationDTO pagination) 
+    {
+        var expression = HotelExpressionBuilder.Build(query);
+        return await _hotelRepository.SearchAsync(expression, pagination.PageNumber, pagination.PageSize);
     }
 
     private async Task ValidateId(Guid Id)
