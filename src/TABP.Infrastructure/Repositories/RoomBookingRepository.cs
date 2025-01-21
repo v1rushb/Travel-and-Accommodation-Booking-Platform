@@ -1,9 +1,12 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
+using TABP.Domain.Models.Booking.Search.Response;
 using TABP.Domain.Models.RoomBooking;
+using TABP.Infrastructure.Extensions.Helpers;
 
 namespace TABP.Infrastructure.Repositories;
 
@@ -38,8 +41,10 @@ public class RoomBookingRepository : IRoomBookingRepository
         return entityEntry.Entity.Id;
     }
 
-    public async Task<RoomBooking?> GetByIdAsync(Guid Id) =>
-        await _context.RoomBookings.FirstOrDefaultAsync(booking => booking.Id == Id); // include user and room later if needed. (check ur need after implementing logic or final refactor.)
+    public async Task<RoomBookingDTO> GetByIdAsync(Guid Id) =>
+        _mapper.Map<RoomBookingDTO>(
+            await _context.RoomBookings
+            .FirstOrDefaultAsync(booking => booking.Id == Id)); // include user and room later if needed. (check ur need after implementing logic or final refactor.)
 
     public async Task<bool> RoomIsBookedBetween(Guid roomId, DateTime StartingDate, DateTime EndingDate) =>
         await _context.RoomBookings.AnyAsync(booking => booking.RoomId == roomId && booking.CheckInDate >= StartingDate && booking.CheckOutDate <= EndingDate);
@@ -70,4 +75,18 @@ public class RoomBookingRepository : IRoomBookingRepository
 
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _context.RoomBookings.AnyAsync(booking => booking.Id == Id);
+
+    public async Task<IEnumerable<BookingUserResponseDTO>> SearchUserBookingsAsync(
+        Expression<Func<RoomBooking, bool>> predicate,
+        int pageNumber,
+        int pageSize)
+    {
+        var bookings = await _context.RoomBookings
+            .Where(predicate)
+            .PaginateAsync(
+                pageNumber,
+                pageSize);
+
+        return _mapper.Map<IEnumerable<BookingUserResponseDTO>>(bookings);
+    }
 }

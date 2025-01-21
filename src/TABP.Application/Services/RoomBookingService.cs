@@ -1,11 +1,14 @@
-using System.ComponentModel.DataAnnotations;
 using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
+using TABP.Domain.Enums;
+using TABP.Domain.Models.Booking.Search;
+using TABP.Domain.Models.Booking.Search.Response;
 using TABP.Domain.Models.Discount;
+using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Room;
 using TABP.Domain.Models.RoomBooking;
 
@@ -25,13 +28,15 @@ public class RoomBookingService : IRoomBookingService
         ILogger<RoomBookingService> logger,
         ICurrentUserService currentUserService,
         IDiscountRepository discountRepository,
-        IRoomService roomService)
+        IRoomService roomService,
+        IValidator<RoomBookingDTO> bookingValidator)
     {
         _roomBookingRepository = roomBookingRepository;
         _logger = logger;
         _currentUserService = currentUserService;
         _discountRepository = discountRepository;
         _roomService = roomService;
+        _bookingValidator = bookingValidator;
     }
     
     public async Task<Guid> AddAsync(RoomBookingDTO newBooking)
@@ -44,15 +49,17 @@ public class RoomBookingService : IRoomBookingService
 
         newBooking.CreationDate = DateTime.UtcNow;
         newBooking.ModificationDate = DateTime.UtcNow;
+        newBooking.Status = BookingStatus.Confirmed;
 
         var room = await _roomService.GetByIdAsync(newBooking.RoomId);
-        var discount = await _discountRepository.GetHighestDiscountActiveForHotelAsync(room.HotelId);
+
+        var discount = await _discountRepository.GetHighestDiscountActiveForHotelRoomTypeAsync(room.HotelId, room.Type);
         
         SetFinalTotalPrice(newBooking, room, discount);
 
         var bookingId = await _roomBookingRepository.AddAsync(newBooking);
     
-        _logger.LogInformation("Booking with Id: {Id} has been added to User {UserId}", bookingId, currentUserId);
+        _logger.LogInformation("Booking with Id: {Id} has been added to User {UserId}, with Discount {Discount}%", bookingId, currentUserId, discount.AmountPercentage);
         
         return bookingId;
     }
@@ -67,7 +74,7 @@ public class RoomBookingService : IRoomBookingService
         _logger.LogInformation("Booking with Id: {Id} has been deleted from User {UserId}", Id, currentUserId);
     }
 
-    public async Task<RoomBooking?> GetByIdAsync(Guid Id) =>
+    public async Task<RoomBookingDTO> GetByIdAsync(Guid Id) =>
         await _roomBookingRepository.GetByIdAsync(Id);
 
     public async Task<IEnumerable<RoomBooking>> GetByRoomAsync(Guid roomId) =>
@@ -85,12 +92,12 @@ public class RoomBookingService : IRoomBookingService
 
     public async Task UpdateAsync(RoomBookingDTO updatedBooking)
     {
-        await ValidateId(updatedBooking.Id);
+        await ValidateId(updatedBooking.Id); // do more proper validation.
 
         var currentUserId = _currentUserService.GetUserId();
         var booking = await GetByIdAsync(updatedBooking.Id);
         
-        await ValidateOwnership(updatedBooking.Id, currentUserId);
+        await ValidateOwnership(booking.Id, currentUserId);
 
         updatedBooking.ModificationDate = DateTime.UtcNow;
         await _roomBookingRepository.UpdateAsync(updatedBooking);
@@ -130,4 +137,17 @@ public class RoomBookingService : IRoomBookingService
 
     private static decimal ApplyDiscount(int originalPrice, decimal discountPercentage) =>
         originalPrice - (originalPrice * (discountPercentage / 100));
+
+    public async Task<IEnumerable<BookingUserResponseDTO>> SearchUserBookingsAsync(
+        BookingSearchQuery query,
+        PaginationDTO pagination)
+    {
+        var currentUserId = _currentUserService.GetUserId();
+        var expression = BookingExpressionBuilder.Build(query, currentUserId);
+
+        return await _roomBookingRepository.SearchUserBookingsAsync(
+            expression,
+            pagination.PageNumber,
+            pagination.PageSize);
+    }
 }
