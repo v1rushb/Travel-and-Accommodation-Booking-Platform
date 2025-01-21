@@ -20,6 +20,7 @@ public static class InfrastructureServicesRegistration
         services.AddScoped<IRoomBookingRepository, RoomBookingRepository>();
         services.AddScoped<IRoomRepository, RoomRepository>();
         services.AddScoped<ICityRepository, CityRepository>();
+        services.AddScoped<ICartRepository, CartRepository>();
 
         return services;
     }

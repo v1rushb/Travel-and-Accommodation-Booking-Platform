@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TABP.Abstractions.Services;
 using TABP.Application.Services;
 using TABP.Application.Validators.Booking;
+using TABP.Application.Validators.Cart;
 using TABP.Application.Validators.City;
 using TABP.Application.Validators.Discount;
 using TABP.Application.Validators.Hotel;
@@ -13,6 +14,7 @@ using TABP.Application.Validators.Room;
 using TABP.Application.Validators.User;
 using TABP.Appllication.Services;
 using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Models.CartItem;
 using TABP.Domain.Models.City;
 using TABP.Domain.Models.Discount;
 using TABP.Domain.Models.HotelReview;
@@ -41,6 +43,7 @@ public static class ApplicationServicesRegistration
         services.AddScoped<IHotelVisitService, HotelVisitService>();
         services.AddScoped<IRoomBookingService, RoomBookingService>();
         services.AddScoped<IRoomService, RoomService>();
+        services.AddScoped<ICartService, CartService>();
 
         AddValidators(services);
 
@@ -64,5 +67,6 @@ public static class ApplicationServicesRegistration
         services.AddScoped<IValidator<CityDTO>, CityValidator>();
         services.AddScoped<IValidator<HotelReviewDTO>, HotelReviewValidator>();
         services.AddScoped<IValidator<RoomBookingDTO>, BookingValidator>();
+        services.AddScoped<IValidator<CartItemDTO>, CartItemValidator>();
     }
 }
