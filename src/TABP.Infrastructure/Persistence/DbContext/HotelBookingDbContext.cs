@@ -24,6 +24,7 @@ public class HotelBookingDbContext : DbContext
     public DbSet<HotelVisit> HotelVisits { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
     public DbSet<RoomBooking> RoomBookings { get; set; }
+    public DbSet<Cart> Carts { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
