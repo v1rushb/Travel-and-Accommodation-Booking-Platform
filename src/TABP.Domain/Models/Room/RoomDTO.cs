@@ -10,7 +10,6 @@ public class RoomDTO : Entity
     public int AdultsCapacity { get; set; }
     public int ChildrenCapacity { get; set; }
     public int PricePerNight { get; set; }
-    public bool IsAvailable { get; set; }
     public DateTime CreationDate { get; set; }
     public DateTime ModificationDate { get; set; }
     public Guid HotelId { get; set; }
