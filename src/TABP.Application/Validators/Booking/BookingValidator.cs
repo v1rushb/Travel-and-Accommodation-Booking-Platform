@@ -1,5 +1,6 @@
 using System.Data;
 using FluentValidation;
+using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Constants.Booking;
 using TABP.Domain.Models.RoomBooking;
@@ -9,18 +10,19 @@ namespace TABP.Application.Validators.Booking;
 internal class BookingValidator : AbstractValidator<RoomBookingDTO>
 {
     public BookingValidator(
-        IUserService userService,
-        IRoomBookingService roomService,
-        IRoomBookingService bookingService)
+        IUserRepository userRepository,
+        IRoomRepository roomRepository,
+        IRoomBookingRepository bookingRepository)
     {
         RuleFor(booking => booking.UserId)
             .NotNull()
-            .MustAsync(async (userId, cancellation) => await userService.ExistsAsync(userId))
+            .MustAsync(async (userId, cancellation) => await userRepository.ExistsAsync(userId))
             .WithMessage("{PropertyName} does not exist."); // try that later.
         
         RuleFor(booking => booking.RoomId)
             .NotNull()
-            .MustAsync(async (roomId, cancellation) => await roomService.ExistsAsync(roomId))
+            .MustAsync(async (roomId, cancellation) =>
+                await roomRepository.ExistsAsync(roomId))
             .WithMessage("{PropertyName} does not exist.");
 
         RuleFor(booking => booking)
@@ -30,7 +32,7 @@ internal class BookingValidator : AbstractValidator<RoomBookingDTO>
         
         RuleFor(booking => booking)
             .MustAsync(async (booking, cancellation) => 
-                !await bookingService.RoomIsBookedBetween(
+                !await bookingRepository.RoomIsBookedBetween(
                     booking.RoomId,
                     booking.CheckInDate,
                     booking.CheckOutDate))
@@ -47,10 +49,6 @@ internal class BookingValidator : AbstractValidator<RoomBookingDTO>
                             <= BookingConstants.MaxBookingDurationDays)
             .WithMessage("Booking duration can not exceed 30 days.");
         
-        RuleFor(booking => booking.TotalPrice)
-            .GreaterThan(BookingConstants.MinTotalPrice)
-            .WithMessage("{PropertyName} must be greater than 0.");
-
         RuleFor(booking => booking.Notes)
             .MaximumLength(BookingConstants.MaxNotesLength)
             .WithMessage("{PropertyName} can not exceed 500 characters.");
