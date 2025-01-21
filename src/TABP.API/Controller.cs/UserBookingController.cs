@@ -8,6 +8,7 @@ using TABP.Domain.Models.Booking.Search;
 using TABP.API.Extensions;
 using Microsoft.AspNetCore.JsonPatch;
 using TABP.Domain.Models.Booking;
+using TABP.Domain.Models.CartItem;
 
 namespace TABP.API.Controllers;
 
@@ -18,22 +19,44 @@ public class UserBookingController : ControllerBase
 {
     private readonly IRoomBookingService _roomBookingService;
     private readonly IMapper _mapper;
+    private readonly ICartService _cartService;
 
     public UserBookingController(
         IRoomBookingService roomBookingService,
-        IMapper mapper)
+        IMapper mapper,
+        ICartService cartService)
     {
         _roomBookingService = roomBookingService;
         _mapper = mapper;
+        _cartService = cartService;
     }
+
+    // [HttpPost]
+    // public async Task<IActionResult> AddBooking(CartItemForCreationDTO newCartItem)
+    // {
+
+    // }
     
     [HttpPost]
-    public async Task<IActionResult> CreateAsync([FromBody] RoomBookingForCreationDTO newBooking)
+    public async Task<IActionResult> CreateBookingAsync([FromBody] RoomBookingForCreationDTO newBooking)
     {
-        await _roomBookingService.AddAsync(_mapper.Map<RoomBookingDTO>(newBooking));
+        // await _roomBookingService.AddAsync(_mapper.Map<RoomBookingDTO>(newBooking));
+        System.Console.WriteLine(newBooking.CheckInDate);
+        System.Console.WriteLine(newBooking.CheckOutDate);
+        System.Console.WriteLine(newBooking.Notes);
+        await _cartService.AddItemAsync(_mapper.Map<CartItemDTO>(newBooking));
         
         return Created();
     }
+
+    [HttpDelete("{Id:guid}")]
+    public async Task<IActionResult> DeleteBookingAsync(Guid Id)
+    {
+        await _cartService.DeleteItemAsync(Id);
+        return Ok();
+    }
+
+    // make update.
 
     // [HttpGet]
     // public async Task<IActionResult> GetBookingsForCurrentUserAsync()
@@ -103,13 +126,39 @@ public class UserBookingController : ControllerBase
         return bookingToUpdate;
     }
 
-    [HttpDelete("{bookingId:guid}")]
-    public async Task<IActionResult> DeleteAsync(Guid bookingId)
+    [HttpGet("all")]
+    public async Task<IActionResult> GetCurrentCartItemsAsync([FromQuery] PaginationDTO pagination)
     {
-        await _roomBookingService.DeleteAsync(bookingId);
+        var carts = await _cartService.GetCartItemsAsync(pagination);
+        var cartsCount = carts.Count();
+
+        Response.Headers.AddPaginationHeaders(cartsCount, pagination);
+        return Ok(carts);
+    }
+
+    // add a search for the carts as well.
+
+    // [HttpDelete("{bookingId:guid}")]
+    // public async Task<IActionResult> DeleteAsync(Guid bookingId)
+    // {
+    //     await _roomBookingService.DeleteAsync(bookingId);
+
+    //     return NoContent();
+    // }
+
+    [HttpPost("checkout")]
+    public async Task<IActionResult> CheckOutCurrentCartAsync()
+    {
+        await _cartService.CheckOutAsync();
 
         return NoContent();
     }
 
-    
+    [HttpPost("new-cart")]
+    public async Task<IActionResult> CreateNewCartAsync()
+    {
+        await _cartService.CreateNewAsync();
+        return NoContent();
+    }
+
 }
