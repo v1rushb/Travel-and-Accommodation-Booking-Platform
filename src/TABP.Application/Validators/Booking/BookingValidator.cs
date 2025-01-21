@@ -40,9 +40,10 @@ internal class BookingValidator : AbstractValidator<RoomBookingDTO>
             .WithName("Booking");
         
         RuleFor(booking => booking)
-            .Must(booking => booking.CheckInDate >= DateTime.UtcNow)
+            .Must(booking => booking.CheckInDate > DateTime.UtcNow)
             .WithMessage("Check-in date must be in the future.")
             .WithName("Booking");
+
 
         RuleFor(booking => booking)
             .Must(booking => (booking.CheckOutDate - booking.CheckInDate).Days 
