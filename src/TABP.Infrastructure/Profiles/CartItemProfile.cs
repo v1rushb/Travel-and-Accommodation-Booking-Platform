@@ -1,6 +1,6 @@
 using AutoMapper;
-using TABD.Domain.Models.CartItem;
 using TABP.Domain.Entities;
+using TABP.Domain.Models.CartItem;
 
 namespace TABP.Infrastructure.Profiles;
 
