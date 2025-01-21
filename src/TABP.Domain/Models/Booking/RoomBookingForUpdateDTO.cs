@@ -1,6 +1,6 @@
-namespace TABP.Domain.Models.RoomBooking;
+namespace TABP.Domain.Models.Booking;
 
-public class RoomBookingForCreationDTO
+public class RoomBookingForUpdateDTO
 {
     public DateTime CheckInDate { get; set; }
     public DateTime CheckOutDate { get; set; }
