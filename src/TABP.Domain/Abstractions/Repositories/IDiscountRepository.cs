@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using TABP.Domain.Entities;
+using TABP.Domain.Enums;
 using TABP.Domain.Models.Discount;
 using TABP.Domain.Models.Discount.Search.Response;
 
@@ -13,6 +14,6 @@ public interface IDiscountRepository
     Task DeleteAsync(Guid Id);
     Task<bool> ExistsAsync(Guid Id);
     Task<IEnumerable<Discount>> GetByHotelAsync(Guid hotelId);
-    Task<DiscountDTO> GetHighestDiscountActiveForHotelAsync(Guid hotelId);
+    Task<DiscountDTO> GetHighestDiscountActiveForHotelRoomTypeAsync(Guid hotelId, RoomType type);
     Task<IEnumerable<DiscountForAdminResponseDTO>> SearchForAdminAsync(Expression<Func<Discount, bool>> expression, int pageNumber, int pageSize);
 }

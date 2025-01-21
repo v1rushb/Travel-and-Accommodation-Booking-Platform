@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
+using TABP.Domain.Enums;
 using TABP.Domain.Models.Discount;
 using TABP.Domain.Models.Discount.Search.Response;
 using TABP.Infrastructure.Extensions.Helpers;
@@ -68,13 +69,6 @@ public class DiscountRepository : IDiscountRepository
 
     public async Task<IEnumerable<Discount>> GetByHotelAsync(Guid hotelId) =>
         await _context.Discounts.Where(discount => discount.HotelId == hotelId).ToListAsync();
-
-    public async Task<DiscountDTO> GetHighestDiscountActiveForHotelAsync(Guid hotelId) => // there always should be one.
-        _mapper.Map<DiscountDTO>(await _context.Discounts
-            .Where(discount => discount.HotelId == hotelId && discount.EndingDate > DateTime.UtcNow)
-            .OrderByDescending(discount => discount.AmountPercentage)
-            .FirstAsync());
-
     public async Task<IEnumerable<DiscountForAdminResponseDTO>> SearchForAdminAsync(
         Expression<Func<Discount, bool>> predicate,
         int pageNumber,
@@ -85,5 +79,17 @@ public class DiscountRepository : IDiscountRepository
             .PaginateAsync(pageNumber, pageSize);
 
         return _mapper.Map<IEnumerable<DiscountForAdminResponseDTO>>(discounts);
+    }
+
+    public async Task<DiscountDTO> GetHighestDiscountActiveForHotelRoomTypeAsync(Guid hotelId, RoomType type)
+    {
+         var maxDiscount = await _context.Discounts
+        .Where(discount => discount.roomType == type && discount.HotelId == hotelId)
+        .OrderByDescending(discount => discount.AmountPercentage)
+        .FirstOrDefaultAsync();
+
+        return maxDiscount != null
+            ? _mapper.Map<DiscountDTO>(maxDiscount)
+            : new DiscountDTO { AmountPercentage = 0 };
     }
 }
