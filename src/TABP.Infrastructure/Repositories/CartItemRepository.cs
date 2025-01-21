@@ -1,9 +1,9 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using TABD.Domain.Models.CartItem;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
+using TABP.Domain.Models.CartItem;
 
 namespace TABP.Infrastructure.Repositories;
 
@@ -44,15 +44,20 @@ public class CartItemRepository : ICartItemRepository
         _logger.LogInformation("Deleted CartItem with Id: {CartItemId}", Id);
     }
 
-    public async Task<CartItem?> GetByIdAsync(Guid Id) =>
-        await _context.CartItems.FirstOrDefaultAsync(cartItem => cartItem.Id == Id);
+    public async Task<CartItemDTO> GetByIdAsync(Guid Id)
+    {
+        var cartItem = await _context.CartItems
+            .FirstOrDefaultAsync(cartItem => cartItem.Id == Id);
+
+        return _mapper.Map<CartItemDTO>(cartItem);
+    }
 
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _context.CartItems.AnyAsync(cartItem => cartItem.Id == Id);
 
-    public async Task<bool> ExistsBetweenUserAndRoomAsync(Guid userId, Guid roomId) =>
-        await _context.CartItems.AnyAsync(cartItem => cartItem.UserId == userId && cartItem.RoomId == roomId);
+    // public async Task<bool> ExistsBetweenUserAndRoomAsync(Guid userId, Guid roomId) =>
+    //     await _context.CartItems.AnyAsync(cartItem => cartItem.UserId == userId && cartItem.RoomId == roomId);
 
-    public async Task<IEnumerable<CartItem>> GetByUserAsync(Guid userId) =>
-        await _context.CartItems.Where(cartItem => cartItem.UserId == userId).ToListAsync();
+    // public async Task<IEnumerable<CartItem>> GetByUserAsync(Guid userId) =>
+    //     await _context.CartItems.Where(cartItem => cartItem.UserId == userId).ToListAsync();
 }

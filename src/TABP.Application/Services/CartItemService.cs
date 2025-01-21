@@ -1,9 +1,9 @@
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Logging;
-using TABD.Domain.Models.CartItem;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
+using TABP.Domain.Models.CartItem;
 
 namespace TABP.Application.Services;
 
@@ -25,7 +25,7 @@ public class CartItemService : ICartItemService
 
         var cartItemId = await _cartItemRepository.AddAsync(newCartItem);
 
-        _logger.LogInformation("Added CartItem for User: {UserId}, Room: {RoomId}", newCartItem.UserId, newCartItem.RoomId);
+        // _logger.LogInformation("Added CartItem for User: {UserId}, Room: {RoomId}", newCartItem.UserId, newCartItem.RoomId);
         
         return cartItemId;
     }
@@ -40,11 +40,11 @@ public class CartItemService : ICartItemService
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _cartItemRepository.ExistsAsync(Id);
 
-    public async Task<CartItem> GetByIdAsync(Guid Id) =>
+    public async Task<CartItemDTO> GetByIdAsync(Guid Id) =>
         await _cartItemRepository.GetByIdAsync(Id);
 
-    public async Task<IEnumerable<CartItem>> GetByUserAsync(Guid userId) =>
-        await _cartItemRepository.GetByUserAsync(userId);
+    // public async Task<IEnumerable<CartItem>> GetByUserAsync(Guid userId) =>
+    //     await _cartItemRepository.GetByUserAsync(userId);
     
     private async Task ValidateId(Guid Id)
     {
