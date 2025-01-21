@@ -1,10 +1,13 @@
 using TABP.Domain.Abstractions;
 
-namespace TABD.Domain.Models.CartItem;
+namespace TABP.Domain.Models.CartItem;
 
 public class CartItemDTO : Entity
 {
+    public string Notes { get; set; }
     public DateTime CreationDate { get; set; }
-    public Guid UserId { get; set; }
     public Guid RoomId { get; set; }
+    public Guid CartId { get; set; }
+    public DateTime CheckInDate { get; set; }
+    public DateTime CheckOutDate { get; set; }
 }
