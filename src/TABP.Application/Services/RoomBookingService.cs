@@ -7,6 +7,7 @@ using TABP.Domain.Entities;
 using TABP.Domain.Enums;
 using TABP.Domain.Models.Booking.Search;
 using TABP.Domain.Models.Booking.Search.Response;
+using TABP.Domain.Models.Cart;
 using TABP.Domain.Models.Discount;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Room;
@@ -39,6 +40,7 @@ public class RoomBookingService : IRoomBookingService
         _bookingValidator = bookingValidator;
     }
     
+    [Obsolete]
     public async Task<Guid> AddAsync(RoomBookingDTO newBooking)
     {
         var currentUserId = _currentUserService.GetUserId();
@@ -64,6 +66,41 @@ public class RoomBookingService : IRoomBookingService
         return bookingId;
     }
 
+    public async Task AddAsync(CartDTO cart)
+    {
+        var items = cart.Items;
+        var bookings = new List<RoomBookingDTO>();
+        foreach(var item in items)
+        {
+            var booking = new RoomBookingDTO
+            {
+                UserId = cart.UserId,
+                RoomId = item.RoomId,
+                CheckInDate = item.CheckInDate,
+                CheckOutDate = item.CheckOutDate,
+                Status = BookingStatus.Confirmed, // remove later.
+                CreationDate = DateTime.UtcNow,
+                ModificationDate = DateTime.UtcNow,
+                Notes = item.Notes,
+            };
+
+            await _bookingValidator.ValidateAndThrowAsync(booking);
+
+            bookings.Add(booking);
+        }
+
+        foreach(var booking in bookings)
+        {
+            var room = await _roomService.GetByIdAsync(booking.RoomId);
+            var discount = await _discountRepository.GetHighestDiscountActiveForHotelRoomTypeAsync(room.HotelId, room.Type);
+            SetFinalTotalPrice(booking, room, discount);
+            _logger.LogInformation("Booking with Id: {Id} has been added to User {UserId}, with Discount {Discount}%", booking.Id, cart.UserId, discount.AmountPercentage);
+        }
+
+        await _roomBookingRepository.AddAsync(bookings); // just adds range of bookings. 
+    }
+
+    [Obsolete]
     public async Task DeleteAsync(Guid Id)
     {
         var currentUserId = _currentUserService.GetUserId();
@@ -90,6 +127,7 @@ public class RoomBookingService : IRoomBookingService
         return bookings;
     }
 
+    [Obsolete]
     public async Task UpdateAsync(RoomBookingDTO updatedBooking)
     {
         await ValidateId(updatedBooking.Id); // do more proper validation.

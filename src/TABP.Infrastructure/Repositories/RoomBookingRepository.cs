@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using TABP.Domain.Models.CartItem;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Booking.Search.Response;
@@ -39,6 +40,13 @@ public class RoomBookingRepository : IRoomBookingRepository
         // fix
 
         return entityEntry.Entity.Id;
+    }
+
+    public async Task AddAsync(List<RoomBookingDTO> bookings)
+    {
+        var bookingList = _mapper.Map<List<RoomBooking>>(bookings);
+        await _context.RoomBookings.AddRangeAsync(bookingList);
+        await _context.SaveChangesAsync();
     }
 
     public async Task<RoomBookingDTO> GetByIdAsync(Guid Id) =>

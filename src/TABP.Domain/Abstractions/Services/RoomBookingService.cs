@@ -1,6 +1,7 @@
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Booking.Search;
 using TABP.Domain.Models.Booking.Search.Response;
+using TABP.Domain.Models.Cart;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.RoomBooking;
 
@@ -10,6 +11,7 @@ public interface IRoomBookingService
 {
     Task<Guid> AddAsync(RoomBookingDTO newBooking);
     Task UpdateAsync(RoomBookingDTO updatedBooking);
+    Task AddAsync(CartDTO Cart);
     Task DeleteAsync(Guid Id);
     Task<RoomBookingDTO> GetByIdAsync(Guid Id);
     Task<bool> ExistsAsync(Guid Id);
