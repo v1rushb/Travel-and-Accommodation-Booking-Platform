@@ -33,7 +33,6 @@ public class HotelReviewService : IHotelReviewService
     public async Task<Guid> AddAsync(HotelReviewDTO newReview)
     {
         var currentUserId = _currentUserService.GetUserId();
-        System.Console.WriteLine(currentUserId);
         await _reviewValidator.ValidateAndThrowAsync(newReview);
 
         newReview.UserId = currentUserId;

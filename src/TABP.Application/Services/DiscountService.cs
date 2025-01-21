@@ -4,6 +4,7 @@ using TABP.Abstractions.Services;
 using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
+using TABP.Domain.Enums;
 using TABP.Domain.Models.Discount;
 using TABP.Domain.Models.Discount.Search;
 using TABP.Domain.Models.Discount.Search.Response;
@@ -66,10 +67,8 @@ public class DiscountService : IDiscountService
     public async Task<IEnumerable<Discount>> GetByHotelAsync(Guid hotelId) => // do some validations?
         await _discountRepository.GetByHotelAsync(hotelId);
 
-    public async Task<DiscountDTO> GetHighestDiscountActiveForHotelAsync(Guid hotelId) =>
-        await _discountRepository.GetHighestDiscountActiveForHotelAsync(hotelId);
-
-    public async Task<IEnumerable<DiscountForAdminResponseDTO>> SearchForAdminAsync(DiscountSearchQuery query, PaginationDTO pagination)
+    public async Task<IEnumerable<DiscountForAdminResponseDTO>> SearchForAdminAsync(
+        DiscountSearchQuery query, PaginationDTO pagination)
     {
         var expression = DiscountForAdminExpressionBuilder.Build(query);
         return await _discountRepository.SearchForAdminAsync(
@@ -77,4 +76,5 @@ public class DiscountService : IDiscountService
             pagination.PageNumber,
             pagination.PageSize);
     }
+
 }
