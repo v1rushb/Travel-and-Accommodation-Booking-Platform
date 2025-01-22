@@ -12,6 +12,6 @@ public interface ICityService
     Task DeleteAsync(Guid Id);
     Task UpdateAsync(CityDTO updatedCity);
     Task<bool> ExistsAsync(Guid Id);
-    Task<IEnumerable<CitySearchResponseDTO>> SearchAsync(CitySearchQuery query);
+    Task<IEnumerable<CitySearchResponseDTO>> SearchAsync(CitySearchQuery query, PaginationDTO pagination);
     Task<IEnumerable<CityAdminResponseDTO>> SearchForAdminAsync(CitySearchQuery query, PaginationDTO pagination); //add city added between time period?
 }

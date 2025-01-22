@@ -59,12 +59,16 @@ public class CityRepository : ICityRepository
         await _context.SaveChangesAsync();
     }
     public async Task<IEnumerable<CitySearchResponseDTO>> SearchAsync(
-        Expression<Func<City, bool>> predicate)
+        Expression<Func<City, bool>> predicate,
+        int pageNumber,
+        int pageSize)
         {
             var cities = await _context.Cities
                 .Include(city => city.Hotels)
                 .Where(predicate)
-                .ToListAsync();
+                .PaginateAsync(
+                    pageNumber,
+                    pageSize);
 
             return _mapper.Map<IEnumerable<CitySearchResponseDTO>>(cities);
         }

@@ -86,7 +86,7 @@ public class CityController : ControllerBase
         [FromQuery] PaginationDTO pagination,
         [FromQuery] CitySearchQuery query)
     {
-        var result = await _cityService.SearchAsync(query);
+        var result = await _cityService.SearchAsync(query, pagination);
         var citySize = result.Count();
 
         Response.Headers.AddPaginationHeaders(citySize, pagination);
