@@ -23,6 +23,7 @@ public class RoomBookingService : IRoomBookingService
     private readonly ICurrentUserService _currentUserService;
     private readonly IDiscountRepository _discountRepository;
     private readonly IRoomService _roomService;
+    private readonly IValidator<PaginationDTO> _paginationValidator;
 
     public RoomBookingService(
         IRoomBookingRepository roomBookingRepository,
@@ -30,7 +31,8 @@ public class RoomBookingService : IRoomBookingService
         ICurrentUserService currentUserService,
         IDiscountRepository discountRepository,
         IRoomService roomService,
-        IValidator<RoomBookingDTO> bookingValidator)
+        IValidator<RoomBookingDTO> bookingValidator,
+        IValidator<PaginationDTO> paginationValidator)
     {
         _roomBookingRepository = roomBookingRepository;
         _logger = logger;
@@ -38,6 +40,7 @@ public class RoomBookingService : IRoomBookingService
         _discountRepository = discountRepository;
         _roomService = roomService;
         _bookingValidator = bookingValidator;
+        _paginationValidator = paginationValidator;
     }
     
     [Obsolete]
@@ -180,6 +183,8 @@ public class RoomBookingService : IRoomBookingService
         BookingSearchQuery query,
         PaginationDTO pagination)
     {
+        _paginationValidator.ValidateAndThrow(pagination);
+
         var currentUserId = _currentUserService.GetUserId();
         var expression = BookingExpressionBuilder.Build(query, currentUserId);
 

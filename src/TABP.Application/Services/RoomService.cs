@@ -19,17 +19,20 @@ public class RoomService : IRoomService
     private readonly ILogger<RoomService> _logger;
     private readonly IValidator<RoomDTO> _roomValidator;
     private readonly IHotelService _hotelService;
+    private readonly IValidator<PaginationDTO> _paginationValidator;
 
     public RoomService(
         IRoomRepository roomRepository,
         ILogger<RoomService> logger,
         IValidator<RoomDTO> roomValidator,
-        IHotelService hotelService)
+        IHotelService hotelService,
+        IValidator<PaginationDTO> paginationValidator)
     {
         _roomRepository = roomRepository;
         _logger = logger;
         _roomValidator = roomValidator;
         _hotelService = hotelService;
+        _paginationValidator = paginationValidator;
     }
 
     public async Task<Guid> AddAsync(RoomDTO newRoom) 
@@ -76,6 +79,8 @@ public class RoomService : IRoomService
 
     public async Task<IEnumerable<RoomAdminResponseDTO>> SearchAdminAsync(RoomSearchQuery query, PaginationDTO pagination)
     {
+        _paginationValidator.ValidateAndThrow(pagination);
+
         var expression = RoomForAdminExpressionBuilder.Build(query);
         return await _roomRepository.SearchAdminAsync(
             expression,

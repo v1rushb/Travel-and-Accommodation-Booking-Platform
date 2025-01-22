@@ -14,13 +14,16 @@ public class HotelService : IHotelService
 {
     private readonly IHotelRepository _hotelRepository;
     private readonly IValidator<HotelDTO> _hotelValidator;
+    private readonly IValidator<PaginationDTO> _paginationValidator;
 
     public HotelService(
         IHotelRepository hotelRepository,
-        IValidator<HotelDTO> hotelValidator)
+        IValidator<HotelDTO> hotelValidator,
+        IValidator<PaginationDTO> paginationValidator)
     {
         _hotelRepository = hotelRepository;
         _hotelValidator = hotelValidator;
+        _paginationValidator = paginationValidator;
     }
     public async Task<Guid> AddAsync(HotelDTO newHotel)
     {
@@ -59,6 +62,8 @@ public class HotelService : IHotelService
         HotelSearchQuery query,
         PaginationDTO pagination) 
     {
+        _paginationValidator.ValidateAndThrow(pagination);
+        
         var expression = HotelExpressionBuilder.Build(query);
         return await _hotelRepository.SearchAsync(expression, pagination.PageNumber, pagination.PageSize);
     }
@@ -73,6 +78,8 @@ public class HotelService : IHotelService
         HotelSearchQuery query,
         PaginationDTO pagination)
     {
+        _paginationValidator.ValidateAndThrow(pagination);
+
         var expression = HotelForAdminExpressionBuilder.Build(query);
         return await _hotelRepository.SearchAdminAsync(expression, pagination.PageNumber, pagination.PageSize);
     }

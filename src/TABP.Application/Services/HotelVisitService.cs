@@ -41,14 +41,17 @@ public class HotelVisitService : IHotelVisitService
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _hotelVisitRepository.ExistsAsync(Id);
 
-    public async Task<IEnumerable<HotelVisit>> GetByHotelAsync(Guid HotelId) =>
-        await _hotelVisitRepository.GetByHotelAsync(HotelId);
+    public async Task<IEnumerable<HotelVisit>> GetByHotelAsync(Guid HotelId, DateTime? startDate = null, DateTime? endDate = null) =>
+        await _hotelVisitRepository.GetByHotelAsync(HotelId, startDate, endDate);
 
     public async Task<HotelVisit> GetByIdAsync(Guid Id) =>
         await _hotelVisitRepository.GetByIdAsync(Id);
 
-    public async Task<IEnumerable<HotelVisit>> GetByUserAsync(Guid userId) =>
-        await _hotelVisitRepository.GetByUserAsync(userId);
+    public async Task<IEnumerable<HotelVisit>> GetByUserAsync(Guid userId, DateTime? startDate = null, DateTime? endDate = null) =>
+        await _hotelVisitRepository.GetByUserAsync(userId, startDate, endDate);
+    
+    public async Task<IEnumerable<HotelVisit>> GetByUserAndHotelAsync(Guid userId, Guid hotelId, DateTime? startDate = null, DateTime? endDate = null) =>
+        await _hotelVisitRepository.GetByUserAndHotelAsync(userId, hotelId, startDate, endDate);
     public async Task UpdateAsync(HotelVisitDTO updatedHotelVisit)
     {
         await ValidateId(updatedHotelVisit.Id);

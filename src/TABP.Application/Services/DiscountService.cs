@@ -1,4 +1,5 @@
 using FluentValidation;
+using FluentValidation.Internal;
 using Microsoft.Extensions.Logging;
 using TABP.Abstractions.Services;
 using TABP.Application.Filters.ExpressionBuilders;
@@ -17,15 +18,18 @@ public class DiscountService : IDiscountService
     private readonly IDiscountRepository _discountRepository;
     private readonly ILogger<DiscountService> _logger;
     private readonly IValidator<DiscountDTO> _discountValidator;
+    private readonly IValidator<PaginationDTO> _paginationValidator;
 
     public DiscountService(
        IDiscountRepository discountRepository,
        ILogger<DiscountService> logger,
-       IValidator<DiscountDTO> discountValidator)
+       IValidator<DiscountDTO> discountValidator,
+       IValidator<PaginationDTO> paginationValidator)
     {
         _discountRepository = discountRepository;
         _logger = logger;
         _discountValidator = discountValidator;
+        _paginationValidator = paginationValidator;
     }
     public async Task<Guid> AddAsync(DiscountDTO newDiscount)
     {
@@ -68,8 +72,11 @@ public class DiscountService : IDiscountService
         await _discountRepository.GetByHotelAsync(hotelId);
 
     public async Task<IEnumerable<DiscountForAdminResponseDTO>> SearchForAdminAsync(
-        DiscountSearchQuery query, PaginationDTO pagination)
+        DiscountSearchQuery query,
+        PaginationDTO pagination)
     {
+        _paginationValidator.ValidateAndThrow(pagination);
+
         var expression = DiscountForAdminExpressionBuilder.Build(query);
         return await _discountRepository.SearchForAdminAsync(
             expression,

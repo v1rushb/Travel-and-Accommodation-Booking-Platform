@@ -20,6 +20,7 @@ public class CartService : ICartService
     private readonly ICartItemRepository _cartItemRepository;
     private readonly ILogger<CartService> _logger;
     private readonly IValidator<CartItemDTO> _cartItemValidator;
+    private readonly IValidator<PaginationDTO> _paginationValidator;
 
     public CartService(
         ICartRepository cartRepository,
@@ -27,7 +28,8 @@ public class CartService : ICartService
         ICartItemRepository cartItemRepository,
         ICurrentUserService currentUserService,
         ILogger<CartService> logger,
-        IValidator<CartItemDTO> cartItemValidator)
+        IValidator<CartItemDTO> cartItemValidator,
+        IValidator<PaginationDTO> paginationValidator)
     {
         _cartRepository = cartRepository;
         _roomBookingService = roomBookingService;
@@ -35,6 +37,7 @@ public class CartService : ICartService
         _currentUserService = currentUserService;
         _logger = logger;
         _cartItemValidator = cartItemValidator;
+        _paginationValidator = paginationValidator;
     }
 
     public async Task<CartDTO> CreateNewAsync() // make private?
@@ -160,8 +163,11 @@ public class CartService : ICartService
 
     }
 
-    public async Task<IEnumerable<CartItemDTO>> GetCartItemsAsync(PaginationDTO pagination)
+    public async Task<IEnumerable<CartItemDTO>> GetCartItemsAsync(
+        PaginationDTO pagination)
     {
+        _paginationValidator.ValidateAndThrow(pagination);
+
         var currentUserId = _currentUserService.GetUserId();
         var cart = await _cartRepository.GetLastPendingCartAsync(currentUserId);
         if(cart is null)

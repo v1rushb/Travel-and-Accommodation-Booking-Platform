@@ -17,17 +17,20 @@ public class HotelReviewService : IHotelReviewService
     private readonly ILogger<HotelReviewService> _logger;
     private readonly IValidator<HotelReviewDTO> _reviewValidator;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IValidator<PaginationDTO> _paginationValidator;
     
     public HotelReviewService(
         IHotelReviewRepository hotelReviewRepository,
         ILogger<HotelReviewService> logger,
         IValidator<HotelReviewDTO> reviewValidator,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IValidator<PaginationDTO> paginationValidator)
     {
         _hotelReviewRepository = hotelReviewRepository;
         _logger = logger;
         _reviewValidator = reviewValidator;
         _currentUserService = currentUserService;
+        _paginationValidator = paginationValidator;
     }
 
     public async Task<Guid> AddAsync(HotelReviewDTO newReview)
@@ -113,6 +116,8 @@ public class HotelReviewService : IHotelReviewService
         ReviewSearchQuery query,
         PaginationDTO pagination)
     {
+        _paginationValidator.ValidateAndThrow(pagination);
+
         var currentUserId = _currentUserService.GetUserId();
         var expression = ReviewExpressionBuilder.Build(query, currentUserId);
 
