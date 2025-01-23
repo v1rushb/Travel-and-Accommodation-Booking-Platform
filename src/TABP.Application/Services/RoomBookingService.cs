@@ -1,3 +1,4 @@
+using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using TABP.Application.Filters.ExpressionBuilders;
@@ -24,6 +25,7 @@ public class RoomBookingService : IRoomBookingService
     private readonly IDiscountRepository _discountRepository;
     private readonly IRoomService _roomService;
     private readonly IValidator<PaginationDTO> _paginationValidator;
+    private readonly IMapper _mapper;
 
     public RoomBookingService(
         IRoomBookingRepository roomBookingRepository,
@@ -32,7 +34,8 @@ public class RoomBookingService : IRoomBookingService
         IDiscountRepository discountRepository,
         IRoomService roomService,
         IValidator<RoomBookingDTO> bookingValidator,
-        IValidator<PaginationDTO> paginationValidator)
+        IValidator<PaginationDTO> paginationValidator,
+        IMapper mapper)
     {
         _roomBookingRepository = roomBookingRepository;
         _logger = logger;
@@ -41,6 +44,7 @@ public class RoomBookingService : IRoomBookingService
         _roomService = roomService;
         _bookingValidator = bookingValidator;
         _paginationValidator = paginationValidator;
+        _mapper = mapper;
     }
     
     [Obsolete]
@@ -193,4 +197,23 @@ public class RoomBookingService : IRoomBookingService
             pagination.PageNumber,
             pagination.PageSize);
     }
+
+    public async Task<IEnumerable<BookingAdminResponseDTO>> SearchAdminAsync(
+        AdminBookingSearchQuery inQuery,
+        PaginationDTO pagination)
+    {
+        _paginationValidator.ValidateAndThrow(pagination);
+
+        var userId = inQuery.UserId;
+        var query = _mapper.Map<BookingSearchQuery>(inQuery);
+        
+        var expression = BookingExpressionBuilder.Build(query, userId);
+
+        return await _roomBookingRepository.SearchAdminAsync(
+            expression,
+            pagination.PageNumber,
+            pagination.PageSize);
+    }
+
+    
 }
