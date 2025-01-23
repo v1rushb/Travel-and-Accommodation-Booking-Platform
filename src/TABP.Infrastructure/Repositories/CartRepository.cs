@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -5,6 +6,7 @@ using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Enums;
 using TABP.Domain.Models.Cart;
+using TABP.Domain.Models.Cart.Search.Response;
 using TABP.Domain.Models.CartItem;
 using TABP.Infrastructure.Extensions.Helpers;
 
@@ -108,10 +110,6 @@ public class CartRepository : ICartRepository
             .SelectMany(cart => cart.Items)
             .PaginateAsync(pageNumber, pageSize);
 
-        // foreach (var cartItem in cartItems)
-        // {
-        //     System.Console.WriteLine(cartItem.);
-        // }
 
         return _mapper.Map<IEnumerable<CartItemDTO>>(cartItems);
     }
@@ -154,5 +152,16 @@ public class CartRepository : ICartRepository
                 cartItem.CheckOutDate > startingDate);
     }
 
+    public async Task<IEnumerable<CartAdminResponseDTO>> SearchAdminAsync(
+        Expression<Func<Cart, bool>> predicate,
+        int pageNumber,
+        int pageSize)
+    {
+        var carts = await _context.Carts
+            .Where(predicate)
+            .PaginateAsync(pageNumber, pageSize);
 
+        return _mapper
+            .Map<IEnumerable<CartAdminResponseDTO>>(carts);
+    }
 }

@@ -1,5 +1,7 @@
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Cart;
+using TABP.Domain.Models.Cart.Search;
+using TABP.Domain.Models.Cart.Search.Response;
 using TABP.Domain.Models.CartItem;
 using TABP.Domain.Models.Pagination;
 
@@ -13,4 +15,5 @@ public interface ICartService
     Task DeleteItemAsync(Guid cartItemId);
     Task CheckOutAsync();
     Task<IEnumerable<CartItemDTO>> GetCartItemsAsync(PaginationDTO pagination);
+    Task<IEnumerable<CartAdminResponseDTO>> SearchCartsAsync(PaginationDTO pagination, CartSearchQuery query);
 }

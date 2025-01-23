@@ -1,4 +1,8 @@
+using System.Linq.Expressions;
+using TABP.Domain.Entities;
 using TABP.Domain.Models.Cart;
+using TABP.Domain.Models.Cart.Search;
+using TABP.Domain.Models.Cart.Search.Response;
 using TABP.Domain.Models.CartItem;
 
 namespace TABP.Domain.Abstractions.Repositories;
@@ -18,5 +22,6 @@ public interface ICartRepository
     Task<IEnumerable<CartItemDTO>> GetAllCartItemsAsync(Guid cartId, int pageNumber, int pageSize);
     Task<bool> RoomIsBookedForSameUserBetween(Guid roomId, Guid userId, DateTime StartingDate, DateTime EndingDate);
     Task<bool> RoomIsBookedByAnyUserBetween(Guid roomId, DateTime StartingDate, DateTime EndingDate);
+    Task<IEnumerable<CartAdminResponseDTO>> SearchAdminAsync(Expression<Func<Cart, bool>> predicate, int pageNumber, int pageSize);
     // do search later.
 }

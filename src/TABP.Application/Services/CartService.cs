@@ -7,6 +7,8 @@ using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
 using TABP.Domain.Enums;
 using TABP.Domain.Models.Cart;
+using TABP.Domain.Models.Cart.Search;
+using TABP.Domain.Models.Cart.Search.Response;
 using TABP.Domain.Models.CartItem;
 using TABP.Domain.Models.Pagination;
 
@@ -21,6 +23,7 @@ public class CartService : ICartService
     private readonly ILogger<CartService> _logger;
     private readonly IValidator<CartItemDTO> _cartItemValidator;
     private readonly IValidator<PaginationDTO> _paginationValidator;
+    private readonly IRoomService _roomService;
 
     public CartService(
         ICartRepository cartRepository,
@@ -29,7 +32,8 @@ public class CartService : ICartService
         ICurrentUserService currentUserService,
         ILogger<CartService> logger,
         IValidator<CartItemDTO> cartItemValidator,
-        IValidator<PaginationDTO> paginationValidator)
+        IValidator<PaginationDTO> paginationValidator,
+        IRoomService roomService)
     {
         _cartRepository = cartRepository;
         _roomBookingService = roomBookingService;
@@ -38,6 +42,7 @@ public class CartService : ICartService
         _logger = logger;
         _cartItemValidator = cartItemValidator;
         _paginationValidator = paginationValidator;
+        _roomService = roomService;
     }
 
     public async Task<CartDTO> CreateNewAsync() // make private?
@@ -90,16 +95,24 @@ public class CartService : ICartService
         var pendingCart = await GetOrCreatePendingCartAsync();
         newCartItem.CartId = pendingCart.Id;
         newCartItem.CreationDate = DateTime.UtcNow;
+        var itemPrice = await _roomService
+            .GetBookingPriceForRoom(
+                newCartItem.RoomId,
+                newCartItem.CheckInDate,
+                newCartItem.CheckOutDate);
 
+        newCartItem.Price = itemPrice;
+            
         await _cartRepository.AddItemAsync(newCartItem);
-
+        
          _logger.LogInformation("Added Room {RoomId} to Cart {CartId} for User {UserId}", newCartItem.RoomId, pendingCart.Id, pendingCart.UserId);
     }
 
     public async Task DeleteItemAsync(Guid cartItemId)
     {
+        var currentUserId = _currentUserService.GetUserId();
         await ValidateCartItemIdAsync(cartItemId);
-        await ValidateOwnershipAsync(cartItemId, _currentUserService.GetUserId());
+        await ValidateOwnershipAsync(cartItemId, currentUserId);
 
         await _cartRepository.DeleteItemAsync(cartItemId);
 
@@ -177,5 +190,16 @@ public class CartService : ICartService
 
         var cartItems = await _cartRepository.GetAllCartItemsAsync(cart.Id, pagination.PageNumber, pagination.PageSize);
         return cartItems;
+    }
+
+    public async Task<IEnumerable<CartAdminResponseDTO>> SearchCartsAsync(
+        PaginationDTO pagination,
+        CartSearchQuery query)
+    {
+        var predicate = CartExpressionBuilder.Build(query);
+        return await _cartRepository.SearchAdminAsync(
+            predicate,
+            pagination.PageNumber,
+            pagination.PageSize);
     }
 }
