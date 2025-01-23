@@ -41,9 +41,6 @@ public class UserBookingController : ControllerBase
     public async Task<IActionResult> CreateBookingAsync([FromBody] RoomBookingForCreationDTO newBooking)
     {
         // await _roomBookingService.AddAsync(_mapper.Map<RoomBookingDTO>(newBooking));
-        System.Console.WriteLine(newBooking.CheckInDate);
-        System.Console.WriteLine(newBooking.CheckOutDate);
-        System.Console.WriteLine(newBooking.Notes);
         await _cartService.AddItemAsync(_mapper.Map<CartItemDTO>(newBooking));
         
         return Created();
