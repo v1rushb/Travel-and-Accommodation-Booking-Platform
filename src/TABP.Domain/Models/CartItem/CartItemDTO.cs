@@ -4,6 +4,7 @@ namespace TABP.Domain.Models.CartItem;
 
 public class CartItemDTO : Entity
 {
+    public decimal Price { get; set; }
     public string Notes { get; set; }
     public DateTime CreationDate { get; set; }
     public Guid RoomId { get; set; }

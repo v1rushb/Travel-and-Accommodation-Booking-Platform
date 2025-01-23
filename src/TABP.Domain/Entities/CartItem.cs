@@ -4,6 +4,7 @@ namespace TABP.Domain.Entities;
 
 public class CartItem : Entity
 {
+    public decimal Price { get; set; }
     public DateTime CreationDate { get; set; }
     public string Notes { get; set; }
     public DateTime CheckInDate { get; set; }
