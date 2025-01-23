@@ -1,3 +1,4 @@
+using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using TABP.Application.Filters.ExpressionBuilders;
@@ -119,9 +120,23 @@ public class HotelReviewService : IHotelReviewService
         _paginationValidator.ValidateAndThrow(pagination);
 
         var currentUserId = _currentUserService.GetUserId();
+        
         var expression = ReviewExpressionBuilder.Build(query, currentUserId);
 
         return await _hotelReviewRepository.SearchReviewsAsync(
+            expression,
+            pagination.PageNumber,
+            pagination.PageSize);
+    }
+
+    public async Task<IEnumerable<HotelReviewAdminResponseDTO>> SearchForAdminAsync(
+        AdminReviewSearchQuery inQuery,
+        PaginationDTO pagination)
+    {
+        _paginationValidator.ValidateAndThrow(pagination);
+
+        var expression = ReviewForAdminExpressionBuilder.Build(inQuery);
+        return await _hotelReviewRepository.SearchReviewsForAdminAsync( 
             expression,
             pagination.PageNumber,
             pagination.PageSize);

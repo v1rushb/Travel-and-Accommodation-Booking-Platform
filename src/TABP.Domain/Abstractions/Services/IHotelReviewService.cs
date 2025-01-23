@@ -23,4 +23,5 @@ public interface IHotelReviewService
     Task<IEnumerable<HotelReview>> GetReviewsByUserAsync(Guid userId);
     Task<HotelReview?> GetByUserAndHotelAsync(Guid userId, Guid hotelId);
     Task<IEnumerable<HotelReviewUserResponseDTO>> SearchReviewsAsync(ReviewSearchQuery query, PaginationDTO pagination);
+    Task<IEnumerable<HotelReviewAdminResponseDTO>> SearchForAdminAsync(AdminReviewSearchQuery query, PaginationDTO pagination);
 }
