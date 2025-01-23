@@ -97,4 +97,18 @@ public class RoomBookingRepository : IRoomBookingRepository
 
         return _mapper.Map<IEnumerable<BookingUserResponseDTO>>(bookings);
     }
+
+    public async Task<IEnumerable<BookingAdminResponseDTO>> SearchAdminAsync(
+        Expression<Func<RoomBooking, bool>> predicate,
+        int pageNumber,
+        int pageSize)
+    {
+        var bookings = await _context.RoomBookings
+            .Where(predicate)
+            .PaginateAsync(
+                pageNumber,
+                pageSize);
+
+        return _mapper.Map<IEnumerable<BookingAdminResponseDTO>>(bookings);
+    }
 }

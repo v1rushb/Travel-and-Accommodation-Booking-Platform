@@ -17,4 +17,5 @@ public interface IRoomBookingRepository
     Task<IEnumerable<RoomBooking>> GetByRoomAsync(Guid roomId);
     Task<bool> RoomIsBookedBetween(Guid roomId, DateTime StartingDate, DateTime EndingDate);
     Task<IEnumerable<BookingUserResponseDTO>> SearchUserBookingsAsync(Expression<Func<RoomBooking, bool>> predicate, int pageNumber, int pageSize);
+    Task<IEnumerable<BookingAdminResponseDTO>> SearchAdminAsync(Expression<Func<RoomBooking, bool>> predicate, int pageNumber, int pageSize);
 }
