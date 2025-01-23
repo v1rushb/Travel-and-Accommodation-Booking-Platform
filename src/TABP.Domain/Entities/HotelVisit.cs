@@ -1,15 +1,12 @@
 using TABP.Domain.Abstractions;
+using TABP.Domain.Abstractions.Services.Generics;
 
 namespace TABP.Domain.Entities;
 
 // consider doing some enhancements to this entity.
-public class HotelVisit : Entity
+public class HotelVisit : Entity, IHasCreationDate
 {
-    public DateTime Date { get; set; }
-    public TimeSpan TimeSpent { get; set; } // idk if this is the best way to do this.
     public DateTime CreationDate { get; set; }
-    public DateTime ModificationDate { get; set; }
-
     public Guid HotelId { get; set; }
     public Hotel Hotel { get; set; }
     public Guid UserId { get; set; }
