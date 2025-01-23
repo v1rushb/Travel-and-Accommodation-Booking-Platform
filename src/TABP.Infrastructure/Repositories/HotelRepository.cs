@@ -79,7 +79,10 @@ public class HotelRepository : IHotelRepository
     {
         var hotels =  await _context.Hotels
             .Where(predicate)
-            .PaginateAsync(pageNumber: 1, pageSize: 4);
+            .PaginateAsync(
+            pageNumber
+            ,pageSize);
+        
         return _mapper.Map<IEnumerable<HotelAdminResponseDTO>>(hotels);
     }
 
