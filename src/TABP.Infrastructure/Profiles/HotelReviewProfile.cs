@@ -12,5 +12,6 @@ internal class HotelReviewProfile : Profile
         CreateMap<HotelReviewDTO, HotelReview>();
         CreateMap<HotelReview, HotelReviewDTO>();
         CreateMap<HotelReview, HotelReviewUserResponseDTO>();
+        CreateMap<HotelReview, HotelReviewAdminResponseDTO>();
     }
 }
