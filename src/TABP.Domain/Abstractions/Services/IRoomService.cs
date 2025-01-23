@@ -16,4 +16,6 @@ public interface IRoomService
     Task<IEnumerable<Room>> GetRoomsByHotelAsync(Guid hotelId);
     Task<bool> RoomNumberExistsForHotelAsync(Guid hotelId, Guid RoomId);
     Task<IEnumerable<RoomAdminResponseDTO>> SearchAdminAsync(RoomSearchQuery query, PaginationDTO pagination);
+    Task<IEnumerable<RoomUserResponseDTO>> SearchRoomsAsync(RoomSearchQuery query, PaginationDTO pagination);
+    Task<decimal> GetBookingPriceForRoom(Guid RoomId, DateTime checkInDate, DateTime checkOutDate);
 }
