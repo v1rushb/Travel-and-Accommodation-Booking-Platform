@@ -103,4 +103,17 @@ public class HotelReviewsRepository : IHotelReviewRepository
         return _mapper
             .Map<IEnumerable<HotelReviewUserResponseDTO>>(reviews);
     }
+
+    public async Task<IEnumerable<HotelReviewAdminResponseDTO>> SearchReviewsForAdminAsync(
+        Expression<Func<HotelReview, bool>> predicate,
+        int pageNumber,
+        int pageSize)
+    {
+        var reviews = await _context.HotelReviews
+            .Where(predicate)
+            .PaginateAsync(pageNumber, pageSize);
+            
+        return _mapper
+            .Map<IEnumerable<HotelReviewAdminResponseDTO>>(reviews);
+    }
 }

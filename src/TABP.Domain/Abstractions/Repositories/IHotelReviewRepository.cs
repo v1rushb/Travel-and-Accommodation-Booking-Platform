@@ -24,4 +24,5 @@ public interface IHotelReviewRepository
     Task<bool> ExistsAsync(Guid reviewId, Guid? userId = null);
     Task<HotelReview?> GetByUserAndHotelAsync(Guid userId, Guid hotelId);
     Task<IEnumerable<HotelReviewUserResponseDTO>> SearchReviewsAsync(Expression<Func<HotelReview, bool>> predicate, int pageNumber, int pageSize);
+    Task<IEnumerable<HotelReviewAdminResponseDTO>> SearchReviewsForAdminAsync(Expression<Func<HotelReview, bool>> predicate, int pageNumber, int pageSize);
 }
