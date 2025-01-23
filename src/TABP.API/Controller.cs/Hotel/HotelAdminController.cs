@@ -1,5 +1,4 @@
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using TABP.Abstractions.Services;
@@ -9,6 +8,7 @@ using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotel.Search.Response;
 using TABP.Domain.Models.Hotels;
 using TABP.Domain.Models.Pagination;
+using TABP.Domain.Models.Hotel.Search;
 
 namespace TABP.API.Controllers;
 
@@ -100,5 +100,23 @@ public class HotelAdminController : ControllerBase
         var hotel = await _hotelService.GetByIdAsync(hotelId);
             _mapper.Map<HotelAdminWithoutIdResponseDTO>(hotel);
         return Ok(hotel);
+    }
+
+    [HttpGet("{hotelId:guid}/page")]
+    public async Task<IActionResult> GetHotelPageAsync(Guid hotelId)
+    {
+        var hotel = await _hotelService
+            .GetHotelPageAsync(hotelId);
+
+        return Ok(hotel);
+    }
+
+    [HttpGet("featured")]
+    public async Task<IActionResult> GetWeeklyFeaturedHotelsAsync() // maybe paginate?
+    {
+        var hotels = await _hotelService
+            .GetWeeklyFeaturedHotelsAsync();
+
+        return Ok(hotels);
     }
 }
