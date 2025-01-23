@@ -3,7 +3,7 @@ using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
-using TABP.Domain.Models.Hotel;
+using TABP.Domain.Models.Hotel.Search;
 using TABP.Domain.Models.Hotel.Search.Response;
 using TABP.Domain.Models.Hotels;
 using TABP.Domain.Models.Pagination;
@@ -63,7 +63,7 @@ public class HotelService : IHotelService
         PaginationDTO pagination) 
     {
         _paginationValidator.ValidateAndThrow(pagination);
-        
+
         var expression = HotelExpressionBuilder.Build(query);
         return await _hotelRepository.SearchAsync(expression, pagination.PageNumber, pagination.PageSize);
     }
@@ -80,8 +80,11 @@ public class HotelService : IHotelService
     {
         _paginationValidator.ValidateAndThrow(pagination);
 
-        var expression = HotelForAdminExpressionBuilder.Build(query);
-        return await _hotelRepository.SearchAdminAsync(expression, pagination.PageNumber, pagination.PageSize);
+        var expression = HotelExpressionBuilder.Build(query);
+        return await _hotelRepository.SearchAdminAsync(
+            expression,
+            pagination.PageNumber,
+            pagination.PageSize);
     }
 
     public async Task<int> GetNextRoomNumberAsync(Guid hotelId) =>
