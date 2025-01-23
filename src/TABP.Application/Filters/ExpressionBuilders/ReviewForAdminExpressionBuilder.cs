@@ -7,11 +7,13 @@ using TABP.Domain.Models.HotelReview.Search;
 
 namespace TABP.Application.Filters.ExpressionBuilders;
 
-public static class ReviewExpressionBuilder
+public static class ReviewForAdminExpressionBuilder
 {
-    public static Expression<Func<HotelReview, bool>> Build(ReviewSearchQuery query, Guid? userId = null) // hmm maybe not?
+    public static Expression<Func<HotelReview, bool>> Build(AdminReviewSearchQuery query)
     {
         var filter = Expressions.True<HotelReview>();
+
+        System.Console.WriteLine(query.UserId.GetValueOrDefault());
 
         filter = 
             filter.AndIf(HasValidSearchTerm(query),
@@ -28,15 +30,15 @@ public static class ReviewExpressionBuilder
             .AndIf(HasValidHotelId(query),
                 GetHotelIdFilter(query.HotelId))
 
-            .AndIf(HasValidUserId(userId),
-                GetUserIdFilter(userId));
+            .AndIf(HasValidUserId(query.UserId),
+                GetUserIdFilter(query));
 
             
 
         return filter;
     }
 
-    private static bool HasValidSearchTerm(ReviewSearchQuery query) =>
+    private static bool HasValidSearchTerm(AdminReviewSearchQuery query) =>
         !string.IsNullOrWhiteSpace(query.SearchTerm);
 
     private static Expression<Func<HotelReview, bool>> GetSearchTermFilter(string searchTerm) =>
@@ -60,13 +62,13 @@ public static class ReviewExpressionBuilder
         return review => validRatings.Contains((int)review.Rating);
     }
 
-    private static bool HasValidCreationDate(ReviewSearchQuery query) =>
+    private static bool HasValidCreationDate(AdminReviewSearchQuery query) =>
         query.CreationDate != default;
 
     private static Expression<Func<HotelReview, bool>> GetCreationDateFilter(DateTime creationDate) =>
         review => review.CreationDate >= creationDate;
 
-    private static bool HasValidHotelId(ReviewSearchQuery query) =>
+    private static bool HasValidHotelId(AdminReviewSearchQuery query) =>
         query.HotelId != Guid.Empty;
 
     private static Expression<Func<HotelReview, bool>> GetHotelIdFilter(Guid hotelId) =>
@@ -76,8 +78,8 @@ public static class ReviewExpressionBuilder
     private static bool HasValidUserId(Guid? userId) =>
         userId.HasValue && userId != Guid.Empty;
 
-    private static Expression<Func<HotelReview, bool>> GetUserIdFilter(Guid? userId) =>
-        review => review.UserId == userId;
+    private static Expression<Func<HotelReview, bool>> GetUserIdFilter(AdminReviewSearchQuery query) =>
+        review => review.UserId == query.UserId;
     
     private static Expression<Func<HotelReview, bool>> GetFlexibleDateRangeFilter(DateTime? startDate, DateTime? endDate)
     {

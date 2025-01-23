@@ -12,11 +12,25 @@ public static class CityExpressionBuilder
         var filter = Expressions.True<City>();
 
         filter = filter
-            .AndIf(!string.IsNullOrWhiteSpace(query.SearchTerm),
-                city => city.Name.Contains(query.SearchTerm))
-            .AndIf(!string.IsNullOrWhiteSpace(query.Country),
-                city => city.CountryName.Contains(query.Country));
+            .AndIf(HasValidSearchTerm(query),
+                GetMinSeachTermFilter(query.SearchTerm)
+            )
+
+            .AndIf(HasValidCountry(query),
+                GetCountryFilter(query.Country))
+            ;
 
         return filter;
-    } // needs refactoring.
+    }
+
+    private static bool HasValidSearchTerm(CitySearchQuery query) =>
+        !string.IsNullOrWhiteSpace(query.SearchTerm);
+    private static Expression<Func<City, bool>> GetMinSeachTermFilter(string searchTerm) =>
+        city => city.Name.Contains(searchTerm);
+
+    private static bool HasValidCountry(CitySearchQuery query) =>
+        !string.IsNullOrWhiteSpace(query.Country);
+
+    private static Expression<Func<City, bool>> GetCountryFilter(string country) =>
+        city => city.CountryName.Contains(country);
 }

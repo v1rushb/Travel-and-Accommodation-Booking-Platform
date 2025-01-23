@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Runtime.Serialization;
 using TABP.Application.Extensions;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
@@ -13,30 +14,95 @@ public static class BookingExpressionBuilder
     {
         var filter = Expressions.True<RoomBooking>();
 
+        filter = filter.AndIf(
+            HasValidDateRange(query),
+            GetDateRangeFilter(query.CheckInDate, query.CheckOutDate)
+        );
+
         filter = filter
-        .AndIf(query.CheckInDate.HasValue,
-            booking => booking.CheckInDate == query.CheckInDate.Value)
-        .AndIf(query.CheckOutDate.HasValue,
-            booking => booking.CheckOutDate == query.CheckOutDate.Value)
-        .AndIf(query.CheckInDateFrom.HasValue,
-            booking => booking.CheckInDate >= query.CheckInDateFrom.Value)
-        .AndIf(query.CheckInDateTo.HasValue,
-            booking => booking.CheckInDate <= query.CheckInDateTo.Value)
-        .AndIf(query.MinPrice.HasValue,
-            booking => booking.TotalPrice >= query.MinPrice.Value)
-        .AndIf(query.MaxPrice.HasValue,
-            booking => booking.TotalPrice <= query.MaxPrice.Value)
-        .AndIf(!string.IsNullOrWhiteSpace(query.Notes),
-            booking => booking.Notes.Contains(query.Notes!))
-        .AndIf(query.Status != default,
-            booking => booking.Status == query.Status)
-        .AndIf(query.RoomNumber > 0,
-            booking => booking.Room.Number == query.RoomNumber)
-        .AndIf(query.HotelId != Guid.Empty,
-            booking => booking.Room.HotelId == query.HotelId)
-        .AndIf(userId.HasValue && userId != Guid.Empty,
-            booking => booking.UserId == userId.Value);
+            .AndIf(
+                HasValidPriceRange(query),
+                GetPriceRangeFilter(query.MinPrice, query.MaxPrice)
+            )
+            .AndIf(
+                !HasValidPriceRange(query) && HasValidMinPrice(query),
+                GetMinPriceFilter(query.MinPrice)
+            )
+            .AndIf(
+                !HasValidPriceRange(query) && HasValidMaxPrice(query),
+                GetMaxPriceFilter(query.MaxPrice)
+            );
+
+        filter = filter.AndIf(
+            HasValidNotes(query.Notes),
+            GetNotesFilter(query.Notes!)
+        );
+
+        filter = filter.AndIf(
+            HasValidRoomNumber(query.RoomNumber),
+            GetRoomNumberFilter(query.RoomNumber)
+        )
+        .AndIf(!HasValidRoomNumber(query.RoomNumber),
+            GetRoomNumberFilter(0)
+        );
+
+        filter = filter.AndIf(
+            HasValidHotelId(query.HotelId),
+            GetHotelIdFilter(query.HotelId)
+        );
+
+        filter = filter
+            .AndIf(HasValidUserId(userId),
+                GetUserIdFilter(userId));
 
         return filter;
     }
+
+    private static bool HasValidDateRange(BookingSearchQuery query) =>
+        query.CheckInDate.HasValue || query.CheckOutDate.HasValue;
+
+    private static Expression<Func<RoomBooking, bool>> GetDateRangeFilter(DateTime? inDate, DateTime? outDate)
+    {
+        return booking =>
+            (!inDate.HasValue || (inDate.Value >= booking.CheckInDate && inDate.Value <= booking.CheckOutDate) || booking.CheckOutDate >= inDate.Value) &&
+            (!outDate.HasValue || (outDate.Value >= booking.CheckInDate && outDate.Value <= booking.CheckOutDate) || booking.CheckInDate <= outDate.Value);
+    }
+
+    private static bool HasValidPriceRange(BookingSearchQuery query) =>
+        query.MinPrice > 0 && query.MaxPrice < decimal.MaxValue;
+
+    private static bool HasValidMinPrice(BookingSearchQuery query) =>
+        query.MinPrice > 0;
+
+    private static bool HasValidMaxPrice(BookingSearchQuery query) =>
+        query.MaxPrice < decimal.MaxValue;
+
+    private static Expression<Func<RoomBooking, bool>> GetPriceRangeFilter(decimal min, decimal max) =>
+        booking => booking.TotalPrice >= min && booking.TotalPrice <= max;
+
+    private static Expression<Func<RoomBooking, bool>> GetMinPriceFilter(decimal min) =>
+        booking => booking.TotalPrice >= min;
+
+    private static Expression<Func<RoomBooking, bool>> GetMaxPriceFilter(decimal max) =>
+        booking => booking.TotalPrice <= max;
+
+    private static bool HasValidNotes(string notes) =>
+        !string.IsNullOrWhiteSpace(notes);
+    private static Expression<Func<RoomBooking, bool>> GetNotesFilter(string notes) =>
+        booking => booking.Notes.Contains(notes);
+
+    private static bool HasValidRoomNumber(int roomNumber) =>
+        roomNumber > 0;
+    private static Expression<Func<RoomBooking, bool>> GetRoomNumberFilter(int roomNumber) =>
+        booking => booking.Room.Number == roomNumber;
+
+    private static bool HasValidHotelId(Guid? hotelId) =>
+        hotelId.HasValue && hotelId != Guid.Empty;
+    private static Expression<Func<RoomBooking, bool>> GetHotelIdFilter(Guid hotelId) =>
+        booking => booking.Room.HotelId == hotelId;
+
+    private static bool HasValidUserId(Guid? userId) =>
+        userId.HasValue && userId != Guid.Empty;
+    private static Expression<Func<RoomBooking, bool>> GetUserIdFilter(Guid? userId) =>
+        booking => booking.UserId == userId;
 }
