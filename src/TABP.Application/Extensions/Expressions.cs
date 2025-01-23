@@ -19,7 +19,7 @@ public static class Expressions
         );
     }
 
-    public static Expression<Func<T, bool>> AndIf<T>(
+    public static Expression<Func<T, bool>> AndIf<T>( // consider doing Lazy evaluation or quit.
         this Expression<Func<T, bool>> expr,
         bool condition,
         Expression<Func<T, bool>> newExpr)
