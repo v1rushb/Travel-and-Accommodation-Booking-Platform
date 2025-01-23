@@ -6,7 +6,9 @@ public class ReviewSearchQuery
 {
 
     public string SearchTerm { get; set; }
-    public HotelRating Rating { get; set; }
+    public IEnumerable<int>? Rating { get; set; }
     public DateTime CreationDate { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
     public Guid HotelId { get; set; }
 }
