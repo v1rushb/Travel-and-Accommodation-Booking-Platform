@@ -2,7 +2,7 @@ namespace TABP.Domain.Enums;
 
 public enum RoomType
 {
-    Budget,
-    Luxury,
-    Boutique
+    Budget= 0,
+    Luxury= 1,
+    Boutique = 2
 }
