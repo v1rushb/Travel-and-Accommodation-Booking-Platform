@@ -17,7 +17,7 @@ public class RoomService : IRoomService
     private readonly IRoomRepository _roomRepository;
     private readonly ILogger<RoomService> _logger;
     private readonly IValidator<RoomDTO> _roomValidator;
-    private readonly IHotelService _hotelService;
+    private readonly IHotelRepository _hotelRepository;
     private readonly IValidator<PaginationDTO> _paginationValidator;
     private readonly IMapper _mapper;
     private readonly IDiscountRepository _discountRepository;
@@ -26,7 +26,7 @@ public class RoomService : IRoomService
         IRoomRepository roomRepository,
         ILogger<RoomService> logger,
         IValidator<RoomDTO> roomValidator,
-        IHotelService hotelService,
+        IHotelRepository hotelRepository,
         IValidator<PaginationDTO> paginationValidator,
         IMapper mapper,
         IDiscountRepository discountRepository)
@@ -34,7 +34,7 @@ public class RoomService : IRoomService
         _roomRepository = roomRepository;
         _logger = logger;
         _roomValidator = roomValidator;
-        _hotelService = hotelService;
+        _hotelRepository = hotelRepository;
         _paginationValidator = paginationValidator;
         _mapper = mapper;
         _discountRepository = discountRepository;
@@ -44,7 +44,9 @@ public class RoomService : IRoomService
     {
         await _roomValidator.ValidateAndThrowAsync(newRoom);
 
-        var nextRoomNumber = await _hotelService.GetNextRoomNumberAsync(newRoom.HotelId);
+        // var nextRoomNumber = await _hotelService.GetNextRoomNumberAsync(newRoom.HotelId);
+        var nextRoomNumber = await _hotelRepository.GetNextRoomNumberAsync(newRoom.HotelId);
+        
         newRoom.Number = nextRoomNumber;
         var roomId = await _roomRepository.AddAsync(newRoom);
 

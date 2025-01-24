@@ -1,5 +1,6 @@
 using System.Data;
 using FluentValidation;
+using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Constants.Room;
 using TABP.Domain.Models.Room;
@@ -8,7 +9,7 @@ namespace TABP.Application.Validators.Room;
 
 public class RoomValidator : AbstractValidator<RoomDTO>
 {
-    public RoomValidator(IHotelService hotelService)
+    public RoomValidator(IHotelRepository hotelRepository)
     {
         RuleFor(room => room.Number)
             .NotNull();
@@ -29,7 +30,7 @@ public class RoomValidator : AbstractValidator<RoomDTO>
         RuleFor(room => room.HotelId)
             .NotNull()
             .MustAsync(async (id, cancellation) =>
-                await hotelService.ExistsAsync(id))
+                await hotelRepository.ExistsAsync(id))
             .WithMessage("{PropertyName} does not exist");
         
         // validate type.
