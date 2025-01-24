@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using TABP.Domain.Entities;
+using TABP.Domain.Models.Booking;
 using TABP.Domain.Models.Booking.Search.Response;
 using TABP.Domain.Models.RoomBooking;
 
@@ -18,4 +19,5 @@ public interface IRoomBookingRepository
     Task<bool> RoomIsBookedBetween(Guid roomId, DateTime StartingDate, DateTime EndingDate);
     Task<IEnumerable<BookingUserResponseDTO>> SearchUserBookingsAsync(Expression<Func<RoomBooking, bool>> predicate, int pageNumber, int pageSize);
     Task<IEnumerable<BookingAdminResponseDTO>> SearchAdminAsync(Expression<Func<RoomBooking, bool>> predicate, int pageNumber, int pageSize);
+    Task<IEnumerable<HotelBookingDTO>> GetAllForHotelsAsync(Expression<Func<RoomBooking, bool>> predicate);
 }

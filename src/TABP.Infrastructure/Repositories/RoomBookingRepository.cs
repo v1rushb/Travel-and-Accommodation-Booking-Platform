@@ -8,6 +8,7 @@ using TABP.Domain.Entities;
 using TABP.Domain.Models.Booking.Search.Response;
 using TABP.Domain.Models.RoomBooking;
 using TABP.Infrastructure.Extensions.Helpers;
+using TABP.Domain.Models.Booking;
 
 namespace TABP.Infrastructure.Repositories;
 
@@ -110,5 +111,18 @@ public class RoomBookingRepository : IRoomBookingRepository
                 pageSize);
 
         return _mapper.Map<IEnumerable<BookingAdminResponseDTO>>(bookings);
+    }
+
+    public async Task<IEnumerable<HotelBookingDTO>> GetAllForHotelsAsync(Expression<Func<RoomBooking, bool>> predicate)
+    {
+        var bookings = await _context.RoomBookings
+            .Where(predicate)
+            .Select(booking => new HotelBookingDTO
+            {
+                BookingId = booking.Id,
+                HotelId = booking.Room.HotelId
+            }).ToListAsync();
+
+        return bookings;
     }
 }
