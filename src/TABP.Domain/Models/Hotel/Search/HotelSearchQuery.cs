@@ -1,5 +1,3 @@
-using TABP.Domain.Enums;
-
 namespace TABP.Domain.Models.Hotel.Search;
 
 public class HotelSearchQuery
