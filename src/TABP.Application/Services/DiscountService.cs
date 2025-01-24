@@ -84,4 +84,6 @@ public class DiscountService : IDiscountService
             pagination.PageSize);
     }
 
+    public async Task<IEnumerable<DiscountDTO>> GetActiveDiscountsForHotelAsync(Guid hotelId) =>
+        await _discountRepository.GetActiveDiscountsForHotelAsync(hotelId);
 }

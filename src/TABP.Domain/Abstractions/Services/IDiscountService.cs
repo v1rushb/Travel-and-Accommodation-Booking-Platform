@@ -16,4 +16,5 @@ public interface IDiscountService
     Task<bool> ExistsAsync(Guid Id);
     Task<IEnumerable<Discount>> GetByHotelAsync(Guid hotelId);
     Task<IEnumerable<DiscountForAdminResponseDTO>> SearchForAdminAsync(DiscountSearchQuery query, PaginationDTO pagination);
+    Task<IEnumerable<DiscountDTO>> GetActiveDiscountsForHotelAsync(Guid hotelId);
 }
