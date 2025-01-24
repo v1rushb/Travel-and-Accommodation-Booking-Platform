@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using TABP.Domain.Entities;
+using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotel.Search.Response;
 using TABP.Domain.Models.Hotels;
 
@@ -15,4 +16,7 @@ public interface IHotelRepository
     Task<int> GetNextRoomNumberAsync(Guid hotelId);
     Task<IEnumerable<HotelUserResponseDTO>> SearchAsync(Expression<Func<Hotel, bool>> predicate, int pageNumber, int pageSize);
     Task<IEnumerable<HotelAdminResponseDTO>> SearchAdminAsync(Expression<Func<Hotel, bool>> predicate, int pageNumber, int pageSize);
+    Task<HotelPageResponseDTO> GetHotelPageAsync(Guid hotelId);
+    Task<IEnumerable<VisitedHotelDTO>> GetWeeklyFeaturedHotelsAsync(Expression<Func<Hotel, bool>> predicate);
+    Task<IEnumerable<HotelHistoryDTO>> GetHotelHistoryAsync(Expression<Func<HotelVisit, bool>> predicate, Guid userId, int pageNumber, int pageSize);
 }
