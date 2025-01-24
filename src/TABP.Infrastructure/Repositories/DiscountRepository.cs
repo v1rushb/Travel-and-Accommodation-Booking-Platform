@@ -92,4 +92,13 @@ public class DiscountRepository : IDiscountRepository
             ? _mapper.Map<DiscountDTO>(maxDiscount)
             : new DiscountDTO { AmountPercentage = 0 };
     }
+
+    public async Task<IEnumerable<DiscountDTO>> GetActiveDiscountsForHotelAsync(Guid hotelId)
+    {
+        var discounts = await _context.Discounts
+            .Where(discount => discount.HotelId == hotelId && discount.EndingDate > DateTime.UtcNow)
+            .ToListAsync();
+        
+        return _mapper.Map<IEnumerable<DiscountDTO>>(discounts);
+    }
 }
