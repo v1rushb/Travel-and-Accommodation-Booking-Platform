@@ -1,4 +1,5 @@
 using TABP.Domain.Entities;
+using TABP.Domain.Models.Booking;
 using TABP.Domain.Models.Booking.Search;
 using TABP.Domain.Models.Booking.Search.Response;
 using TABP.Domain.Models.Cart;
@@ -20,4 +21,5 @@ public interface IRoomBookingService
     Task<bool> RoomIsBookedBetween(Guid roomId, DateTime StartingDate, DateTime EndingDate);
     Task<IEnumerable<BookingUserResponseDTO>> SearchUserBookingsAsync(BookingSearchQuery query, PaginationDTO pagination);
     Task<IEnumerable<BookingAdminResponseDTO>> SearchAdminAsync(AdminBookingSearchQuery query, PaginationDTO pagination);
+    Task<IEnumerable<HotelBookingDTO>> GetByHotelAsync();
 }

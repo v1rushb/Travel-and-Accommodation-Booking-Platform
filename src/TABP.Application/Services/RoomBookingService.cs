@@ -1,15 +1,19 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using TABP.Application.Filters.ExpressionBuilders;
+using TABP.Application.Filters.ExpressionBuilders.Generics;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
 using TABP.Domain.Enums;
+using TABP.Domain.Models.Booking;
 using TABP.Domain.Models.Booking.Search;
 using TABP.Domain.Models.Booking.Search.Response;
 using TABP.Domain.Models.Cart;
 using TABP.Domain.Models.Discount;
+using TABP.Domain.Models.HotelVisit;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Room;
 using TABP.Domain.Models.RoomBooking;
@@ -215,5 +219,12 @@ public class RoomBookingService : IRoomBookingService
             pagination.PageSize);
     }
 
-    
+    public async Task<IEnumerable<HotelBookingDTO>> GetByHotelAsync()
+    {
+        var timeOption = TimeOptions.LastWeek;
+        var expression = TimeOptionExpressionBuilder<RoomBooking>.Build(new VisitTimeOptionQuery{ TimeOption = (int)timeOption });
+        return await _roomBookingRepository
+            .GetAllForHotelsAsync(expression);
+
+    }
 }
