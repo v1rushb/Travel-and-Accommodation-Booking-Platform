@@ -1,15 +1,13 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using TABP.Abstractions.Services;
 using TABP.API.Extensions;
-using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Models.Discount;
-using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotels;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Room;
+using TABP.Domain.Models.Hotel.Search;
 
 namespace TABP.API.Controllers;
 
@@ -165,5 +163,4 @@ public class HotelController : ControllerBase
 
         return Ok(result);
     }
-
 }
