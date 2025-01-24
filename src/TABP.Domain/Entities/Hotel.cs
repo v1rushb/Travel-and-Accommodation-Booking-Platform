@@ -1,8 +1,9 @@
 using TABP.Domain.Abstractions;
+using TABP.Domain.Abstractions.Services.Generics;
 
 namespace TABP.Domain.Entities;
 
-public class Hotel : Entity
+public class Hotel : Entity, IHasCreationDate
 {
     public string Name { get; set; }
     public string BriefDescription { get; set; }

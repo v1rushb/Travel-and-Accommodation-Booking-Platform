@@ -1,9 +1,10 @@
 using TABP.Domain.Abstractions;
+using TABP.Domain.Abstractions.Services.Generics;
 using TABP.Domain.Enums;
 
 namespace TABP.Domain.Entities;
 
-public class RoomBooking : Entity
+public class RoomBooking : Entity, IHasCreationDate
 {
     public DateTime CheckInDate { get; set; }
     public DateTime CheckOutDate { get; set; }
