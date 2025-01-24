@@ -16,4 +16,16 @@ public static class PaginationExtension
 
         return Items;
     }
+    public static IEnumerable<T> PaginateAsync<T>(
+        this IEnumerable<T> query,
+        int pageNumber,
+        int pageSize)
+    {
+        var Items = query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        return Items;
+    }
 }
