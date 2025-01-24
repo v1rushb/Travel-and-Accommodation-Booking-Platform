@@ -1,5 +1,7 @@
 using AutoMapper;
 using TABP.Domain.Entities;
+using TABP.Domain.Enums;
+using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotel.Search.Response;
 using TABP.Domain.Models.Hotels;
 
@@ -16,5 +18,11 @@ internal class HotelProfile : Profile
         CreateMap<HotelUserResponseDTO, Hotel>();
 
         CreateMap<Hotel, HotelAdminResponseDTO>();
+
+        CreateMap<Hotel, HotelPageResponseDTO>()
+            .ForMember(dest => dest.StarRating,
+                opt => opt.MapFrom(src => (HotelRating)src.StarRating));
+
+        CreateMap<FeaturedHotelDTO, HotelDTO>();
     }
 }
