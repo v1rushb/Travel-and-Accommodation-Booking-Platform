@@ -1,3 +1,4 @@
+using SixLabors.ImageSharp;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Room;
@@ -18,4 +19,6 @@ public interface IRoomService
     Task<IEnumerable<RoomAdminResponseDTO>> SearchAdminAsync(RoomSearchQuery query, PaginationDTO pagination);
     Task<IEnumerable<RoomUserResponseDTO>> SearchRoomsAsync(RoomSearchQuery query, PaginationDTO pagination);
     Task<decimal> GetBookingPriceForRoom(Guid RoomId, DateTime checkInDate, DateTime checkOutDate);
+    Task AddImagesAsync(Guid roomId, IEnumerable<Image> images);
+    Task<IEnumerable<Guid>> GetImageIdsForRoomAsync(Guid roomId);
 }

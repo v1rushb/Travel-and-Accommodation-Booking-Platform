@@ -1,9 +1,12 @@
 using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using SixLabors.ImageSharp;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Constants.Image;
 using TABP.Domain.Entities;
+using TABP.Domain.Exceptions;
 using TABP.Domain.Models.Discount;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Room;
@@ -21,6 +24,7 @@ public class RoomService : IRoomService
     private readonly IValidator<PaginationDTO> _paginationValidator;
     private readonly IMapper _mapper;
     private readonly IDiscountRepository _discountRepository;
+    private readonly IImageService _imageService;
 
     public RoomService(
         IRoomRepository roomRepository,
@@ -29,7 +33,8 @@ public class RoomService : IRoomService
         IHotelRepository hotelRepository,
         IValidator<PaginationDTO> paginationValidator,
         IMapper mapper,
-        IDiscountRepository discountRepository)
+        IDiscountRepository discountRepository,
+        IImageService imageService)
     {
         _roomRepository = roomRepository;
         _logger = logger;
@@ -38,13 +43,13 @@ public class RoomService : IRoomService
         _paginationValidator = paginationValidator;
         _mapper = mapper;
         _discountRepository = discountRepository;
+        _imageService = imageService;
     }
 
     public async Task<Guid> AddAsync(RoomDTO newRoom) 
     {
         await _roomValidator.ValidateAndThrowAsync(newRoom);
 
-        // var nextRoomNumber = await _hotelService.GetNextRoomNumberAsync(newRoom.HotelId);
         var nextRoomNumber = await _hotelRepository.GetNextRoomNumberAsync(newRoom.HotelId);
         
         newRoom.Number = nextRoomNumber;
@@ -147,4 +152,38 @@ public class RoomService : IRoomService
 
     private static decimal ApplyDiscount(int originalPrice, decimal discountPercentage) =>
         originalPrice - (originalPrice * (discountPercentage / 100));
+
+    public async Task AddImagesAsync(
+        Guid roomId,
+        IEnumerable<Image> images)
+    {
+        await ValidateId(roomId);
+        await ValidateNumberOfImagesForRoomAsync(
+            roomId,
+            images.Count()
+        );
+
+        await _imageService.AddAsync(roomId, images);
+    }
+
+    private async Task ValidateNumberOfImagesForRoomAsync(
+        Guid roomId,
+        int numberOfImagesToAdd)
+    {
+        var numberOfStoredImages = await _imageService
+            .GetCountAsync(roomId);
+
+        if(numberOfStoredImages + numberOfImagesToAdd > 
+            ImageConstants.MaxNumberOfImages)
+        {
+            throw new EntityImageLimitExceededException();
+        }
+    }
+
+    public async Task<IEnumerable<Guid>> GetImageIdsForRoomAsync(Guid roomId)
+    {
+        await ValidateId(roomId);
+
+        return await _imageService.GetIdsForEntityAsync(roomId);
+    }
 }
