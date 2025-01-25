@@ -1,11 +1,14 @@
 using System.Linq.Expressions;
 using FluentValidation;
+using SixLabors.ImageSharp;
 using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Application.Filters.ExpressionBuilders.Generics;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Constants.Image;
 using TABP.Domain.Entities;
 using TABP.Domain.Enums;
+using TABP.Domain.Exceptions;
 using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotel.Search;
 using TABP.Domain.Models.Hotel.Search.Response;
@@ -24,6 +27,7 @@ public class HotelService : IHotelService
     private readonly IHotelVisitService _hotelVisitService;
     private readonly ICurrentUserService _currentUserService;
     private readonly IRoomBookingService _roomBookingService;
+    private readonly IImageService _imageService;
 
     public HotelService(
         IHotelRepository hotelRepository,
@@ -32,7 +36,8 @@ public class HotelService : IHotelService
         IDiscountRepository discountRepository,
         IHotelVisitService hotelVisitService,
         ICurrentUserService currentUserService,
-        IRoomBookingService roomBookingService)
+        IRoomBookingService roomBookingService,
+        IImageService imageService)
     {
         _hotelRepository = hotelRepository;
         _hotelValidator = hotelValidator;
@@ -41,6 +46,7 @@ public class HotelService : IHotelService
         _hotelVisitService = hotelVisitService;
         _currentUserService = currentUserService;
         _roomBookingService = roomBookingService;
+        _imageService = imageService;
     }
     public async Task<Guid> AddAsync(HotelDTO newHotel)
     {
@@ -188,5 +194,38 @@ public class HotelService : IHotelService
                 pagination.PageNumber,
                 pagination.PageSize
             );
+    }
+
+    public async Task AddImagesAsync(
+        Guid hotelId,
+        IEnumerable<Image> images)
+    {
+        await ValidateId(hotelId);
+        await ValidateNumberOfImagesForHotelAsync(
+            hotelId,
+            images.Count()
+        );
+
+        await _imageService.AddAsync(hotelId, images);
+    }
+
+    private async Task ValidateNumberOfImagesForHotelAsync(
+        Guid hotelId,
+        int numberOfImagesToAdd)
+    {
+        var numberOfStoredImages = await _imageService
+            .GetCountAsync(hotelId);
+
+        if(numberOfStoredImages + numberOfImagesToAdd > 
+            ImageConstants.MaxNumberOfImages)
+        {
+            throw new EntityImageLimitExceededException();
+        }
+    }
+
+    public async Task<IEnumerable<Guid>> GetImageIdsForHotelAsync(Guid hotelId)
+    {
+        await ValidateId(hotelId);
+        return await _imageService.GetIdsForEntityAsync(hotelId);
     }
 }

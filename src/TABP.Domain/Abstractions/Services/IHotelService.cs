@@ -1,3 +1,4 @@
+using SixLabors.ImageSharp;
 using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotel.Search;
 using TABP.Domain.Models.Hotel.Search.Response;
@@ -20,4 +21,6 @@ public interface IHotelService
     Task<HotelPageResponseDTO> GetHotelPageAsync(Guid hotelId);
     Task<IEnumerable<FeaturedHotelDTO>> GetWeeklyFeaturedHotelsAsync();
     Task<IEnumerable<HotelHistoryDTO>> GetHotelHistoryAsync(PaginationDTO pagination, VisitTimeOptionQuery query, Guid? userId = null);
+    Task AddImagesAsync(Guid hotelId, IEnumerable<Image> images);
+    Task<IEnumerable<Guid>> GetImageIdsForHotelAsync(Guid hotelId);
 }
