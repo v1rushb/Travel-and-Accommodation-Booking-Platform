@@ -1,3 +1,4 @@
+using SixLabors.ImageSharp;
 using TABP.Domain.Models.City;
 using TABP.Domain.Models.City.Response;
 using TABP.Domain.Models.City.Search;
@@ -14,4 +15,7 @@ public interface ICityService
     Task<bool> ExistsAsync(Guid Id);
     Task<IEnumerable<CitySearchResponseDTO>> SearchAsync(CitySearchQuery query, PaginationDTO pagination);
     Task<IEnumerable<CityAdminResponseDTO>> SearchForAdminAsync(CitySearchQuery query, PaginationDTO pagination); //add city added between time period?
+    Task ValidateId(Guid Id);
+    Task AddImagesAsync(Guid cityId, IEnumerable<Image> images);
+    Task<IEnumerable<Guid>> GetImageIdsForCityAsync(Guid cityId);
 }
