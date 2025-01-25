@@ -18,4 +18,9 @@ public static class CustomExceptionMessages
     {
         public static string Title => "Configuration Error";
     }
+
+    public static class EntityImageLimitExceededException
+    {
+        public static string Title => "Entity Image Limit Exceeded";
+    }
 }
