@@ -2,13 +2,16 @@ using System.Reflection;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using SixLabors.ImageSharp;
 using TABP.Abstractions.Services;
 using TABP.Application.Services;
+using TABP.Application.Vaildator.Images;
 using TABP.Application.Validators.Booking;
 using TABP.Application.Validators.Cart;
 using TABP.Application.Validators.City;
 using TABP.Application.Validators.Discount;
 using TABP.Application.Validators.Hotel;
+using TABP.Application.Validators.Image;
 using TABP.Application.Validators.Pagination;
 using TABP.Application.Validators.Review;
 using TABP.Application.Validators.Room;
@@ -20,6 +23,7 @@ using TABP.Domain.Models.City;
 using TABP.Domain.Models.Discount;
 using TABP.Domain.Models.HotelReview;
 using TABP.Domain.Models.Hotels;
+using TABP.Domain.Models.Image;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Room;
 using TABP.Domain.Models.RoomBooking;
@@ -46,6 +50,7 @@ public static class ApplicationServicesRegistration
         services.AddScoped<IRoomBookingService, RoomBookingService>();
         services.AddScoped<IRoomService, RoomService>();
         services.AddScoped<ICartService, CartService>();
+        services.AddScoped<IImageService, ImageService>();
 
         AddValidators(services);
 
@@ -71,5 +76,7 @@ public static class ApplicationServicesRegistration
         services.AddScoped<IValidator<RoomBookingDTO>, BookingValidator>();
         services.AddScoped<IValidator<CartItemDTO>, CartItemValidator>();
         services.AddScoped<IValidator<PaginationDTO>, PaginationValidator>();
+        services.AddScoped<IValidator<ImageSizeDTO>, ImageSizeValidator>();
+        services.AddScoped<IValidator<IEnumerable<Image>>, ImageValidator>();
     }
 }
