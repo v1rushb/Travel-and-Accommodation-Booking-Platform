@@ -20,19 +20,22 @@ public class UserService : IUserService
     private readonly ITokenGenerator _tokenGenerator;
     private readonly IPasswordHasher<string> _passwordHasher;
     private readonly IValidator<UserDTO> _userValidator;
+    private readonly IValidator<UserLoginDTO> _userLoginValidator;
 
     public UserService(
         IUserRepository userRepository,
         ITokenGenerator tokenGenerator,
         IPasswordHasher<string> passwordHasher,
         IRoleRepository roleRepository,
-        IValidator<UserDTO> userValidator)
+        IValidator<UserDTO> userValidator,
+        IValidator<UserLoginDTO> userLoginValidator)
     {
         _userRepository = userRepository;
         _tokenGenerator = tokenGenerator;
         _passwordHasher = passwordHasher;
         _roleRepository = roleRepository;
         _userValidator = userValidator;
+        _userLoginValidator = userLoginValidator;
     }
 
     public async Task<Guid> CreateAsync(UserDTO newUser)
@@ -52,6 +55,8 @@ public class UserService : IUserService
 
     public async Task<string> AuthenticateAsync(UserLoginDTO userLoginCredentials) // mayeb add fluent validation here?
     {
+        await _userLoginValidator.ValidateAndThrowAsync(userLoginCredentials);
+        
         var storedUser = await ValidateUsername(userLoginCredentials.Username);
         ValidatePassword(
             userLoginCredentials.Password,
