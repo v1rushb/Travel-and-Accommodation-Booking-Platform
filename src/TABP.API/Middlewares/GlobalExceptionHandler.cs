@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using TABP.API.Constants;
 using TABP.Domain.Exceptions;
 
@@ -19,6 +20,14 @@ public class GlobalExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken = default)
     {
+
+        if(exception is FluentValidation.ValidationException validationException)
+        {
+            _logger.LogCritical("asdaskdjhasdkjasghdjhasdkajshdkasjhdajhsgdasd");
+            await HandleValidationExceptionAsync(context, validationException);
+            return true;
+        }
+
         LogException(exception);
 
         var problemDetails = GenerateProblemDetails(context, exception);
@@ -72,5 +81,26 @@ public class GlobalExceptionHandler : IExceptionHandler
         };
 
         return (statusCode, exception.Title, exception.Message);
+    }
+
+    private async Task HandleValidationExceptionAsync(
+        HttpContext context,
+        FluentValidation.ValidationException exception)
+    {
+        var validationErrors = exception.Errors
+            .Select(err => 
+                err.ToString());
+        var problemDetails = new ProblemDetails
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Title = "Validation Error",
+            Detail = "One or more validation errors occurred.",
+            Extensions = {["errors"] = validationErrors}
+        };
+
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        context.Response.ContentType = "application/json";
+
+        await context.Response.WriteAsJsonAsync(problemDetails);
     }
 }
