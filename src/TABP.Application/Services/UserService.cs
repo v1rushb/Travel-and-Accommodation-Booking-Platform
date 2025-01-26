@@ -6,6 +6,7 @@ using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
 using TABP.Domain.Enums;
 using TABP.Domain.Exceptions;
+using TABP.Domain.Models.Email;
 using TABP.Domain.Models.User;
 
 namespace TABP.Appllication.Services;
@@ -21,6 +22,7 @@ public class UserService : IUserService
     private readonly IPasswordHasher<string> _passwordHasher;
     private readonly IValidator<UserDTO> _userValidator;
     private readonly IValidator<UserLoginDTO> _userLoginValidator;
+    private readonly IEmailService _emailService;
 
     public UserService(
         IUserRepository userRepository,
@@ -28,7 +30,8 @@ public class UserService : IUserService
         IPasswordHasher<string> passwordHasher,
         IRoleRepository roleRepository,
         IValidator<UserDTO> userValidator,
-        IValidator<UserLoginDTO> userLoginValidator)
+        IValidator<UserLoginDTO> userLoginValidator,
+        IEmailService emailService)
     {
         _userRepository = userRepository;
         _tokenGenerator = tokenGenerator;
@@ -36,6 +39,7 @@ public class UserService : IUserService
         _roleRepository = roleRepository;
         _userValidator = userValidator;
         _userLoginValidator = userLoginValidator;
+        _emailService = emailService;
     }
 
     public async Task<Guid> CreateAsync(UserDTO newUser)
@@ -50,6 +54,8 @@ public class UserService : IUserService
         var role = await _roleRepository.GetByNameAsync(nameof(RoleType.Admin));
         newUser.Roles.Add(role); // should never be null
 
+        await SendWelcomeEmailAsync(newUser);
+        
         return await _userRepository.AddAsync(newUser);
     }
 
@@ -64,6 +70,17 @@ public class UserService : IUserService
             userLoginCredentials.Username);
 
         return _tokenGenerator.GenerateToken(storedUser);
+    }
+
+    private async Task SendWelcomeEmailAsync(UserDTO user)
+    {
+        await _emailService.SendAsync(new EmailDTO
+        {
+            RecipientEmail = user.Email,
+            RecipientName = user.FirstName,
+            Subject = "Welcome to TABP",
+            Body = $"Welcome to TABP, {user.FirstName}!"
+        });
     }
 
     private async Task<UserDTO> ValidateUsername(string loginUsername)
