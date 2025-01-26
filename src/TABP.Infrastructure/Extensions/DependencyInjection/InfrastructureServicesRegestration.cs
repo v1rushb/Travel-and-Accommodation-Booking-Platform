@@ -30,6 +30,7 @@ public static class InfrastructureServicesRegistration
         services.AddScoped<IImageRepository, ImageRepository>();
         AddCache(services, configuration);
         services.AddHostedService<RedisCacheEventService>();
+        services.AddSingleton<IBlacklistService, BlacklistService>();
         services.AddTransient<ICacheEventService, RedisCacheEventService>();
         services.AddTransient<IEmailService, EmailService>();
 
@@ -43,18 +44,16 @@ public static class InfrastructureServicesRegistration
         IConfiguration configuration)
     {
         string redisConnectionString = configuration.GetConnectionString("Redis");
-        if (string.IsNullOrEmpty(redisConnectionString))
-        {
-            throw new InvalidOperationException("Redis connection string is not configured.");
-        }
 
         services.AddStackExchangeRedisCache(options =>
         {
-            options.Configuration = redisConnectionString;
+            options.Configuration = redisConnectionString;  
         });
 
         services.AddSingleton<IConnectionMultiplexer>(_ =>
             ConnectionMultiplexer.Connect(redisConnectionString));
+
+        
 
         return services;
     }
