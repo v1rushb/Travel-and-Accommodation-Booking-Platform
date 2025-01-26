@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
+using TABP.Domain.Exceptions;
 using TABP.Domain.Models.CartItem;
 
 namespace TABP.Application.Services;
@@ -43,14 +44,11 @@ public class CartItemService : ICartItemService
     public async Task<CartItemDTO> GetByIdAsync(Guid Id) =>
         await _cartItemRepository.GetByIdAsync(Id);
 
-    // public async Task<IEnumerable<CartItem>> GetByUserAsync(Guid userId) =>
-    //     await _cartItemRepository.GetByUserAsync(userId);
-    
     private async Task ValidateId(Guid Id)
     {
         if(!await ExistsAsync(Id))
         {
-            throw new KeyNotFoundException($"Id {Id} Does not exist.");
+            throw new NotFoundException($"Id {Id} Does not exist.");
         }
     }
 }
