@@ -15,6 +15,7 @@ internal class RoleRepository : IRoleRepository
     public async Task<Role> GetByNameAsync(string roleName)
     {
         var role = await _context.Roles
+            .AsTracking()
             .FirstOrDefaultAsync(role => role.Name == roleName);
         
         return role ?? await AddAsync(roleName);
