@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Timers;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -13,10 +14,12 @@ using TABP.Domain.Models.Booking.Search;
 using TABP.Domain.Models.Booking.Search.Response;
 using TABP.Domain.Models.Cart;
 using TABP.Domain.Models.Discount;
+using TABP.Domain.Models.Email;
 using TABP.Domain.Models.HotelVisit;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Room;
 using TABP.Domain.Models.RoomBooking;
+using TABP.Domain.Models.User;
 
 namespace TABP.Application.Services;
 
@@ -30,6 +33,9 @@ public class RoomBookingService : IRoomBookingService
     private readonly IRoomService _roomService;
     private readonly IValidator<PaginationDTO> _paginationValidator;
     private readonly IMapper _mapper;
+    private readonly ICacheEventService _cacheEventService;
+    private readonly IEmailService _emailService;
+    private readonly IUserRepository _userRepository;
 
     public RoomBookingService(
         IRoomBookingRepository roomBookingRepository,
@@ -39,7 +45,10 @@ public class RoomBookingService : IRoomBookingService
         IRoomService roomService,
         IValidator<RoomBookingDTO> bookingValidator,
         IValidator<PaginationDTO> paginationValidator,
-        IMapper mapper)
+        IMapper mapper,
+        ICacheEventService cacheEventService,
+        IEmailService emailService,
+        IUserRepository userRepository)
     {
         _roomBookingRepository = roomBookingRepository;
         _logger = logger;
@@ -49,6 +58,9 @@ public class RoomBookingService : IRoomBookingService
         _bookingValidator = bookingValidator;
         _paginationValidator = paginationValidator;
         _mapper = mapper;
+        _cacheEventService = cacheEventService;
+        _emailService = emailService;
+        _userRepository = userRepository;
     }
     
     [Obsolete]
@@ -95,7 +107,7 @@ public class RoomBookingService : IRoomBookingService
                 Notes = item.Notes,
             };
 
-            await _bookingValidator.ValidateAndThrowAsync(booking);
+            // await _bookingValidator.ValidateAndThrowAsync(booking);
 
             bookings.Add(booking);
         }
@@ -106,9 +118,33 @@ public class RoomBookingService : IRoomBookingService
             var discount = await _discountRepository.GetHighestDiscountActiveForHotelRoomTypeAsync(room.HotelId, room.Type);
             SetFinalTotalPrice(booking, room, discount);
             _logger.LogInformation("Booking with Id: {Id} has been added to User {UserId}, with Discount {Discount}%", booking.Id, cart.UserId, discount.AmountPercentage);
+            await SchduleSendingBookingEndedEmailJob(booking);
         }
+        await _roomBookingRepository.AddAsync(bookings); // just adds range of bookings.
+    }
 
-        await _roomBookingRepository.AddAsync(bookings); // just adds range of bookings. 
+    private async Task SchduleSendingBookingEndedEmailJob(RoomBookingDTO booking)
+    {
+        var user = await GetCorrespondingUser(booking);
+        var timeToSendEmail = booking.CheckOutDate - DateTime.UtcNow;
+        await _cacheEventService.ScheduleExpirationAsync(
+            new Guid().ToString(),
+            timeToSendEmail,
+            async () => await SendEndBookingEmailToUser(user, booking.Id)
+        );
+    }
+
+    private async Task<UserDTO> GetCorrespondingUser(RoomBookingDTO booking) =>
+        await _userRepository.GetByIdAsync(booking.UserId);
+    private async Task SendEndBookingEmailToUser(UserDTO recipient, Guid bookingId)
+    {
+        await _emailService.SendAsync(new EmailDTO
+        {
+            RecipientEmail = recipient.Email,
+            RecipientName = recipient.FirstName,
+            Subject = "Your booking has ended",
+            Body = $"Your booking with Id {bookingId} has ended."
+        });
     }
 
     [Obsolete]
