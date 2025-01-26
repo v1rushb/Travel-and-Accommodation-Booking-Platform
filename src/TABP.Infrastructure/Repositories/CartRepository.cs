@@ -144,7 +144,7 @@ public class CartRepository : ICartRepository
         DateTime endingDate)
     {
         return await _context.Carts
-            .Where(cart => cart.Status == BookingStatus.Confirmed || cart.Status == BookingStatus.Pending)
+            .Where(cart => cart.Status == BookingStatus.Confirmed)
             .SelectMany(cart => cart.Items)
             .AnyAsync(cartItem =>
                 cartItem.RoomId == roomId &&
