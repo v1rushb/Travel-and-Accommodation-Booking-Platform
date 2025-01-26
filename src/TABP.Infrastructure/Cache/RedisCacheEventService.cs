@@ -75,8 +75,8 @@ public class RedisCacheEventService : BackgroundService, ICacheEventService
     {
         _logger.LogInformation("RedisCacheEventService is starting.");
 
-        var server = _redis.GetServer(_redis.GetEndPoints().First());
-        await server.ConfigSetAsync("notify-keyspace-events", "Ex");
+        // var server = _redis.GetServer(_redis.GetEndPoints().First());
+        // await server.ConfigSetAsync("notify-keyspace-events", "Ex");
 
         await base.StartAsync(cancellationToken);
     }
