@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Configurations;
+using TABP.Infrastructure.Extensions;
 
 namespace TABP.Infrastructure;
 
@@ -25,6 +26,7 @@ public class HotelBookingDbContext : DbContext
     public DbSet<CartItem> CartItems { get; set; }
     public DbSet<RoomBooking> RoomBookings { get; set; }
     public DbSet<Cart> Carts { get; set; }
+    public DbSet<ImageEntity> Images { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -36,5 +38,6 @@ public class HotelBookingDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.ConfigureEntities();
     }
 }
