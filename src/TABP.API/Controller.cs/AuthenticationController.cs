@@ -1,4 +1,6 @@
+using System.IdentityModel.Tokens.Jwt;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Models.User;
@@ -15,15 +17,18 @@ public class AuthenticationController : ControllerBase
     private readonly IUserService _userService;
     private readonly ILogger<AuthenticationController> _logger;
     private readonly IMapper _mapper;
+    private readonly IBlacklistService _blacklistService;
 
     public AuthenticationController(
         IUserService userService,
         ILogger<AuthenticationController> logger,
-        IMapper mapper)
+        IMapper mapper,
+        IBlacklistService blacklistService)
     {
         _userService = userService;
         _logger = logger;
         _mapper = mapper;
+        _blacklistService = blacklistService;
     }
     
     //Incomplete
@@ -43,5 +48,31 @@ public class AuthenticationController : ControllerBase
         _logger.LogInformation($"User {userLoginCredentials.Username} logged in");
 
         return Ok(authenticationToken);
+    }
+
+    [HttpPost("logout")] //refactor later.
+    [Authorize]
+    public async Task<IActionResult> LogoutUserAsync()
+    {
+        var authHeader = Request.Headers.Authorization.FirstOrDefault();
+        // System.Console.WriteLine(authHeader);
+         if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+        {
+            return Unauthorized(new { Message = "Invalid authorization header" });
+        }
+        var token = authHeader["Bearer ".Length..].Trim(); // check later.
+
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+
+        // 3. Calculate remaining time (already validated by [Authorize])
+        var expUnixTime = long.Parse(jwtToken.Claims.First(c => c.Type == "exp").Value);
+        var expirationTime = DateTimeOffset.FromUnixTimeSeconds(expUnixTime);
+        var remainingTime = expirationTime - DateTimeOffset.UtcNow;
+
+        await _blacklistService.AddToBlacklistAsync(token, remainingTime);
+
+
+        return Ok(new { Message = "Successfully logged out" });
     }
 }
