@@ -15,7 +15,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.BindConfiguration(builder.Configuration);
 
-builder.Services.RegisterInfrastructure();
+builder.Services.RegisterInfrastructure(builder.Configuration);
 builder.Services.RegisterAuthentication(builder.Configuration);
 builder.Services.RegisterApplicationServices();
 builder.Services.RegisterUtilites();
