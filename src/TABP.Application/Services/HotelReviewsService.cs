@@ -5,6 +5,7 @@ using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
+using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.HotelReview;
 using TABP.Domain.Models.HotelReview.Search;
 using TABP.Domain.Models.HotelReview.Search.Response;
@@ -19,39 +20,66 @@ public class HotelReviewService : IHotelReviewService
     private readonly IValidator<HotelReviewDTO> _reviewValidator;
     private readonly ICurrentUserService _currentUserService;
     private readonly IValidator<PaginationDTO> _paginationValidator;
-    
+    private readonly IHotelRepository _hotelRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
     public HotelReviewService(
         IHotelReviewRepository hotelReviewRepository,
         ILogger<HotelReviewService> logger,
         IValidator<HotelReviewDTO> reviewValidator,
         ICurrentUserService currentUserService,
-        IValidator<PaginationDTO> paginationValidator)
+        IValidator<PaginationDTO> paginationValidator,
+        IHotelRepository hotelRepository,
+        IUnitOfWork unitOfWork)
     {
         _hotelReviewRepository = hotelReviewRepository;
         _logger = logger;
         _reviewValidator = reviewValidator;
         _currentUserService = currentUserService;
         _paginationValidator = paginationValidator;
+        _hotelRepository = hotelRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Guid> AddAsync(HotelReviewDTO newReview)
     {
-        var currentUserId = _currentUserService.GetUserId();
-        await _reviewValidator.ValidateAndThrowAsync(newReview);
+        await _reviewValidator
+            .ValidateAndThrowAsync(newReview);
 
-        newReview.UserId = currentUserId;
+        newReview.UserId = _currentUserService
+            .GetUserId();
 
-        var reviewId = await _hotelReviewRepository.AddAsync(newReview);
+        var reviewId = await _hotelReviewRepository
+            .AddAsync(newReview);
 
+        await UpdateHotelStarRatingAsync(
+            newReview.HotelId, 
+            newRating: newReview.Rating);
+
+        await _unitOfWork
+            .SaveChangesAsync();
+        
         return reviewId;
     }
 
     public async Task DeleteAsync(Guid Id)
     {
         await ValidateId(Id);
-        await ValidateOwnership(Id, _currentUserService.GetUserId());
+        await ValidateOwnership(
+            Id,
+            _currentUserService.GetUserId());
 
-        await _hotelReviewRepository.DeleteAsync(Id);
+        var persistedReview = await _hotelReviewRepository
+            .GetByIdAsync(Id);
+
+        await _hotelReviewRepository
+            .DeleteAsync(Id);
+
+         await UpdateHotelStarRatingAsync(
+            persistedReview.HotelId, 
+            originalRating: persistedReview.Rating);
+    
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task<bool> ExistsAsync(Guid Id, Guid? userId = null) =>
@@ -82,13 +110,25 @@ public class HotelReviewService : IHotelReviewService
     public async Task UpdateAsync(HotelReviewDTO updatedReview)
     {
         await ValidateId(updatedReview.Id);
-        var currentUserId = _currentUserService.GetUserId();
         
-        await ValidateOwnership(updatedReview.Id, currentUserId); // maybe move to fluentvalidation?
+        await ValidateOwnership(
+            updatedReview.Id,
+            _currentUserService.GetUserId()); // maybe move to fluentvalidation?
 
         updatedReview.ModificationDate = DateTime.UtcNow;
 
-        await _hotelReviewRepository.UpdateAsync(updatedReview);
+        var persistedReview = await _hotelReviewRepository
+            .GetByIdAsync(updatedReview.Id);
+
+        await _hotelReviewRepository
+            .UpdateAsync(updatedReview);
+
+        await UpdateHotelStarRatingAsync(
+            updatedReview.HotelId, 
+            newRating: updatedReview.Rating,
+            originalRating: persistedReview.Rating);
+
+        await _unitOfWork.SaveChangesAsync();
     }
     
     private async Task ValidateId(Guid Id)
@@ -140,5 +180,30 @@ public class HotelReviewService : IHotelReviewService
             expression,
             pagination.PageNumber,
             pagination.PageSize);
+    }
+
+    private async Task UpdateHotelStarRatingAsync(
+        Guid hotelId, 
+        decimal? newRating = null, 
+        decimal? originalRating = null)
+    {
+        var hotel = await _hotelRepository.GetByIdAsync(hotelId);
+        
+        if (!newRating.HasValue && originalRating.HasValue)
+        {
+            hotel.StarRating -= originalRating.Value;
+            return;
+        }
+
+        if (newRating.HasValue && originalRating.HasValue)
+        {
+            hotel.StarRating += newRating.Value - originalRating.Value;
+            return;
+        }
+
+        if (newRating.HasValue)
+        {
+            hotel.StarRating += newRating.Value;
+        }
     }
 }

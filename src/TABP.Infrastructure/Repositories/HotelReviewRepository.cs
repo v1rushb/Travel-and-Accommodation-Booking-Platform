@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
+using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.HotelReview;
 using TABP.Domain.Models.HotelReview.Search.Response;
@@ -34,9 +35,8 @@ public class HotelReviewsRepository : IHotelReviewRepository
         review.ModificationDate = DateTime.UtcNow;
 
         var entityEntry = _context.HotelReviews.Add(review);
-        await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Created Review with Id: {ReviewId}, HotelId: {HotelId}, UserId: {UserId}", review.Id, review.HotelId, review.UserId); // who?
+        // _logger.LogInformation("Created Review with Id: {ReviewId}, HotelId: {HotelId}, UserId: {UserId}", review.Id, review.HotelId, review.UserId); // who?
         
         return entityEntry.Entity.Id;
     }
@@ -52,14 +52,13 @@ public class HotelReviewsRepository : IHotelReviewRepository
         review.ModificationDate = DateTime.UtcNow;
 
         _context.HotelReviews.Update(review);
-        await _context.SaveChangesAsync();
-         _logger.LogInformation("Updated Review with Id: {ReviewId}", updatedReview.Id);
+
+        //  _logger.LogInformation("Updated Review with Id: {ReviewId}", updatedReview.Id);
     }
 
     public async Task DeleteAsync(Guid reviewId)
     {
         _context.HotelReviews.Remove(new HotelReview { Id = reviewId });
-        await _context.SaveChangesAsync();
         _logger.LogInformation("Deleted Review with Id: {ReviewId}", reviewId);
     }
 
