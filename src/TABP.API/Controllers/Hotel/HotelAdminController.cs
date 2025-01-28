@@ -9,10 +9,12 @@ using TABP.Domain.Models.Hotel.Search.Response;
 using TABP.Domain.Models.Hotels;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Hotel.Search;
+using Microsoft.AspNetCore.Authorization;
+using TABP.Domain.Enums;
 
 namespace TABP.API.Controllers;
 
-// [Authorize] // add admin later.
+[Authorize(Roles = nameof(RoleType.Admin))]
 [ApiController]
 [Route("api/hotel/admin")]
 public class HotelAdminController : ControllerBase

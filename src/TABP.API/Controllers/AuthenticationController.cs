@@ -65,7 +65,6 @@ public class AuthenticationController : ControllerBase
         var handler = new JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(token);
 
-        // 3. Calculate remaining time (already validated by [Authorize])
         var expUnixTime = long.Parse(jwtToken.Claims.First(c => c.Type == "exp").Value);
         var expirationTime = DateTimeOffset.FromUnixTimeSeconds(expUnixTime);
         var remainingTime = expirationTime - DateTimeOffset.UtcNow;

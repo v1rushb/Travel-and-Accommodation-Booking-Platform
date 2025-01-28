@@ -8,6 +8,7 @@ using TABP.Domain.Models.Hotels;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Room;
 using TABP.Domain.Models.Hotel.Search;
+using TABP.Domain.Models.Hotel;
 
 namespace TABP.API.Controllers;
 

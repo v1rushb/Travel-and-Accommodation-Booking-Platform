@@ -133,6 +133,15 @@ public class UserBookingController : ControllerBase
         return Ok(carts);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetCurrentCartDetailsAsync()
+    {
+        await _cartService
+            .GetCurrentCartDetailsAsync();
+
+        return Ok();
+    }
+
     // add a search for the carts as well.
 
     // [HttpDelete("{bookingId:guid}")]
