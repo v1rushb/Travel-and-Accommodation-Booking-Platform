@@ -164,4 +164,9 @@ public class CartRepository : ICartRepository
         return _mapper
             .Map<IEnumerable<CartAdminResponseDTO>>(carts);
     }
+
+    public async Task<CartUserResponseDTO> GetCartDetailsByUserIdAsync(Guid userId) =>
+        _mapper.Map<CartUserResponseDTO>(
+                await GetLastPendingCartAsync(userId));
+
 }

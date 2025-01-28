@@ -23,5 +23,5 @@ public interface ICartRepository
     Task<bool> RoomIsBookedForSameUserBetween(Guid roomId, Guid userId, DateTime StartingDate, DateTime EndingDate);
     Task<bool> RoomIsBookedByAnyUserBetween(Guid roomId, DateTime StartingDate, DateTime EndingDate);
     Task<IEnumerable<CartAdminResponseDTO>> SearchAdminAsync(Expression<Func<Cart, bool>> predicate, int pageNumber, int pageSize);
-    // do search later.
+    Task<CartUserResponseDTO> GetCartDetailsByUserIdAsync(Guid userId);
 }
