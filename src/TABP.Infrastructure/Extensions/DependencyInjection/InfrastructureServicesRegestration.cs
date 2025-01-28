@@ -6,6 +6,7 @@ using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Models.Configurations;
 using TABP.Infrastructure.Cache;
+using TABP.Infrastructure.Persistence;
 using TABP.Infrastructure.Repositories;
 using TABP.Infrastructure.Utilities;
 
@@ -33,6 +34,7 @@ public static class InfrastructureServicesRegistration
         services.AddSingleton<IBlacklistService, BlacklistService>();
         services.AddTransient<ICacheEventService, RedisCacheEventService>();
         services.AddTransient<IEmailService, EmailService>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         AddEmailServices(services, configuration);
 
