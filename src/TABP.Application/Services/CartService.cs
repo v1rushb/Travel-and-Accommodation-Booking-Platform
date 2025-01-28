@@ -24,7 +24,7 @@ public class CartService : ICartService
     private readonly IValidator<CartItemDTO> _cartItemValidator;
     private readonly IValidator<PaginationDTO> _paginationValidator;
     private readonly IRoomService _roomService;
-
+    private readonly IUnitOfWork _unitOfWork;
     public CartService(
         ICartRepository cartRepository,
         IRoomBookingService roomBookingService,
@@ -33,7 +33,9 @@ public class CartService : ICartService
         ILogger<CartService> logger,
         IValidator<CartItemDTO> cartItemValidator,
         IValidator<PaginationDTO> paginationValidator,
-        IRoomService roomService)
+        IRoomService roomService,
+        IDiscountRepository discountRepository,
+        IUnitOfWork unitOfWork)
     {
         _cartRepository = cartRepository;
         _roomBookingService = roomBookingService;
@@ -43,6 +45,7 @@ public class CartService : ICartService
         _cartItemValidator = cartItemValidator;
         _paginationValidator = paginationValidator;
         _roomService = roomService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<CartDTO> CreateNewAsync() // make private?
@@ -201,5 +204,28 @@ public class CartService : ICartService
             predicate,
             pagination.PageNumber,
             pagination.PageSize);
+    }
+
+    public async Task<CartUserResponseDTO> GetCurrentCartDetailsAsync()
+    {
+        var currentUserId = _currentUserService.GetUserId();
+        var cart = await _cartRepository
+            .GetCartDetailsByUserIdAsync(currentUserId);
+
+
+        if(cart is null)
+            return new CartUserResponseDTO();
+        
+        var cartItems = cart.Items;
+        decimal x = 0;
+        foreach(var item in cartItems)
+        {
+            var price = await _roomService.GetBookingPriceForRoom(item.RoomId, item.CheckInDate, item.CheckOutDate);
+            item.Price = price;
+            x+= price;
+        }
+        cart.TotalPrice = x;
+
+        return cart;
     }
 }

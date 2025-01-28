@@ -16,4 +16,6 @@ public interface ICartService
     Task CheckOutAsync();
     Task<IEnumerable<CartItemDTO>> GetCartItemsAsync(PaginationDTO pagination);
     Task<IEnumerable<CartAdminResponseDTO>> SearchCartsAsync(PaginationDTO pagination, CartSearchQuery query);
+    Task<CartUserResponseDTO> GetCurrentCartDetailsAsync();
+    
 }
