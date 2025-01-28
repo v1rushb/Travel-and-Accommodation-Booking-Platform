@@ -1,9 +1,7 @@
-using System.Data;
 using FluentValidation;
-using TABP.Application.Services;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Constants.Hotel;
-using TABP.Domain.Models.Hotels;
+using TABP.Domain.Models.Hotel;
 
 namespace TABP.Application.Validators.Hotel;
 

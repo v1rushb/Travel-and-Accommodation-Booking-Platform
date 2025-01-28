@@ -1,7 +1,7 @@
 using TABP.Domain.Abstractions;
 using TABP.Domain.Models.Room;
 
-namespace TABP.Domain.Models.Hotels;
+namespace TABP.Domain.Models.Hotel;
 
 public class HotelDTO : Entity
 {
