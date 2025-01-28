@@ -20,6 +20,12 @@ public class Blacklist
 
     public async Task InvokeAsync(HttpContext context)
     {
+        if(!CanBeBlacklisted(context))
+        {
+            await _next(context);
+            return;
+        }
+
         var incomingToken = context.Request.Headers.Authorization
             .FirstOrDefault();
 
@@ -28,9 +34,28 @@ public class Blacklist
         if(await _blacklistService.IsTokenBlacklistedAsync(token))
         {
             _logger.LogInformation("Token {Token} is blacklisted. and tried to access the System.", token);
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
             await context.Response.WriteAsync("Token is blacklisted. Try to login again.");
             return;
         }
         await _next(context);
+    }
+
+    private bool CanBeBlacklisted(HttpContext context)
+    {
+        var path = context.Request.Path.Value
+            .ToLower();
+
+        bool isLoginOrRegisterPath = 
+            path.Contains("/api/auth/user-login") || 
+            path.Contains("/api/auth/user-register");
+
+        if(isLoginOrRegisterPath)
+            return false;
+
+        bool hasAuthorizationHeader = 
+            context.Request.Headers.ContainsKey("Authorization");
+
+        return hasAuthorizationHeader;
     }
 }
