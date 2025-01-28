@@ -38,8 +38,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
-app.UseAuthorization();
 app.UseMiddleware<Blacklist>();
+app.UseAuthorization();
 app.UseExceptionHandler();
 
 
