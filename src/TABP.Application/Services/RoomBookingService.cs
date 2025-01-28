@@ -5,6 +5,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Application.Filters.ExpressionBuilders.Generics;
+using TABP.Application.Utilities;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
@@ -80,7 +81,8 @@ public class RoomBookingService : IRoomBookingService
 
         var discount = await _discountRepository.GetHighestDiscountActiveForHotelRoomTypeAsync(room.HotelId, room.Type);
         
-        SetFinalTotalPrice(newBooking, room, discount);
+        // SetFinalTotalPrice(newBooking, room, discount);
+        // newBooking.TotalPrice = DiscountedPriceCalculator.GetFinalDiscountedPrice(
 
         var bookingId = await _roomBookingRepository.AddAsync(newBooking);
     
@@ -116,7 +118,13 @@ public class RoomBookingService : IRoomBookingService
         {
             var room = await _roomService.GetByIdAsync(booking.RoomId);
             var discount = await _discountRepository.GetHighestDiscountActiveForHotelRoomTypeAsync(room.HotelId, room.Type);
-            SetFinalTotalPrice(booking, room, discount);
+
+            booking.TotalPrice = DiscountedPriceCalculator.GetFinalDiscountedPrice(
+                booking.CheckInDate,
+                booking.CheckOutDate,
+                room.PricePerNight,
+                discount.AmountPercentage);
+
             _logger.LogInformation("Booking with Id: {Id} has been added to User {UserId}, with Discount {Discount}%", booking.Id, cart.UserId, discount.AmountPercentage);
             await SchduleSendingBookingEndedEmailJob(booking);
         }
@@ -211,17 +219,6 @@ public class RoomBookingService : IRoomBookingService
 
     public async Task<bool> RoomIsBookedBetween(Guid roomId, DateTime StartingDate, DateTime EndingDate) =>
         await _roomBookingRepository.RoomIsBookedBetween(roomId, StartingDate, EndingDate);
-    
-    private void SetFinalTotalPrice(RoomBookingDTO booking, RoomDTO room, DiscountDTO discount)
-    {
-        var discountPercentage = discount?.AmountPercentage ?? 0; // temp sol, make sure to include 0% by default to db.
-        var originalPrice = ((booking.CheckOutDate - booking.CheckInDate).Days + 1) * room.PricePerNight;
-        var discountedPrice = ApplyDiscount(originalPrice, discountPercentage);
-        booking.TotalPrice = discountedPrice;
-    }
-
-    private static decimal ApplyDiscount(int originalPrice, decimal discountPercentage) =>
-        originalPrice - (originalPrice * (discountPercentage / 100));
 
     public async Task<IEnumerable<BookingUserResponseDTO>> SearchUserBookingsAsync(
         BookingSearchQuery query,

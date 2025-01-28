@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
+using TABP.Application.Utilities;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Constants.Image;
@@ -132,26 +133,12 @@ public class RoomService : IRoomService
         var discount = await _discountRepository
             .GetHighestDiscountActiveForHotelRoomTypeAsync(room.HotelId, room.Type);
         
-        return GetCalculatedDiscount(
-            discount,
-            room,
+        return DiscountedPriceCalculator.GetFinalDiscountedPrice(
             checkInDate,
-            checkOutDate);
+            checkOutDate,
+            room.PricePerNight,
+            discount.AmountPercentage);
     }
-
-    private decimal GetCalculatedDiscount(
-        DiscountDTO discount,
-        RoomDTO room,
-        DateTime checkInDate,
-        DateTime checkOutDate)
-    {
-        var discountPercentage = discount?.AmountPercentage ?? 0;
-        var originalPrice = ((checkInDate - checkOutDate).Days + 1) * room.PricePerNight;
-        return ApplyDiscount(originalPrice, discountPercentage);
-    }
-
-    private static decimal ApplyDiscount(int originalPrice, decimal discountPercentage) =>
-        originalPrice - (originalPrice * (discountPercentage / 100));
 
     public async Task AddImagesAsync(
         Guid roomId,
