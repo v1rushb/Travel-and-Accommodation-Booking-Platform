@@ -4,7 +4,6 @@ using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Hotel;
-using TABP.Domain.Models.Hotels;
 using TABP.Domain.Models.HotelVisit;
 
 namespace TABP.Application.Services;
@@ -26,26 +25,26 @@ public class HotelVisitService : IHotelVisitService
         _currentUserService = currentUserService;
     }
 
-    public async Task<Guid> AddAsync(HotelVisitDTO newHotelVisit)
+    public async Task AddAsync(HotelVisitDTO newHotelVisit)
     {
         var visitId = await _hotelVisitRepository.AddAsync(newHotelVisit);
 
         _logger.LogInformation("Added HotelVisit for HotelId: {HotelId}, UserId: {UserId}", newHotelVisit.HotelId, newHotelVisit.UserId);
         
-        return visitId;
+        // return visitId;
     }
 
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _hotelVisitRepository.ExistsAsync(Id);
 
-    public async Task<IEnumerable<HotelVisit>> GetByHotelAsync(Guid HotelId, DateTime? startDate = null, DateTime? endDate = null) =>
-        await _hotelVisitRepository.GetByHotelAsync(HotelId, startDate, endDate);
+    // public async Task<IEnumerable<HotelVisit>> GetByHotelAsync(Guid HotelId, DateTime? startDate = null, DateTime? endDate = null) =>
+    //     await _hotelVisitRepository.GetByHotelAsync(HotelId, startDate, endDate);
 
-    public async Task<IEnumerable<HotelVisit>> GetByUserAsync(Guid userId, DateTime? startDate = null, DateTime? endDate = null) =>
-        await _hotelVisitRepository.GetByUserAsync(userId, startDate, endDate);
+    // public async Task<IEnumerable<HotelVisit>> GetByUserAsync(Guid userId, DateTime? startDate = null, DateTime? endDate = null) =>
+    //     await _hotelVisitRepository.GetByUserAsync(userId, startDate, endDate);
     
-    public async Task<IEnumerable<HotelVisit>> GetByUserAndHotelAsync(Guid userId, Guid hotelId, DateTime? startDate = null, DateTime? endDate = null) =>
-        await _hotelVisitRepository.GetByUserAndHotelAsync(userId, hotelId, startDate, endDate);
+    // public async Task<IEnumerable<HotelVisit>> GetByUserAndHotelAsync(Guid userId, Guid hotelId, DateTime? startDate = null, DateTime? endDate = null) =>
+    //     await _hotelVisitRepository.GetByUserAndHotelAsync(userId, hotelId, startDate, endDate);
 
     public async Task<IEnumerable<VisitedHotelDTO>> GetTop5VisitedHotels(VisitTimeOptionQuery query)
     {

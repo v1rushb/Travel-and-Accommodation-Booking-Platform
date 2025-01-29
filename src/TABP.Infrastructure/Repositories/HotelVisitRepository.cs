@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Hotel;
-using TABP.Domain.Models.Hotels;
 using TABP.Domain.Models.HotelVisit;
 
 namespace TABP.Infrastructure.Repositories;
@@ -36,57 +35,6 @@ public class HotelVisitRepository : IHotelVisitRepository
 
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _context.HotelVisits.AnyAsync(visit => visit.Id == Id);
-
-    public async Task<IEnumerable<HotelVisit>> GetByHotelAsync(Guid hotelId, DateTime? startDate = null, DateTime? endDate = null)
-    {
-        var query = _context.HotelVisits
-            .Where(visit => visit.HotelId == hotelId);
-
-        query = ApplyDateFilter(query, startDate, endDate);
-
-        return await query.ToListAsync();
-    }
-
-    public async Task<IEnumerable<HotelVisit>> GetByUserAsync(Guid userId, DateTime? startDate = null, DateTime? endDate = null)
-    {
-        var query = _context.HotelVisits
-            .Where(visit => visit.UserId == userId);
-
-        query = ApplyDateFilter(query, startDate, endDate);
-
-        return await query.ToListAsync();
-    }
-
-    public async Task<IEnumerable<HotelVisit>> GetByUserAndHotelAsync(
-        Guid userId,
-        Guid hotelId,
-        DateTime? startDate = null,
-        DateTime? endDate = null)
-    {
-        var query = _context.HotelVisits
-            .Where(visit => visit.UserId == userId && visit.HotelId == hotelId);
-
-        query = ApplyDateFilter(query, startDate, endDate);
-
-        return await query.ToListAsync();
-    }
-
-    private IQueryable<HotelVisit> ApplyDateFilter(IQueryable<HotelVisit> visits, DateTime? startDate = null, DateTime? endDate = null)
-    {
-        if(startDate.HasValue)
-        {
-            visits = visits
-                .Where(visit => visit.CreationDate >= startDate.Value);
-        }
-
-        if(endDate.HasValue)
-        {
-            visits = visits
-                .Where(visit => visit.CreationDate <= endDate.Value);
-        }
-
-        return visits;
-    }
 
     public async Task<IEnumerable<VisitedHotelDTO>> GetTop5VisitedHotels(
         Expression<Func<HotelVisit, bool>> predicate)
