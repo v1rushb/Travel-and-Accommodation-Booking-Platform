@@ -1,28 +1,23 @@
-using System.Linq.Expressions;
-using System.Timers;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
-using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Application.Filters.ExpressionBuilders.Generics;
 using TABP.Application.Utilities;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Abstractions.Services.Booking;
+using TABP.Domain.Abstractions.Services.Room;
 using TABP.Domain.Entities;
 using TABP.Domain.Enums;
 using TABP.Domain.Models.Booking;
-using TABP.Domain.Models.Booking.Search;
-using TABP.Domain.Models.Booking.Search.Response;
 using TABP.Domain.Models.Cart;
-using TABP.Domain.Models.Discount;
 using TABP.Domain.Models.Email;
 using TABP.Domain.Models.HotelVisit;
 using TABP.Domain.Models.Pagination;
-using TABP.Domain.Models.Room;
 using TABP.Domain.Models.RoomBooking;
 using TABP.Domain.Models.User;
 
-namespace TABP.Application.Services;
+namespace TABP.Application.Services.Booking;
 
 public class RoomBookingService : IRoomBookingService
 {
@@ -65,7 +60,7 @@ public class RoomBookingService : IRoomBookingService
     }
     
     [Obsolete]
-    public async Task<Guid> AddAsync(RoomBookingDTO newBooking)
+    public async Task AddAsync(RoomBookingDTO newBooking)
     {
         var currentUserId = _currentUserService.GetUserId();
         newBooking.UserId = currentUserId;
@@ -88,7 +83,7 @@ public class RoomBookingService : IRoomBookingService
     
         _logger.LogInformation("Booking with Id: {Id} has been added to User {UserId}, with Discount {Discount}%", bookingId, currentUserId, discount.AmountPercentage);
         
-        return bookingId;
+        // return bookingId;
     }
 
     public async Task AddAsync(CartDTO cart)
@@ -169,18 +164,18 @@ public class RoomBookingService : IRoomBookingService
     public async Task<RoomBookingDTO> GetByIdAsync(Guid Id) =>
         await _roomBookingRepository.GetByIdAsync(Id);
 
-    public async Task<IEnumerable<RoomBooking>> GetByRoomAsync(Guid roomId) =>
-        await _roomBookingRepository.GetByRoomAsync(roomId);
+    // public async Task<IEnumerable<RoomBooking>> GetByRoomAsync(Guid roomId) =>
+    //     await _roomBookingRepository.GetByRoomAsync(roomId);
 
-    public async Task<IEnumerable<RoomBooking>> GetByUserAsync()
-    {
-        var currentUserId = _currentUserService.GetUserId();
-        var bookings = await _roomBookingRepository.GetByUserAsync(currentUserId);
+    // public async Task<IEnumerable<RoomBooking>> GetByUserAsync()
+    // {
+    //     var currentUserId = _currentUserService.GetUserId();
+    //     var bookings = await _roomBookingRepository.GetByUserAsync(currentUserId);
 
-        _logger.LogInformation("User {UserId} requested bookings for himself", currentUserId);
+    //     _logger.LogInformation("User {UserId} requested bookings for himself", currentUserId);
 
-        return bookings;
-    }
+    //     return bookings;
+    // }
 
     [Obsolete]
     public async Task UpdateAsync(RoomBookingDTO updatedBooking)
@@ -220,44 +215,11 @@ public class RoomBookingService : IRoomBookingService
     public async Task<bool> RoomIsBookedBetween(Guid roomId, DateTime StartingDate, DateTime EndingDate) =>
         await _roomBookingRepository.RoomIsBookedBetween(roomId, StartingDate, EndingDate);
 
-    public async Task<IEnumerable<BookingUserResponseDTO>> SearchUserBookingsAsync(
-        BookingSearchQuery query,
-        PaginationDTO pagination)
-    {
-        _paginationValidator.ValidateAndThrow(pagination);
-
-        var currentUserId = _currentUserService.GetUserId();
-        var expression = BookingExpressionBuilder.Build(query, currentUserId);
-
-        return await _roomBookingRepository.SearchUserBookingsAsync(
-            expression,
-            pagination.PageNumber,
-            pagination.PageSize);
-    }
-
-    public async Task<IEnumerable<BookingAdminResponseDTO>> SearchAdminAsync(
-        AdminBookingSearchQuery inQuery,
-        PaginationDTO pagination)
-    {
-        _paginationValidator.ValidateAndThrow(pagination);
-
-        var userId = inQuery.UserId;
-        var query = _mapper.Map<BookingSearchQuery>(inQuery);
-        
-        var expression = BookingExpressionBuilder.Build(query, userId);
-
-        return await _roomBookingRepository.SearchAdminAsync(
-            expression,
-            pagination.PageNumber,
-            pagination.PageSize);
-    }
-
     public async Task<IEnumerable<HotelBookingDTO>> GetByHotelAsync()
     {
         var timeOption = TimeOptions.LastWeek;
         var expression = TimeOptionExpressionBuilder<RoomBooking>.Build(new VisitTimeOptionQuery{ TimeOption = (int)timeOption });
         return await _roomBookingRepository
             .GetAllForHotelsAsync(expression);
-
     }
 }

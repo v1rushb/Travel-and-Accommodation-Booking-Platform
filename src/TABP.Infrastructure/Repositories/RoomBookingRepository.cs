@@ -2,7 +2,6 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using TABP.Domain.Models.CartItem;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Booking.Search.Response;
@@ -99,7 +98,7 @@ public class RoomBookingRepository : IRoomBookingRepository
         return _mapper.Map<IEnumerable<BookingUserResponseDTO>>(bookings);
     }
 
-    public async Task<IEnumerable<BookingAdminResponseDTO>> SearchAdminAsync(
+    public async Task<IEnumerable<RoomBookingDTO>> SearchAsync(
         Expression<Func<RoomBooking, bool>> predicate,
         int pageNumber,
         int pageSize)
@@ -110,7 +109,7 @@ public class RoomBookingRepository : IRoomBookingRepository
                 pageNumber,
                 pageSize);
 
-        return _mapper.Map<IEnumerable<BookingAdminResponseDTO>>(bookings);
+        return _mapper.Map<IEnumerable<RoomBookingDTO>>(bookings);
     }
 
     public async Task<IEnumerable<HotelBookingDTO>> GetAllForHotelsAsync(Expression<Func<RoomBooking, bool>> predicate)
@@ -125,4 +124,5 @@ public class RoomBookingRepository : IRoomBookingRepository
 
         return bookings;
     }
+
 }
