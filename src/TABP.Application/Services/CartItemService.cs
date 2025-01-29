@@ -1,8 +1,6 @@
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
-using TABP.Domain.Entities;
 using TABP.Domain.Exceptions;
 using TABP.Domain.Models.CartItem;
 
@@ -20,15 +18,13 @@ public class CartItemService : ICartItemService
         _cartItemRepository = cartItemRepository;
         _logger = logger;
     }
-    public async Task<Guid> AddAsync(CartItemDTO newCartItem)
+    public async Task AddAsync(CartItemDTO newCartItem)
     {
         // some validations here.
 
         var cartItemId = await _cartItemRepository.AddAsync(newCartItem);
 
         // _logger.LogInformation("Added CartItem for User: {UserId}, Room: {RoomId}", newCartItem.UserId, newCartItem.RoomId);
-        
-        return cartItemId;
     }
 
     public async Task DeleteAsync(Guid Id)
