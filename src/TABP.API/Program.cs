@@ -1,3 +1,4 @@
+using Serilog;
 using TABP.API.Extensions;
 using TABP.API.Extensions.DependencyInjection;
 using TABP.API.Middlewares;
@@ -19,6 +20,7 @@ builder.Services.RegisterInfrastructure(builder.Configuration);
 builder.Services.RegisterAuthentication(builder.Configuration);
 builder.Services.RegisterApplicationServices();
 builder.Services.RegisterUtilites();
+builder.Host.AddLoggingService();
 
 builder.Services.AddProblemDetails()
     .AddExceptionHandler<GlobalExceptionHandler>();
@@ -35,6 +37,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
