@@ -1,10 +1,8 @@
 using System.Linq.Expressions;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.HotelReview;
-using TABP.Domain.Models.HotelReview.Search.Response;
-using TABP.Domain.Models.Pagination;
 
-namespace TABP.Domain.Abstractions.Repositories;
+namespace TABP.Domain.Abstractions.Repositories.Review;
 
 public interface IHotelReviewRepository
 {
@@ -19,10 +17,9 @@ public interface IHotelReviewRepository
     Task UpdateAsync(HotelReviewDTO updatedReview);
     Task DeleteAsync(Guid reviewId);
     Task<double> GetAverageRatingByHotelAsync(Guid hotelId);
-    Task<IEnumerable<HotelReview>> GetReviewsByHotelAsync(Guid hotelId);
+    // Task<IEnumerable<HotelReview>> GetReviewsByHotelAsync(Guid hotelId);
     Task<IEnumerable<HotelReview>> GetReviewsByUserAsync(Guid userId);
     Task<bool> ExistsAsync(Guid reviewId, Guid? userId = null);
-    Task<HotelReview?> GetByUserAndHotelAsync(Guid userId, Guid hotelId);
-    Task<IEnumerable<HotelReviewUserResponseDTO>> SearchReviewsAsync(Expression<Func<HotelReview, bool>> predicate, int pageNumber, int pageSize);
-    Task<IEnumerable<HotelReviewAdminResponseDTO>> SearchReviewsForAdminAsync(Expression<Func<HotelReview, bool>> predicate, int pageNumber, int pageSize);
+    // Task<HotelReview?> GetByUserAndHotelAsync(Guid userId, Guid hotelId);
+    Task<IEnumerable<HotelReviewDTO>> SearchAsync(Expression<Func<HotelReview, bool>> predicate, int pageNumber, int pageSize);
 }

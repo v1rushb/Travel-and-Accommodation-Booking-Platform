@@ -2,12 +2,9 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using TABP.Domain.Abstractions.Repositories;
-using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Abstractions.Repositories.Review;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.HotelReview;
-using TABP.Domain.Models.HotelReview.Search.Response;
-using TABP.Domain.Models.Pagination;
 using TABP.Infrastructure.Extensions.Helpers;
 
 namespace TABP.Infrastructure.Repositories;
@@ -74,8 +71,8 @@ public class HotelReviewsRepository : IHotelReviewRepository
             .Select(review => (int) review.Rating)
             .AverageAsync(rating => rating);
     
-    public async Task<IEnumerable<HotelReview>> GetReviewsByHotelAsync(Guid hotelId) =>
-        await _context.HotelReviews.Where(review => review.HotelId == hotelId).ToListAsync();
+    // public async Task<IEnumerable<HotelReview>> GetReviewsByHotelAsync(Guid hotelId) =>
+    //     await _context.HotelReviews.Where(review => review.HotelId == hotelId).ToListAsync();
 
     public async Task<IEnumerable<HotelReview>> GetReviewsByUserAsync(Guid userId) =>
         await _context.HotelReviews
@@ -87,23 +84,11 @@ public class HotelReviewsRepository : IHotelReviewRepository
         await _context.HotelReviews
             .AnyAsync(review => (review.Id == Id) && (!userId.HasValue || (review.UserId == userId.Value)));
 
-    public async Task<HotelReview?> GetByUserAndHotelAsync(Guid userId, Guid hotelId) =>
-        await _context.HotelReviews
-            .FirstOrDefaultAsync(review => (review.UserId == userId) && (review.HotelId == hotelId));
+    // public async Task<HotelReview?> GetByUserAndHotelAsync(Guid userId, Guid hotelId) =>
+    //     await _context.HotelReviews
+    //         .FirstOrDefaultAsync(review => (review.UserId == userId) && (review.HotelId == hotelId));
 
-    public async Task<IEnumerable<HotelReviewUserResponseDTO>> SearchReviewsAsync(
-        Expression<Func<HotelReview, bool>> predicate,
-        int pageNumber,
-        int pageSize)
-    {
-        var reviews = await _context.HotelReviews
-            .Where(predicate)
-            .PaginateAsync(pageNumber, pageSize);
-        return _mapper
-            .Map<IEnumerable<HotelReviewUserResponseDTO>>(reviews);
-    }
-
-    public async Task<IEnumerable<HotelReviewAdminResponseDTO>> SearchReviewsForAdminAsync(
+    public async Task<IEnumerable<HotelReviewDTO>> SearchAsync(
         Expression<Func<HotelReview, bool>> predicate,
         int pageNumber,
         int pageSize)
@@ -113,6 +98,19 @@ public class HotelReviewsRepository : IHotelReviewRepository
             .PaginateAsync(pageNumber, pageSize);
             
         return _mapper
-            .Map<IEnumerable<HotelReviewAdminResponseDTO>>(reviews);
+            .Map<IEnumerable<HotelReviewDTO>>(reviews);
     }
+
+    // public async Task<IEnumerable<HotelReviewAdminResponseDTO>> SearchReviewsForAdminAsync(
+    //     Expression<Func<HotelReview, bool>> predicate,
+    //     int pageNumber,
+    //     int pageSize)
+    // {
+    //     var reviews = await _context.HotelReviews
+    //         .Where(predicate)
+    //         .PaginateAsync(pageNumber, pageSize);
+            
+    //     return _mapper
+    //         .Map<IEnumerable<HotelReviewAdminResponseDTO>>(reviews);
+    // }
 }
