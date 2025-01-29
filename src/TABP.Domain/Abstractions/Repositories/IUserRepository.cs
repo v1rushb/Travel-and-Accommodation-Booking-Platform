@@ -1,6 +1,4 @@
-using TABP.Domain.Entities;
 using TABP.Domain.Models.User;
-using TABP.Domain.Models.Users;
 
 namespace TABP.Domain.Abstractions.Repositories;
 

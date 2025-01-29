@@ -1,11 +1,9 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.User;
-using TABP.Domain.Models.Users;
 
 namespace TABP.Infrastructure.Repositories;
 

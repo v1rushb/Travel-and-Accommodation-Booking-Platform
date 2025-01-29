@@ -1,15 +1,13 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
-using TABP.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
-using TABP.Domain.Entities;
 using TABP.Domain.Enums;
 using TABP.Domain.Exceptions;
 using TABP.Domain.Models.Email;
 using TABP.Domain.Models.User;
 
-namespace TABP.Appllication.Services;
+namespace TABP.Application.Services;
 
 
 // very dirty, clean asap.
@@ -50,19 +48,19 @@ public class UserService : IUserService
             newUser.Username,
             newUser.Password
         );
-        
+
         var role = await _roleRepository.GetByNameAsync(nameof(RoleType.Admin));
         newUser.Roles.Add(role); // should never be null
 
         await SendWelcomeEmailAsync(newUser);
-        
+
         return await _userRepository.AddAsync(newUser);
     }
 
     public async Task<string> AuthenticateAsync(UserLoginDTO userLoginCredentials) // mayeb add fluent validation here?
     {
         await _userLoginValidator.ValidateAndThrowAsync(userLoginCredentials);
-        
+
         var storedUser = await ValidateUsername(userLoginCredentials.Username);
         ValidatePassword(
             userLoginCredentials.Password,
@@ -87,24 +85,24 @@ public class UserService : IUserService
     {
         var storedUser = await _userRepository.GetByUsernameWithRolesAsync(loginUsername);
 
-        return storedUser ?? 
+        return storedUser ??
             throw new InvalidUserCredentialsException();
     }
 
     private void ValidatePassword(string loginPassword, string storedPassword, string username)
     {
-        var validationResult = _passwordHasher.VerifyHashedPassword( 
+        var validationResult = _passwordHasher.VerifyHashedPassword(
             username,
             storedPassword,
             loginPassword
         );
 
-        if(validationResult == PasswordVerificationResult.Failed)
+        if (validationResult == PasswordVerificationResult.Failed)
         {
             throw new InvalidUserCredentialsException();
         }
     }
-    
+
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _userRepository.ExistsAsync(Id);
 
