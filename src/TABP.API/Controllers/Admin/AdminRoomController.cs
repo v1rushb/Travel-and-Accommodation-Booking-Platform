@@ -8,23 +8,27 @@ using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Room;
 using TABP.Domain.Models.Room.Search;
 using TABP.Domain.Models.Room.Search.Response;
+using TABP.Domain.Enums;
 
-namespace TABP.API.Controllers.Room;
+namespace TABP.API.Controllers.Admin;
 
-// [Authorize]
+[Authorize(Roles = nameof(RoleType.Admin))]
 [ApiController]
 [Route("api/admin/rooms")] 
 public class RoomController : ControllerBase
 {
     private readonly IRoomService _roomService;
+    private readonly IRoomAdminService _roomAdminService;
     private readonly IMapper _mapper;
 
     public RoomController(
         IRoomService roomService,
+        IRoomAdminService roomAdminService,
         IMapper mapper)
     {
         _roomService = roomService;
         _mapper = mapper;
+        _roomAdminService = roomAdminService;
     }
 
     [HttpPost]
@@ -86,10 +90,18 @@ public class RoomController : ControllerBase
         [FromQuery] PaginationDTO pagination,
         [FromQuery] RoomSearchQuery query)
     {
-        var rooms = await _roomService.SearchAdminAsync(query, pagination);
+        var rooms = await _roomAdminService.SearchAsync(
+            query,
+            pagination
+        );
+
         var roomsCount = rooms.Count();
 
-        Response.Headers.AddPaginationHeaders(roomsCount, pagination);
+        Response.Headers
+            .AddPaginationHeaders(
+                roomsCount,
+                pagination
+            );
 
         return Ok(rooms);
     }

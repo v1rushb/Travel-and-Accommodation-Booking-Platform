@@ -1,30 +1,33 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Models.HotelReview;
 using Microsoft.AspNetCore.JsonPatch;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.HotelReview.Search;
 using TABP.API.Extensions;
+using TABP.Domain.Abstractions.Services.Review;
 
 namespace TABP.API.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/user/reviews")]
+[Route("api/hotel-reviews")]
 public class ReviewsController : ControllerBase
 {
     private readonly IHotelReviewService _hotelReviewService;
+    private readonly IHotelReviewUserService _hotelReviewUserService;
     private readonly IMapper _mapper;
     private readonly ICurrentUserService _currentUserService;
 
     public ReviewsController(
         IHotelReviewService hotelReviewService,
+        IHotelReviewUserService hotelReviewUserService,
         IMapper mapper,
         ICurrentUserService currentUserService)
     {
         _hotelReviewService = hotelReviewService;
+        _hotelReviewUserService = hotelReviewUserService;
         _mapper = mapper;
         _currentUserService = currentUserService;
     }
@@ -47,15 +50,6 @@ public class ReviewsController : ControllerBase
 
         return Ok(reviews);
     }
-
-    // [HttpGet("{hotelId:guid}")]
-    // public async Task<IActionResult> SearchByHotelAsync(Guid hotelId)
-    // {
-    //     var currentUserId = _currentUserService.GetUserId();
-    //     var reviews = await _hotelReviewService.GetByUserAndHotelAsync(currentUserId, hotelId); 
-
-    //     return Ok(reviews);
-    // }
 
     [HttpPatch("{reviewId:guid}")]
     public async Task<IActionResult> PatchReviewAsync(
@@ -99,10 +93,19 @@ public class ReviewsController : ControllerBase
         [FromQuery] PaginationDTO pagination,
         [FromQuery] ReviewSearchQuery query) 
     {
-        var reviews = await _hotelReviewService.SearchReviewsAsync(query, pagination);
+        var reviews = await _hotelReviewUserService
+            .SearchAsync(
+                query,
+                pagination
+            );
+
         var reviewsCount = reviews.Count();
         
-        Response.Headers.AddPaginationHeaders(reviewsCount, pagination);
+        Response.Headers
+            .AddPaginationHeaders(
+                reviewsCount,
+                pagination
+            );
 
         return Ok(reviews);
     }

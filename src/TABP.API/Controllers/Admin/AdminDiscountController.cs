@@ -1,17 +1,20 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using TABP.Abstractions.Services;
 using TABP.Domain.Models.Discount;
 using TABP.Domain.Models.Discount.Search.Response;
 using Microsoft.AspNetCore.JsonPatch;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Discount.Search;
 using TABP.API.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using TABP.Domain.Enums;
+using TABP.Domain.Abstractions.Services;
 
-namespace TABP.API.Controllers;
+namespace TABP.API.Controllers.Admin;
 
+[Authorize(Roles = nameof(RoleType.Admin))]
 [ApiController]
-[Route("/api/discounts/admin")]
+[Route("/api/admin/discounts")]
 public class DiscountController : ControllerBase
 {
     private readonly IDiscountService _discountService;
@@ -44,14 +47,6 @@ public class DiscountController : ControllerBase
         return Ok(resultDiscount);
     }
 
-    [HttpDelete("{discountId:guid}")]
-    public async Task<IActionResult> DeleteDiscountAsync(Guid discountId)
-    {
-        await _discountService.DeleteAsync(discountId);
-
-        return NoContent();
-    }
-
     [HttpPatch("{discountId:guid}")]
     public async Task<IActionResult> PatchDiscountAsync(
         Guid discountId,
@@ -79,6 +74,13 @@ public class DiscountController : ControllerBase
         patchDoc.ApplyTo(discountToUpdate, ModelState);
 
         return discountToUpdate;
+    }
+
+    [HttpDelete("{discountId:guid}")]
+    public async Task<IActionResult> DeleteDiscountAsync(Guid discountId)
+    {
+        await _discountService.DeleteAsync(discountId);
+        return NoContent();
     }
 
     [HttpGet("search")]

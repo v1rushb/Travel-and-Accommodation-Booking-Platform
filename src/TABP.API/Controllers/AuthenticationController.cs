@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Enums;
 using TABP.Domain.Models.User;
 
 namespace TABP.API.Controllers;
@@ -55,8 +56,8 @@ public class AuthenticationController : ControllerBase
     public async Task<IActionResult> LogoutUserAsync()
     {
         var authHeader = Request.Headers.Authorization.FirstOrDefault();
-        // System.Console.WriteLine(authHeader);
-         if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+
+        if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
         {
             return Unauthorized(new { Message = "Invalid authorization header" });
         }
@@ -65,13 +66,12 @@ public class AuthenticationController : ControllerBase
         var handler = new JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(token);
 
-        var expUnixTime = long.Parse(jwtToken.Claims.First(c => c.Type == "exp").Value);
+        var expUnixTime = long.Parse(jwtToken.Claims.First(claim => claim.Type == "exp").Value);
         var expirationTime = DateTimeOffset.FromUnixTimeSeconds(expUnixTime);
         var remainingTime = expirationTime - DateTimeOffset.UtcNow;
 
         await _blacklistService.AddToBlacklistAsync(token, remainingTime);
 
-
-        return Ok(new { Message = "Successfully logged out" });
+        return Ok();
     }
 }

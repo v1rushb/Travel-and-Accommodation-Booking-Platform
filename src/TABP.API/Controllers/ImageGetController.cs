@@ -2,35 +2,40 @@ using Microsoft.AspNetCore.Mvc;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Models.Image;
 using SixLabors.ImageSharp;
+using TABP.Domain.Abstractions.Services.Hotel;
+using TABP.Domain.Abstractions.Services.City;
+using Microsoft.AspNetCore.Authorization;
+using TABP.Domain.Enums;
 
 namespace TABP.API.Controllers;
 
+// [Authorize(Roles = nameof(RoleType.Admin))]
+[Authorize]
 [ApiController]
 [Route("api")]
 public class ImageGetController : ControllerBase
 {
     private readonly IImageService _imageService;
-    private readonly IHotelService _hotelService;
-    private readonly ICityService _cityService;
-    private readonly IRoomService _roomService;
+    private readonly IHotelImageService _hotelImageService;
+    private readonly ICityImageService _cityImageService;
+    private readonly IRoomImageService _roomImageService;
 
     public ImageGetController(
         IImageService imageService,
-        IHotelService hotelService,
-        ICityService cityService,
-        IRoomService roomService)
+        IHotelImageService hotelImageService,
+        ICityImageService cityImageService,
+        IRoomImageService roomImageService)
     {
         _imageService = imageService;
-        _hotelService = hotelService;
-        _cityService = cityService;
-        _roomService = roomService;
+        _hotelImageService = hotelImageService;
+        _cityImageService = cityImageService;
+        _roomImageService = roomImageService;
     }
 
-    // private async Task<IActionResult> GetEntityImagesAsync()
     [HttpGet("hotel/{hotelId:guid}/images")]
     public async Task<IActionResult> GetHotelImagesIdsAsync(Guid hotelId)
     {
-        var imagesIds = await _hotelService
+        var imagesIds = await _hotelImageService
             .GetImageIdsForHotelAsync(hotelId);
 
         return Ok(imagesIds);
@@ -39,7 +44,7 @@ public class ImageGetController : ControllerBase
     [HttpGet("city/{cityId:guid}/images")]
     public async Task<IActionResult> GetCityImagesIdsAsync(Guid cityId)
     {
-        var imagesIds = await _cityService
+        var imagesIds = await _cityImageService
             .GetImageIdsForCityAsync(cityId);
 
         return Ok(imagesIds);
@@ -48,7 +53,7 @@ public class ImageGetController : ControllerBase
     [HttpGet("room/{roomId:guid}/images")]
     public async Task<IActionResult> GetRoomImagesIdsAsync(Guid roomId)
     {
-        var imagesIds = await _roomService
+        var imagesIds = await _roomImageService
             .GetImageIdsForRoomAsync(roomId);
 
         return Ok(imagesIds);

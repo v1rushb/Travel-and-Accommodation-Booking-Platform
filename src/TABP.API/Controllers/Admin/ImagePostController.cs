@@ -2,36 +2,40 @@ using Microsoft.AspNetCore.Mvc;
 using TABP.Domain.Abstractions.Services;
 using SixLabors.ImageSharp;
 using TABP.API.Extensions;
+using TABP.Domain.Abstractions.Services.Hotel;
+using TABP.Domain.Abstractions.Services.City;
+using Microsoft.AspNetCore.Authorization;
+using TABP.Domain.Enums;
 
-namespace TABP.API.Controllers;
+namespace TABP.API.Controllers.Admin;
 
+[Authorize(Roles = nameof(RoleType.Admin))]
 [ApiController]
 [Route("api")]
 public class ImageController : ControllerBase
 {
-    private readonly IHotelService _hotelService;
-    private readonly ICityService _cityService;
-    private readonly IRoomService _roomService;
+    private readonly IHotelImageService _hotelImageService;
+    private readonly ICityImageService _cityImageService;
+    private readonly IRoomImageService _roomImageService;
 
     public ImageController(
-        IHotelService hotelService,
-        ICityService cityService,
-        IRoomService roomService)
+        IHotelImageService hotelImageService,
+        ICityImageService cityImageService,
+        IRoomImageService roomImageService)
     {
-        _hotelService = hotelService;
-        _cityService = cityService;
-        _roomService = roomService;
+        _hotelImageService = hotelImageService;
+        _cityImageService = cityImageService;
+        _roomImageService = roomImageService;
     }
 
     [HttpPost("hotel/{hotelId:guid}/images")]
     public async Task<IActionResult> AddHotelImagesAsync(
         Guid hotelId, List<IFormFile> imagesForm)
     {
-        System.Console.WriteLine(imagesForm.Count);
         return await CreateEntityImagesAsync(
             hotelId, 
             imagesForm, 
-            _hotelService.AddImagesAsync
+            _hotelImageService.AddImagesAsync
         );
     }
 
@@ -43,7 +47,7 @@ public class ImageController : ControllerBase
         return await CreateEntityImagesAsync(
             cityId, 
             imagesForm, 
-            _cityService.AddImagesAsync
+            _cityImageService.AddImagesAsync
         );
     }
 
@@ -55,7 +59,7 @@ public class ImageController : ControllerBase
         return await CreateEntityImagesAsync(
             roomId, 
             imagesForm, 
-            _roomService.AddImagesAsync
+            _roomImageService.AddImagesAsync
         );
     }
     private async Task<IActionResult> CreateEntityImagesAsync(
