@@ -21,14 +21,12 @@ builder.Services.RegisterAuthentication(builder.Configuration);
 builder.Services.RegisterApplicationServices();
 builder.Services.RegisterUtilites();
 builder.Host.AddLoggingService();
+builder.Services.AddRateLimitingService();
 
 builder.Services.AddProblemDetails()
     .AddExceptionHandler<GlobalExceptionHandler>();
 
-
-
 var app = builder.Build();
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -40,6 +38,7 @@ if (app.Environment.IsDevelopment())
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseMiddleware<Blacklist>();
 app.UseAuthorization();
@@ -47,7 +46,8 @@ app.UseExceptionHandler();
 
 
 
-app.MapControllers();
+app.MapControllers()
+    .RequireRateLimiting(nameof(RateLimitingPolicies.FixedWindow));
 
 
 app.Run();
