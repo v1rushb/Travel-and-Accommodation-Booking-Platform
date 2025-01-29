@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
-using TABP.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Repositories;
+using TABP.Domain.Abstractions.Repositories.Review;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Models.Configurations;
 using TABP.Infrastructure.Cache;
@@ -35,6 +35,7 @@ public static class InfrastructureServicesRegistration
         services.AddTransient<ICacheEventService, RedisCacheEventService>();
         services.AddTransient<IEmailService, EmailService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IHotelUserRepository, HotelUserRepository>();
 
         AddEmailServices(services, configuration);
 
