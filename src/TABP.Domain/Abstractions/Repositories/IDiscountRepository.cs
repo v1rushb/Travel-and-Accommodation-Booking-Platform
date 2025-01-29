@@ -13,8 +13,9 @@ public interface IDiscountRepository
     Task UpdateAsync(DiscountDTO updatedDiscount);
     Task DeleteAsync(Guid Id);
     Task<bool> ExistsAsync(Guid Id);
-    Task<IEnumerable<Discount>> GetByHotelAsync(Guid hotelId);
+    // Task<IEnumerable<Discount>> GetByHotelAsync(Guid hotelId);
     Task<DiscountDTO> GetHighestDiscountActiveForHotelRoomTypeAsync(Guid hotelId, RoomType type);
+    //change to searchasync only.
     Task<IEnumerable<DiscountForAdminResponseDTO>> SearchForAdminAsync(Expression<Func<Discount, bool>> expression, int pageNumber, int pageSize);
     Task<IEnumerable<DiscountDTO>> GetActiveDiscountsForHotelAsync(Guid hotelId);
 }

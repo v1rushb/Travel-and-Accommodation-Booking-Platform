@@ -1,11 +1,7 @@
 using FluentValidation;
-using FluentValidation.Internal;
 using Microsoft.Extensions.Logging;
-using TABP.Abstractions.Services;
-using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
-using TABP.Domain.Entities;
-using TABP.Domain.Enums;
+using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Models.Discount;
 using TABP.Domain.Models.Discount.Search;
 using TABP.Domain.Models.Discount.Search.Response;
@@ -31,11 +27,11 @@ public class DiscountService : IDiscountService
         _discountValidator = discountValidator;
         _paginationValidator = paginationValidator;
     }
-    public async Task<Guid> AddAsync(DiscountDTO newDiscount)
+    public async Task AddAsync(DiscountDTO newDiscount)
     {
         await _discountValidator.ValidateAndThrowAsync(newDiscount);
 
-        return await _discountRepository.AddAsync(newDiscount);
+        await _discountRepository.AddAsync(newDiscount);
     }
 
     public async Task DeleteAsync(Guid Id)
@@ -68,8 +64,8 @@ public class DiscountService : IDiscountService
             throw new KeyNotFoundException($"Id {Id} Does not exist.");
     }
 
-    public async Task<IEnumerable<Discount>> GetByHotelAsync(Guid hotelId) => // do some validations?
-        await _discountRepository.GetByHotelAsync(hotelId);
+    // public async Task<IEnumerable<Discount>> GetByHotelAsync(Guid hotelId) => // do some validations?
+    //     await _discountRepository.GetByHotelAsync(hotelId);
 
     public async Task<IEnumerable<DiscountForAdminResponseDTO>> SearchForAdminAsync(
         DiscountSearchQuery query,
