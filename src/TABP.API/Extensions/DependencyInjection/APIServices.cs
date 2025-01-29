@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using TABP.API.Utilities.Injectable;
 using TABP.Domain.Models.Configurations;
 
@@ -36,7 +37,7 @@ internal static class APIServices
         return services;
     }
 
-    private static void SetTokenValidationParameters(
+    public static void SetTokenValidationParameters(
         JwtBearerOptions options, JWTConfigurations jwtConfig
     )
     {
@@ -54,5 +55,11 @@ internal static class APIServices
                 Encoding.UTF8.GetBytes(jwtConfig.Key)),
             ClockSkew = TimeSpan.Zero
         };
+    }
+
+    public static void AddLoggingService(this IHostBuilder builder)
+    {
+         builder.UseSerilog((context, config) =>
+            config.ReadFrom.Configuration(context.Configuration));
     }
 }
