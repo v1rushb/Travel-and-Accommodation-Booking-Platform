@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Cart;
-using TABP.Domain.Models.Cart.Search;
 using TABP.Domain.Models.Cart.Search.Response;
 using TABP.Domain.Models.CartItem;
 

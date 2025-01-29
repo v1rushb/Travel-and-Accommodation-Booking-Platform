@@ -1,18 +1,17 @@
-using System.Reflection.Metadata.Ecma335;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
-using TABP.Domain.Entities;
+using TABP.Domain.Abstractions.Services.Booking;
+using TABP.Domain.Abstractions.Services.Cart;
 using TABP.Domain.Enums;
 using TABP.Domain.Models.Cart;
-using TABP.Domain.Models.Cart.Search;
 using TABP.Domain.Models.Cart.Search.Response;
 using TABP.Domain.Models.CartItem;
 using TABP.Domain.Models.Pagination;
 
-namespace TABP.Application.Services;
+namespace TABP.Application.Services.Cart;
+
 
 public class CartService : ICartService
 {
@@ -34,7 +33,6 @@ public class CartService : ICartService
         IValidator<CartItemDTO> cartItemValidator,
         IValidator<PaginationDTO> paginationValidator,
         IRoomService roomService,
-        IDiscountRepository discountRepository,
         IUnitOfWork unitOfWork)
     {
         _cartRepository = cartRepository;
@@ -195,17 +193,6 @@ public class CartService : ICartService
         return cartItems;
     }
 
-    public async Task<IEnumerable<CartAdminResponseDTO>> SearchCartsAsync(
-        PaginationDTO pagination,
-        CartSearchQuery query)
-    {
-        var predicate = CartExpressionBuilder.Build(query);
-        return await _cartRepository.SearchAdminAsync(
-            predicate,
-            pagination.PageNumber,
-            pagination.PageSize);
-    }
-
     public async Task<CartUserResponseDTO> GetCurrentCartDetailsAsync()
     {
         var currentUserId = _currentUserService.GetUserId();
@@ -225,7 +212,7 @@ public class CartService : ICartService
             x+= price;
         }
         cart.TotalPrice = x;
-
+        // await _cartRepository.UpdateAsync(cart);
         return cart;
     }
 }
