@@ -3,8 +3,10 @@ using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using SixLabors.ImageSharp;
-using TABP.Abstractions.Services;
 using TABP.Application.Services;
+using TABP.Application.Services.Booking;
+using TABP.Application.Services.Cart;
+using TABP.Application.Services.City;
 using TABP.Application.Vaildator.Images;
 using TABP.Application.Validators.Booking;
 using TABP.Application.Validators.Cart;
@@ -18,6 +20,12 @@ using TABP.Application.Validators.Room;
 using TABP.Application.Validators.User;
 using TABP.Appllication.Services;
 using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Abstractions.Services.Booking;
+using TABP.Domain.Abstractions.Services.Cart;
+using TABP.Domain.Abstractions.Services.City;
+using TABP.Domain.Abstractions.Services.Hotel;
+using TABP.Domain.Abstractions.Services.Review;
+using TABP.Domain.Abstractions.Services.Room;
 using TABP.Domain.Models.CartItem;
 using TABP.Domain.Models.City;
 using TABP.Domain.Models.Discount;
@@ -38,23 +46,70 @@ public static class ApplicationServicesRegistration
         services.AddScoped<IUserService, UserService>();
         AddUserServiceDependencies(services);
 
-        services.AddScoped<IRoomService, RoomService>();
-        services.AddScoped<ICityService, CityService>();
+        AddHotelServices(services);
+
+        AddRoomServices(services);
+
+        AddCityServices(services);
+
+        AddReviewServices(services);
+
+        AddBookingServices(services);
+
+        AddCartServices(services);
 
         services.AddScoped<ICartItemService, CartItemService>();
-        services.AddScoped<ICityService, CityService>();
         services.AddScoped<IDiscountService, DiscountService>();
-        services.AddScoped<IHotelReviewService, HotelReviewService>();
-        services.AddScoped<IHotelService, HotelService>();
         services.AddScoped<IHotelVisitService, HotelVisitService>();
-        services.AddScoped<IRoomBookingService, RoomBookingService>();
-        services.AddScoped<IRoomService, RoomService>();
-        services.AddScoped<ICartService, CartService>();
         services.AddScoped<IImageService, ImageService>();
 
         AddValidators(services);
 
         return services;
+    }
+
+    private static void AddHotelServices(this IServiceCollection services)
+    {
+        services.AddScoped<IHotelAdminService, HotelAdminService>();
+        services.AddScoped<IHotelService, HotelService>();
+        services.AddScoped<IHotelUserService, HotelUserService>();
+        services.AddScoped<IHotelVisitService, HotelVisitService>();
+    }
+
+    private static void AddRoomServices(this IServiceCollection services)
+    {
+        services.AddScoped<IRoomService, RoomService>();
+        services.AddScoped<IRoomAdminService, RoomAdminService>();
+        services.AddScoped<IRoomUserService, RoomUserService>();
+        services.AddScoped<IRoomImageService, RoomImageService>();
+    }
+
+    private static void AddCityServices(this IServiceCollection services)
+    {
+        services.AddScoped<ICityService, CityService>();
+        services.AddScoped<ICityAdminService, CityAdminService>();
+        services.AddScoped<ICityUserService, CityUserService>();
+        services.AddScoped<ICityImageService, CityImageService>();
+    }
+
+    private static void AddReviewServices(this IServiceCollection services)
+    {
+        services.AddScoped<IHotelReviewService, HotelReviewService>();
+        services.AddScoped<IHotelReviewAdminService, HotelReviewAdminService>();
+        services.AddScoped<IHotelReviewUserService, HotelReviewUserService>();
+    }
+
+    private static void AddBookingServices(this IServiceCollection services)
+    {
+        services.AddScoped<IRoomBookingService, RoomBookingService>();
+        services.AddScoped<IRoomBookingAdminService, RoomBookingAdminService>();
+        services.AddScoped<IRoomBookingUserService, RoomBookingUserService>();
+    }
+
+    private static void AddCartServices(this IServiceCollection services)
+    {
+        services.AddScoped<ICartService, CartService>();
+        services.AddScoped<ICartAdminService, CartAdminService>();
     }
 
     private static void AddUserServiceDependencies(IServiceCollection services)
