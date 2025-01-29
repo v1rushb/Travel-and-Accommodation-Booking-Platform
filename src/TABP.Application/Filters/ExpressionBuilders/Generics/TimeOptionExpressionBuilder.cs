@@ -45,7 +45,6 @@ public static class TimeOptionExpressionBuilder<T> where T : class, IHasCreation
             TimeOptions.LastYear => DateTime.Now.AddYears(-1).Date,
             _ => null,
         };
-        System.Console.WriteLine(filterDate);
         return filterDate.HasValue ? visit =>
             visit.CreationDate.Date >= filterDate.Value
             : visit => true;
