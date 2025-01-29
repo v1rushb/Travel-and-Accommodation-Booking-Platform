@@ -1,8 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using TABP.API.Utilities.Injectable;
@@ -61,5 +63,26 @@ internal static class APIServices
     {
          builder.UseSerilog((context, config) =>
             config.ReadFrom.Configuration(context.Configuration));
+    }
+
+    public static void AddRateLimitingService(this IServiceCollection services)
+    {
+        services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+            options.AddPolicy(nameof(RateLimitingPolicies.FixedWindow), httpContext =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(), // hmm maybe consider the case of localhost and nginx?
+                    factory: partition => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 10,
+                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                        Window = TimeSpan.FromSeconds(3),
+                        QueueLimit = 4
+                    }
+                )
+            );
+        });
     }
 }
