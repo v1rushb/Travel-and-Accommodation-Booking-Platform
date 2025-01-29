@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
 using TABP.Application.Extensions;
 using TABP.Domain.Abstractions.Services.Generics;
-using TABP.Domain.Entities;
 using TABP.Domain.Enums;
 using TABP.Domain.Models.HotelVisit;
 
@@ -35,7 +34,7 @@ public static class TimeOptionExpressionBuilder<T> where T : class, IHasCreation
     {
         if(!query.TimeOption.HasValue)
             return visit => true;
-        
+
         var timeOption = Enum.Parse<TimeOptions>(query.TimeOption.ToString());
 
         DateTime? filterDate = timeOption switch
@@ -46,7 +45,7 @@ public static class TimeOptionExpressionBuilder<T> where T : class, IHasCreation
             TimeOptions.LastYear => DateTime.Now.AddYears(-1).Date,
             _ => null,
         };
-
+        System.Console.WriteLine(filterDate);
         return filterDate.HasValue ? visit =>
             visit.CreationDate.Date >= filterDate.Value
             : visit => true;

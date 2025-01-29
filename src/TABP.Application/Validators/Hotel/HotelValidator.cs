@@ -1,5 +1,6 @@
 using FluentValidation;
 using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Abstractions.Services.City;
 using TABP.Domain.Constants.Hotel;
 using TABP.Domain.Models.Hotel;
 

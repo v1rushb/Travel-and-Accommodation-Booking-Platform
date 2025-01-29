@@ -1,6 +1,6 @@
 using TABP.Domain.Entities;
 
-namespace TABP.Abstractions.Repositories;
+namespace TABP.Domain.Abstractions.Repositories;
 
 public interface IRoleRepository
 {

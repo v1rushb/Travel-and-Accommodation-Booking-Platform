@@ -1,7 +1,6 @@
 using FluentValidation;
 using TAB.Domain.Constants.Discount;
-using TABP.Domain.Abstractions.Repositories;
-using TABP.Domain.Enums;
+using TABP.Domain.Abstractions.Repositories.Review;
 using TABP.Domain.Models.Discount;
 
 namespace TABP.Application.Validators.Discount;

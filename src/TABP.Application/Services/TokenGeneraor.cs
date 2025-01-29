@@ -3,13 +3,10 @@ using TABP.Domain.Models.Configurations;
 using Microsoft.Extensions.Options;
 using TABP.Domain.Models.User;
 using TABP.Domain.Exceptions;
-using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
-using TABP.Domain.Entities;
-using Microsoft.Extensions.Logging;
 
 namespace TABP.Appllication.Services;
 

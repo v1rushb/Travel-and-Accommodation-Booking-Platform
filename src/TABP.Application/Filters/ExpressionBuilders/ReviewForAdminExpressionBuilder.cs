@@ -13,7 +13,6 @@ public static class ReviewForAdminExpressionBuilder
     {
         var filter = Expressions.True<HotelReview>();
 
-        System.Console.WriteLine(query.UserId.GetValueOrDefault());
 
         filter = 
             filter.AndIf(HasValidSearchTerm(query),

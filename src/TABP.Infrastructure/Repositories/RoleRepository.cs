@@ -1,6 +1,5 @@
-using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
-using TABP.Abstractions.Repositories;
+using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 
 namespace TABP.Infrastructure.Repositories;
