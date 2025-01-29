@@ -14,17 +14,14 @@ namespace TABP.API.Controllers;
 public class VisitsController : ControllerBase
 {
     private readonly IHotelVisitService _visitService;
-    private readonly IHotelService _hotelService;
     private readonly IHotelUserService _hotelUserService;
 
 
     public VisitsController(
         IHotelVisitService historyService,
-        IHotelService hotelService,
         IHotelUserService hotelUserService)
     {
         _visitService = historyService;
-        _hotelService = hotelService;
         _hotelUserService = hotelUserService;
     }
 
