@@ -14,11 +14,14 @@ namespace TABP.API.Controllers.Admin;
 public class AdminBookingsController : ControllerBase
 {
     private readonly IRoomBookingAdminService _roomBookingAdminService;
+    private readonly ILogger<AdminBookingsController> _logger;
 
     public AdminBookingsController(
-        IRoomBookingAdminService roomBookingAdminService)
+        IRoomBookingAdminService roomBookingAdminService,
+        ILogger<AdminBookingsController> logger)
     {
         _roomBookingAdminService = roomBookingAdminService;
+        _logger = logger;
     }
 
     [HttpGet("search")]
@@ -33,6 +36,8 @@ public class AdminBookingsController : ControllerBase
             );
             
         var bookingCount = bookings.Count();
+
+        _logger.LogInformation("Found {Count} bookings for the specified query", bookingCount);
 
         Response.Headers
             .AddPaginationHeaders(

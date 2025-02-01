@@ -1,4 +1,3 @@
-using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using TABP.Application.Filters.ExpressionBuilders.Generics;
@@ -6,14 +5,12 @@ using TABP.Application.Utilities;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Abstractions.Services.Booking;
-using TABP.Domain.Abstractions.Services.Room;
 using TABP.Domain.Entities;
 using TABP.Domain.Enums;
 using TABP.Domain.Models.Booking;
 using TABP.Domain.Models.Cart;
 using TABP.Domain.Models.Email;
 using TABP.Domain.Models.HotelVisit;
-using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.RoomBooking;
 using TABP.Domain.Models.User;
 
@@ -24,11 +21,8 @@ public class RoomBookingService : IRoomBookingService
     private readonly IRoomBookingRepository _roomBookingRepository;
     private readonly ILogger<RoomBookingService> _logger;
     private readonly IValidator<RoomBookingDTO> _bookingValidator;
-    private readonly ICurrentUserService _currentUserService;
     private readonly IDiscountRepository _discountRepository;
     private readonly IRoomService _roomService;
-    private readonly IValidator<PaginationDTO> _paginationValidator;
-    private readonly IMapper _mapper;
     private readonly ICacheEventService _cacheEventService;
     private readonly IEmailService _emailService;
     private readonly IUserRepository _userRepository;
@@ -36,57 +30,24 @@ public class RoomBookingService : IRoomBookingService
     public RoomBookingService(
         IRoomBookingRepository roomBookingRepository,
         ILogger<RoomBookingService> logger,
-        ICurrentUserService currentUserService,
         IDiscountRepository discountRepository,
         IRoomService roomService,
         IValidator<RoomBookingDTO> bookingValidator,
-        IValidator<PaginationDTO> paginationValidator,
-        IMapper mapper,
         ICacheEventService cacheEventService,
         IEmailService emailService,
         IUserRepository userRepository)
     {
         _roomBookingRepository = roomBookingRepository;
         _logger = logger;
-        _currentUserService = currentUserService;
         _discountRepository = discountRepository;
         _roomService = roomService;
         _bookingValidator = bookingValidator;
-        _paginationValidator = paginationValidator;
-        _mapper = mapper;
         _cacheEventService = cacheEventService;
         _emailService = emailService;
         _userRepository = userRepository;
     }
     
-    [Obsolete]
-    public async Task AddAsync(RoomBookingDTO newBooking)
-    {
-        var currentUserId = _currentUserService.GetUserId();
-        newBooking.UserId = currentUserId;
-
-
-        await _bookingValidator.ValidateAndThrowAsync(newBooking);
-
-        newBooking.CreationDate = DateTime.UtcNow;
-        newBooking.ModificationDate = DateTime.UtcNow;
-        newBooking.Status = BookingStatus.Confirmed;
-
-        var room = await _roomService.GetByIdAsync(newBooking.RoomId);
-
-        var discount = await _discountRepository.GetHighestDiscountActiveForHotelRoomTypeAsync(room.HotelId, room.Type);
-        
-        // SetFinalTotalPrice(newBooking, room, discount);
-        // newBooking.TotalPrice = DiscountedPriceCalculator.GetFinalDiscountedPrice(
-
-        var bookingId = await _roomBookingRepository.AddAsync(newBooking);
-    
-        _logger.LogInformation("Booking with Id: {Id} has been added to User {UserId}, with Discount {Discount}%", bookingId, currentUserId, discount.AmountPercentage);
-        
-        // return bookingId;
-    }
-
-    public async Task AddAsync(CartDTO cart)
+    public async Task AddAsync(CartDTO cart) // refactor method later.
     {
         var items = cart.Items;
         var bookings = new List<RoomBookingDTO>();
@@ -98,13 +59,13 @@ public class RoomBookingService : IRoomBookingService
                 RoomId = item.RoomId,
                 CheckInDate = item.CheckInDate,
                 CheckOutDate = item.CheckOutDate,
-                Status = BookingStatus.Confirmed, // remove later.
+                Status = BookingStatus.Confirmed,
                 CreationDate = DateTime.UtcNow,
                 ModificationDate = DateTime.UtcNow,
                 Notes = item.Notes,
             };
 
-            // await _bookingValidator.ValidateAndThrowAsync(booking);
+            await _bookingValidator.ValidateAndThrowAsync(booking);
 
             bookings.Add(booking);
         }
@@ -120,7 +81,8 @@ public class RoomBookingService : IRoomBookingService
                 room.PricePerNight,
                 discount.AmountPercentage);
 
-            _logger.LogInformation("Booking with Id: {Id} has been added to User {UserId}, with Discount {Discount}%", booking.Id, cart.UserId, discount.AmountPercentage);
+            // _logger.LogInformation("Booking with Id: {Id} has been added to User {UserId}, with Discount {Discount}%", booking.Id, cart.UserId, discount.AmountPercentage);
+            
             await SchduleSendingBookingEndedEmailJob(booking);
         }
         await _roomBookingRepository.AddAsync(bookings); // just adds range of bookings.
@@ -128,70 +90,38 @@ public class RoomBookingService : IRoomBookingService
 
     private async Task SchduleSendingBookingEndedEmailJob(RoomBookingDTO booking)
     {
-        var user = await GetCorrespondingUser(booking);
+        var user = await GetCorrespondingUser(booking.UserId);
         var timeToSendEmail = booking.CheckOutDate - DateTime.UtcNow;
         await _cacheEventService.ScheduleExpirationAsync(
             new Guid().ToString(),
             timeToSendEmail,
-            async () => await SendEndBookingEmailToUser(user, booking.Id)
+            async () => await SendEndBookingEmailToUser(user)
         );
+        _logger.LogInformation("An Email has been scheduled to be sent to the user {UserId} at {CheckOutDate}", booking.UserId, booking.CheckOutDate);
     }
 
-    private async Task<UserDTO> GetCorrespondingUser(RoomBookingDTO booking) =>
-        await _userRepository.GetByIdAsync(booking.UserId);
-    private async Task SendEndBookingEmailToUser(UserDTO recipient, Guid bookingId)
+    private async Task<UserDTO> GetCorrespondingUser(Guid userId) =>
+        await _userRepository.GetByIdAsync(userId);
+    private async Task SendEndBookingEmailToUser(UserDTO recipient)
     {
         await _emailService.SendAsync(new EmailDTO
         {
             RecipientEmail = recipient.Email,
             RecipientName = recipient.FirstName,
             Subject = "Your booking has ended",
-            Body = $"Your booking with Id {bookingId} has ended."
+            Body = $"Your booking For Hotel ........." 
         });
+
+        _logger.LogInformation("Email sent to {RecipientEmail} Regarding his booking", recipient.Email);
     }
 
-    [Obsolete]
-    public async Task DeleteAsync(Guid Id)
+    public async Task<RoomBookingDTO> GetByIdAsync(Guid Id)
     {
-        var currentUserId = _currentUserService.GetUserId();
-
-        await ValidateOwnership(Id, currentUserId);
-
-        await _roomBookingRepository.DeleteAsync(Id);
-        _logger.LogInformation("Booking with Id: {Id} has been deleted from User {UserId}", Id, currentUserId);
+        await ValidateId(Id);
+        return await _roomBookingRepository
+            .GetByIdAsync(Id);
     }
 
-    public async Task<RoomBookingDTO> GetByIdAsync(Guid Id) =>
-        await _roomBookingRepository.GetByIdAsync(Id);
-
-    // public async Task<IEnumerable<RoomBooking>> GetByRoomAsync(Guid roomId) =>
-    //     await _roomBookingRepository.GetByRoomAsync(roomId);
-
-    // public async Task<IEnumerable<RoomBooking>> GetByUserAsync()
-    // {
-    //     var currentUserId = _currentUserService.GetUserId();
-    //     var bookings = await _roomBookingRepository.GetByUserAsync(currentUserId);
-
-    //     _logger.LogInformation("User {UserId} requested bookings for himself", currentUserId);
-
-    //     return bookings;
-    // }
-
-    [Obsolete]
-    public async Task UpdateAsync(RoomBookingDTO updatedBooking)
-    {
-        await ValidateId(updatedBooking.Id); // do more proper validation.
-
-        var currentUserId = _currentUserService.GetUserId();
-        var booking = await GetByIdAsync(updatedBooking.Id);
-        
-        await ValidateOwnership(booking.Id, currentUserId);
-
-        updatedBooking.ModificationDate = DateTime.UtcNow;
-        await _roomBookingRepository.UpdateAsync(updatedBooking);
-
-        _logger.LogInformation("Updated RoomBooking with Id: {BookingId}", updatedBooking.Id);
-    }
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _roomBookingRepository.ExistsAsync(Id);
 
@@ -200,15 +130,6 @@ public class RoomBookingService : IRoomBookingService
         if (!await ExistsAsync(Id))
         {
             throw new KeyNotFoundException("Booking does not exist.");
-        }
-    }
-
-    private async Task ValidateOwnership(Guid bookingId, Guid currentUserId) 
-    {
-        var booking = await GetByIdAsync(bookingId);
-        if(booking == null || booking.UserId != currentUserId)
-        {
-            throw new KeyNotFoundException($"Booking with Id {bookingId} not found.");
         }
     }
 

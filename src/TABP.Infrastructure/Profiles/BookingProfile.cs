@@ -14,5 +14,6 @@ internal class BookingProfile : Profile
 
         CreateMap<RoomBooking, BookingUserResponseDTO>();
         CreateMap<RoomBooking, BookingAdminResponseDTO>();
+        CreateMap<RoomBookingDTO ,BookingAdminResponseDTO>();
     }
 }

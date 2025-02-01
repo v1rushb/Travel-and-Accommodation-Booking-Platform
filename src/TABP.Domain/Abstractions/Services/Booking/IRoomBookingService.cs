@@ -6,10 +6,7 @@ namespace TABP.Domain.Abstractions.Services.Booking;
 
 public interface IRoomBookingService
 {
-    Task AddAsync(RoomBookingDTO newBooking);
-    Task UpdateAsync(RoomBookingDTO updatedBooking);
     Task AddAsync(CartDTO Cart);
-    Task DeleteAsync(Guid Id);
     Task<RoomBookingDTO> GetByIdAsync(Guid Id);
     Task<bool> ExistsAsync(Guid Id);
     // Task<IEnumerable<RoomBooking>> GetByUserAsync();
