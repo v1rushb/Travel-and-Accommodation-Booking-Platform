@@ -3,7 +3,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TABP.Domain.Abstractions.Services;
-using TABP.Domain.Enums;
 using TABP.Domain.Models.User;
 
 namespace TABP.API.Controllers;
@@ -36,7 +35,10 @@ public class AuthenticationController : ControllerBase
     [HttpPost("user-register")]
     public async Task<IActionResult> RegisterUserAsync(UserRegisterationDTO newUser)
     {
-        await _userService.CreateAsync(_mapper.Map<UserDTO>(newUser));
+        await _userService
+            .CreateAsync(_mapper.Map<UserDTO>(newUser));
+
+        _logger.LogInformation("User {Username} has been registered successfully", newUser.Username);
 
         return Created();
     }
@@ -44,14 +46,15 @@ public class AuthenticationController : ControllerBase
     [HttpPost("user-login")]
     public async Task<IActionResult> LoginUserAsync(UserLoginDTO userLoginCredentials)
     {
-        var authenticationToken = await _userService.AuthenticateAsync(userLoginCredentials);
+        var authenticationToken = await _userService
+            .AuthenticateAsync(userLoginCredentials);
 
-        _logger.LogInformation($"User {userLoginCredentials.Username} logged in");
+        _logger.LogInformation("User {Username} has logged in successfully", userLoginCredentials.Username);
 
         return Ok(authenticationToken);
     }
 
-    [HttpPost("logout")] //refactor later.
+    [HttpPost("user-logout")] //refactor later.
     [Authorize]
     public async Task<IActionResult> LogoutUserAsync()
     {

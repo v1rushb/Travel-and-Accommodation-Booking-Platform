@@ -33,7 +33,9 @@ public class Blacklist
 
         if(await _blacklistService.IsTokenBlacklistedAsync(token))
         {
-            _logger.LogInformation("Token {Token} is blacklisted. and tried to access the System.", token);
+
+            _logger.LogWarning("User with Username {Username} tried to access resources with a blacklisted token",
+                context.User.Identity.Name);
             context.Response.StatusCode = StatusCodes.Status403Forbidden;
             await context.Response.WriteAsync("Token is blacklisted. Try to login again.");
             return;

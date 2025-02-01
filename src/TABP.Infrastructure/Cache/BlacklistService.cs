@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Services;
 
 namespace TABP.Infrastructure.Cache;
@@ -7,11 +8,13 @@ public class BlacklistService : IBlacklistService
 {
     private const string _blacklistKeyPrefix = "blacklist:";
     private readonly IDistributedCache _cache;
-
+    private readonly ILogger<BlacklistService> _logger;
     public BlacklistService(
-        IDistributedCache cache)
+        IDistributedCache cache,
+        ILogger<BlacklistService> logger)
     {
         _cache = cache;
+        _logger = logger;
     }
 
     public async Task AddToBlacklistAsync(
@@ -27,7 +30,7 @@ public class BlacklistService : IBlacklistService
                 AbsoluteExpirationRelativeToNow = expiration
             }
         );
-
+        _logger.LogInformation("A new token has been added to the blacklist");
     }
 
     public async Task<bool> IsTokenBlacklistedAsync(string token)
