@@ -1,5 +1,6 @@
 using AutoMapper;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Application.Filters.ExpressionBuilders.Generics;
 using TABP.Domain.Abstractions.Repositories;
@@ -13,7 +14,7 @@ using TABP.Domain.Models.Hotel.Search.Response;
 using TABP.Domain.Models.HotelVisit;
 using TABP.Domain.Models.Pagination;
 
-namespace TABP.Application.Services;
+namespace TABP.Application.Services.Hotel;
 
 public class HotelUserService : IHotelUserService
 {
@@ -25,6 +26,8 @@ public class HotelUserService : IHotelUserService
     private readonly IValidator<PaginationDTO> _paginationValidator;
     private readonly ICurrentUserService _currentUserService;
     private readonly IMapper _mapper;
+    private readonly ILogger<HotelUserService> _logger;
+
 
     public HotelUserService(
         IHotelRepository hotelRepository,
@@ -34,7 +37,8 @@ public class HotelUserService : IHotelUserService
         IHotelVisitRepository hotelVisitService,
         ICurrentUserService currentUserService,
         IRoomBookingService roomBookingService,
-        IMapper mapper)
+        IMapper mapper,
+        ILogger<HotelUserService> logger)
     {
         _hotelRepository = hotelRepository;
         _paginationValidator = paginationValidator;
@@ -44,6 +48,7 @@ public class HotelUserService : IHotelUserService
         _currentUserService = currentUserService;
         _roomBookingService = roomBookingService;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<IEnumerable<HotelUserResponseDTO>> SearchAsync(
@@ -59,6 +64,12 @@ public class HotelUserService : IHotelUserService
                 pagination.PageNumber,
                 pagination.PageSize
             );
+
+        _logger.LogInformation(
+            "Searching for Hotels with query {@HotelSearchQuery} by User {UserId}",
+            query,
+            _currentUserService.GetUserId());
+
         return _mapper.Map<IEnumerable<HotelUserResponseDTO>>(hotels);
     }
 

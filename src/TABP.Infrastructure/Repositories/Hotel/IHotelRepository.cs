@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Hotel;
@@ -12,13 +13,16 @@ public class HotelRepository : IHotelRepository
 {
     private readonly HotelBookingDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ILogger<HotelRepository> _logger;
 
     public HotelRepository(
         HotelBookingDbContext context,
-        IMapper mapper)
+        IMapper mapper,
+        ILogger<HotelRepository> logger)
     {
         _context = context;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<Guid> AddAsync(HotelDTO newHotel)
@@ -27,7 +31,8 @@ public class HotelRepository : IHotelRepository
         var entityEntry =  _context.Hotels.Add(hotel);
         await _context.SaveChangesAsync();
 
-        // _logger.LogInformation($"Created Hotel with Name: {hotel.Name}");
+        _logger.LogInformation("Added Hotel: {Name} With Hotel Id: {Id}", newHotel.Name, entityEntry.Entity.Id);
+
         return entityEntry.Entity.Id;
     }
 
@@ -37,7 +42,7 @@ public class HotelRepository : IHotelRepository
 
         await _context.SaveChangesAsync();
 
-        // _logger.LogInformation($"Hotel with Id: {Id} has been deleted");
+        _logger.LogInformation("Deleted Hotel With Id: {Id}", Id);
     }
 
     public async Task<bool> ExistsAsync(Guid Id) =>
@@ -53,6 +58,8 @@ public class HotelRepository : IHotelRepository
         var hotel = _mapper.Map<Hotel>(updatedHotel);
         _context.Hotels.Update(hotel);
         await _context.SaveChangesAsync();
+        
+        _logger.LogInformation("Updated Hotel: {Name} With Hotel Id: {Id}", updatedHotel.Name, hotel.Id);
     }
 
     public async Task<int> GetNextRoomNumberAsync(Guid hotelId) =>
