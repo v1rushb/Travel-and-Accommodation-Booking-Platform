@@ -1,6 +1,16 @@
 using AutoMapper;
+using TABP.Domain.Enums;
 using TABP.Domain.Models.Booking.Search;
+using TABP.Domain.Models.City.Response;
+using TABP.Domain.Models.City.Search;
+using TABP.Domain.Models.Hotel;
+using TABP.Domain.Models.Hotel.Search.Response;
+using TABP.Domain.Models.HotelReview;
 using TABP.Domain.Models.HotelReview.Search;
+using TABP.Domain.Models.HotelReview.Search.Response;
+using TABP.Domain.Models.Room;
+using TABP.Domain.Models.Room.Search.Response;
+using TABP.Domain.Models.RoomBooking;
 
 namespace TABP.Application.Profiles;
 
@@ -8,8 +18,17 @@ public class SearchProfile : Profile
 {
     public SearchProfile()
     {
-        // CreateMap<ReviewSearchQuery, AdminReviewSearchQuery>();
-        // CreateMap<AdminReviewSearchQuery, ReviewSearchQuery>();
         CreateMap<AdminBookingSearchQuery, BookingSearchQuery>();
+
+        CreateMap<HotelDTO, HotelUserResponseDTO>();
+        CreateMap<RoomBookingDTO, RoomAdminResponseDTO>();
+        CreateMap<CitySearchResponseDTO, CityAdminResponseDTO>();
+        CreateMap<HotelDTO, HotelAdminResponseDTO>();
+        CreateMap<HotelReviewDTO, HotelReviewUserResponseDTO>()
+            .ForMember(dest => dest.Rating,
+                opt => opt.MapFrom(src => (HotelRating)src.Rating));
+
+        CreateMap<RoomDTO, RoomUserResponseDTO>();
+        CreateMap<RoomDTO, RoomAdminResponseDTO>(); 
     }
 }
