@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 
@@ -7,9 +8,13 @@ namespace TABP.Infrastructure.Repositories;
 internal class RoleRepository : IRoleRepository
 {
     private readonly HotelBookingDbContext _context;
-    public RoleRepository(HotelBookingDbContext context)
+    private readonly ILogger<RoleRepository> _logger;
+    public RoleRepository(
+        HotelBookingDbContext context,
+        ILogger<RoleRepository> logger)
     {
         _context = context;
+        _logger = logger;
     }
     public async Task<Role> GetByNameAsync(string roleName)
     {
@@ -25,11 +30,16 @@ internal class RoleRepository : IRoleRepository
         var newRole = new Role
         {
             Name = roleName,
-            Description = String.Empty // empty for now.
+            Description = roleName
         };
 
-        _context.Roles.Add(newRole);
+        var entityEntry = _context.Roles.Add(newRole);
         await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Role {RoleName} has been added With Id: {RoleId}",
+            newRole.Name,
+            entityEntry.Entity.Id
+        );
 
         return newRole;
     }
