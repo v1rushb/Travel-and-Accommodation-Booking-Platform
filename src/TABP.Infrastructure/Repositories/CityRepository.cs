@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.City;
-using TABP.Domain.Models.City.Response;
 using TABP.Domain.Models.City.Search;
 using TABP.Infrastructure.Extensions.Helpers;
 
@@ -36,6 +35,10 @@ public class CityRepository : ICityRepository
 
         await _context.SaveChangesAsync();
 
+        _logger.LogInformation("City {Name} with Id {Id} has been added", 
+            newCity.Name,
+            entityEntry.Entity.Id);
+
         return entityEntry.Entity.Id;
     }
 
@@ -44,7 +47,9 @@ public class CityRepository : ICityRepository
         _context.Cities.Remove(new City { Id = Id});  
 
         await _context.SaveChangesAsync();
-        _logger.LogInformation($"City with discount Id: {Id} has been deleted");
+
+        _logger.LogInformation("City with Id {Id} has been deleted", 
+            Id);
     }
 
     public async Task<bool> ExistsAsync(Guid Id) =>
@@ -57,6 +62,9 @@ public class CityRepository : ICityRepository
     {
         _context.Cities.Update(_mapper.Map<City>(updatedCity));
         await _context.SaveChangesAsync();
+
+        _logger.LogInformation("City with Id {Id} has been updated", 
+            updatedCity.Id);
     }
     public async Task<IEnumerable<CitySearchResponseDTO>> SearchAsync(
         Expression<Func<City, bool>> predicate,
@@ -72,18 +80,6 @@ public class CityRepository : ICityRepository
 
             return _mapper.Map<IEnumerable<CitySearchResponseDTO>>(cities);
         }
-
-    public async Task<IEnumerable<CityAdminResponseDTO>> SearchForAdminAsync(
-        Expression<Func<City, bool>> predicate,
-        int pageNumber,
-        int pageSize) 
-    {
-        var cities = await _context.Cities
-            .Where(predicate)
-            .PaginateAsync(pageNumber, pageSize);
-
-        return _mapper.Map<IEnumerable<CityAdminResponseDTO>>(cities);
-    }
 
     public async Task<bool> ExistsByNameAndCountryAsync(string name, string country) => // check if could be replaced later.
         await _context.Cities

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Abstractions.Services.City;
@@ -9,10 +10,14 @@ namespace TABP.Application.Services.City;
 public class CityImageService : ICityImageService
 {
     private readonly IImageService _imageService;
+    private readonly ILogger<CityImageService> _logger;
 
-    public CityImageService(IImageService imageService)
+    public CityImageService(
+        IImageService imageService,
+        ILogger<CityImageService> logger)
     {
         _imageService = imageService;
+        _logger = logger;
     }
     
     public async Task AddImagesAsync(
@@ -23,6 +28,8 @@ public class CityImageService : ICityImageService
         await ValidateNumberOfImagesForCityAsync(cityId, images.Count());
 
         await _imageService.AddAsync(cityId, images);
+
+        _logger.LogInformation("{NumberOfImages} images added to the city {CityId}", images.Count(), cityId);
     }
 
     private async Task ValidateNumberOfImagesForCityAsync(
