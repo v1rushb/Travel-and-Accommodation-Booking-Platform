@@ -31,8 +31,16 @@ public class CartItemRepository : ICartItemRepository
         var entityEntry = _context.CartItems.Add(cartItem);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Added CartItem for User: {UserId}, Room: {RoomId}");
-        
+        _logger.LogInformation(@"Added CartItem with Id: {CartItemId}
+             for Room with Id: {RoomId} 
+             With Time Interval: {CheckInDate} - {CheckOutDate}",
+            
+            entityEntry.Entity.Id,
+            cartItem.RoomId,
+            cartItem.CheckInDate,
+            cartItem.CheckOutDate
+        );
+
         return entityEntry.Entity.Id;
     }
 
@@ -41,6 +49,7 @@ public class CartItemRepository : ICartItemRepository
         _context.CartItems.Remove(new CartItem { Id = Id});
 
         await _context.SaveChangesAsync();
+        
         _logger.LogInformation("Deleted CartItem with Id: {CartItemId}", Id);
     }
 
