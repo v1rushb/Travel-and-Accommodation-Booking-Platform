@@ -1,9 +1,10 @@
 using SixLabors.ImageSharp;
+using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Abstractions.Services.Hotel;
 using TABP.Domain.Constants.Image;
 using TABP.Domain.Exceptions;
 
-namespace TABP.Domain.Abstractions.Services;
+namespace TABP.Application.Services.Hotel;
 
 public class HotelImageService : IHotelImageService
 {
@@ -13,7 +14,7 @@ public class HotelImageService : IHotelImageService
     {
         _imageService = imageService;
     }
-    
+
     public async Task AddImagesAsync(
         Guid hotelId,
         IEnumerable<Image> images)
@@ -34,7 +35,7 @@ public class HotelImageService : IHotelImageService
         var numberOfStoredImages = await _imageService
             .GetCountAsync(hotelId);
 
-        if(numberOfStoredImages + numberOfImagesToAdd > 
+        if (numberOfStoredImages + numberOfImagesToAdd >
             ImageConstants.MaxNumberOfImages)
         {
             throw new EntityImageLimitExceededException();
@@ -49,7 +50,7 @@ public class HotelImageService : IHotelImageService
 
     private async Task ValidateId(Guid Id)
     {
-        if(!await _imageService.ExistsAsync(Id))
+        if (!await _imageService.ExistsAsync(Id))
             throw new KeyNotFoundException($"Id {Id} Does not exist.");
     }
 }
