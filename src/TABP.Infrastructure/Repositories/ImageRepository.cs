@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using TABP.Domain.Abstractions.Repositories;
@@ -16,12 +17,16 @@ public class ImageRepository : IImageRepository
             "Images");
     
     private readonly string _imageExtension = "jpeg";
+    private readonly ILogger<ImageRepository> _logger;
     
 
-    public ImageRepository(HotelBookingDbContext context)
+    public ImageRepository(
+        HotelBookingDbContext context,
+        ILogger<ImageRepository> logger)
     {
         _context = context;
         Directory.CreateDirectory(_mainDirectory);
+        _logger = logger;
     }
     public async Task AddAsync(
         Guid entityId,
@@ -29,24 +34,28 @@ public class ImageRepository : IImageRepository
     {
         var imageList = new List<ImageEntity>();
 
+        var logMessage = "";
         foreach(var image in images)
         {
             GenerateAndSaveImage(
                 image,
                 out var imageId,
-                out var imagePat
+                out var imagePath
             );
             var imageEntity = new ImageEntity
             {
                 Id = imageId,
-                Path = imagePat,
+                Path = imagePath,
                 EntityId = entityId
             };
             imageList.Add(imageEntity);
+            logMessage += $"Added Image with Id: {imageId} For Entity with Id: {entityId} With Path: {imagePath}";
         }
 
         await _context.Images.AddRangeAsync(imageList);
         await _context.SaveChangesAsync();
+
+        _logger.LogInformation(logMessage);
     }
     
     private void GenerateAndSaveImage(Image image,
