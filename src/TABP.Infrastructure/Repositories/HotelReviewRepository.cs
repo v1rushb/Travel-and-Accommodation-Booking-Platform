@@ -33,7 +33,12 @@ public class HotelReviewsRepository : IHotelReviewRepository
 
         var entityEntry = _context.HotelReviews.Add(review);
 
-        // _logger.LogInformation("Created Review with Id: {ReviewId}, HotelId: {HotelId}, UserId: {UserId}", review.Id, review.HotelId, review.UserId); // who?
+        _logger.LogInformation(@"Created Review with Id: {ReviewId}
+            For Hotel with Id: {HotelId}
+            By User with Id: {UserId}",
+            review.Id,
+            review.HotelId,
+            review.UserId);
         
         return entityEntry.Entity.Id;
     }
@@ -50,13 +55,18 @@ public class HotelReviewsRepository : IHotelReviewRepository
 
         _context.HotelReviews.Update(review);
 
-        //  _logger.LogInformation("Updated Review with Id: {ReviewId}", updatedReview.Id);
+         _logger.LogInformation("Updated Review with Id: {ReviewId}", 
+            updatedReview.Id
+        );
     }
 
     public async Task DeleteAsync(Guid reviewId)
     {
         _context.HotelReviews.Remove(new HotelReview { Id = reviewId });
-        _logger.LogInformation("Deleted Review with Id: {ReviewId}", reviewId);
+
+        _logger.LogInformation("Deleted Review with Id: {ReviewId}",
+            reviewId
+        );
     }
 
     public async Task<bool> ExistsByUserAndHotelAsync(Guid userId, Guid HotelId) =>
@@ -100,17 +110,4 @@ public class HotelReviewsRepository : IHotelReviewRepository
         return _mapper
             .Map<IEnumerable<HotelReviewDTO>>(reviews);
     }
-
-    // public async Task<IEnumerable<HotelReviewAdminResponseDTO>> SearchReviewsForAdminAsync(
-    //     Expression<Func<HotelReview, bool>> predicate,
-    //     int pageNumber,
-    //     int pageSize)
-    // {
-    //     var reviews = await _context.HotelReviews
-    //         .Where(predicate)
-    //         .PaginateAsync(pageNumber, pageSize);
-            
-    //     return _mapper
-    //         .Map<IEnumerable<HotelReviewAdminResponseDTO>>(reviews);
-    // }
 }

@@ -21,7 +21,7 @@ public class AdminReviewsControllers : ControllerBase
         _hotelReviewAdminService = hotelReviewAdminService;
     }
 
-    [HttpGet("hotel-reviews/search")]
+    [HttpGet("search")]
     public async Task<IActionResult> SearchHotelReviewsAsync(
         [FromQuery] PaginationDTO pagination,
         [FromQuery] AdminReviewSearchQuery query)

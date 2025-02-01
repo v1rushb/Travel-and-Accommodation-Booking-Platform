@@ -2,11 +2,12 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Models.HotelReview;
-using TABP.Domain.Models.Pagination;
 using TABP.Domain.Abstractions.Repositories.Review;
 using TABP.Domain.Entities;
+using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Abstractions.Services.Review;
 
-namespace TABP.Domain.Abstractions.Services.Review;
+namespace TABP.Application.Services.Review;
 
 public class HotelReviewService : IHotelReviewService
 {
@@ -14,7 +15,6 @@ public class HotelReviewService : IHotelReviewService
     private readonly ILogger<HotelReviewService> _logger;
     private readonly IValidator<HotelReviewDTO> _reviewValidator;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IValidator<PaginationDTO> _paginationValidator;
     private readonly IHotelRepository _hotelRepository;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -23,7 +23,6 @@ public class HotelReviewService : IHotelReviewService
         ILogger<HotelReviewService> logger,
         IValidator<HotelReviewDTO> reviewValidator,
         ICurrentUserService currentUserService,
-        IValidator<PaginationDTO> paginationValidator,
         IHotelRepository hotelRepository,
         IUnitOfWork unitOfWork)
     {
@@ -31,7 +30,6 @@ public class HotelReviewService : IHotelReviewService
         _logger = logger;
         _reviewValidator = reviewValidator;
         _currentUserService = currentUserService;
-        _paginationValidator = paginationValidator;
         _hotelRepository = hotelRepository;
         _unitOfWork = unitOfWork;
     }
@@ -48,12 +46,12 @@ public class HotelReviewService : IHotelReviewService
             .AddAsync(newReview);
 
         await UpdateHotelStarRatingAsync(
-            newReview.HotelId, 
+            newReview.HotelId,
             newRating: newReview.Rating);
 
         await _unitOfWork
             .SaveChangesAsync();
-        
+
         // return reviewId;
     }
 
@@ -70,10 +68,10 @@ public class HotelReviewService : IHotelReviewService
         await _hotelReviewRepository
             .DeleteAsync(Id);
 
-         await UpdateHotelStarRatingAsync(
-            persistedReview.HotelId, 
-            originalRating: persistedReview.Rating);
-    
+        await UpdateHotelStarRatingAsync(
+           persistedReview.HotelId,
+           originalRating: persistedReview.Rating);
+
         await _unitOfWork.SaveChangesAsync();
     }
 
@@ -105,7 +103,7 @@ public class HotelReviewService : IHotelReviewService
     public async Task UpdateAsync(HotelReviewDTO updatedReview)
     {
         await ValidateId(updatedReview.Id);
-        
+
         await ValidateOwnership(
             updatedReview.Id,
             _currentUserService.GetUserId()); // maybe move to fluentvalidation?
@@ -119,16 +117,16 @@ public class HotelReviewService : IHotelReviewService
             .UpdateAsync(updatedReview);
 
         await UpdateHotelStarRatingAsync(
-            updatedReview.HotelId, 
+            updatedReview.HotelId,
             newRating: updatedReview.Rating,
             originalRating: persistedReview.Rating);
 
         await _unitOfWork.SaveChangesAsync();
     }
-    
+
     private async Task ValidateId(Guid Id)
     {
-        if(! await ExistsAsync(Id))
+        if (!await ExistsAsync(Id))
         {
             throw new KeyNotFoundException($"Id {Id} Does not exist.");
         }
@@ -136,7 +134,7 @@ public class HotelReviewService : IHotelReviewService
 
     private async Task ValidateOwnership(Guid reviewId, Guid currentUserId)
     {
-        if(! await ExistsAsync(reviewId, currentUserId))
+        if (!await ExistsAsync(reviewId, currentUserId))
         {
             throw new KeyNotFoundException($"Review with Id {reviewId} does not exist for the current user.");
         }
@@ -149,12 +147,12 @@ public class HotelReviewService : IHotelReviewService
     // }
 
     private async Task UpdateHotelStarRatingAsync(
-        Guid hotelId, 
-        decimal? newRating = null, 
+        Guid hotelId,
+        decimal? newRating = null,
         decimal? originalRating = null)
     {
         var hotel = await _hotelRepository.GetByIdAsync(hotelId);
-        
+
         if (!newRating.HasValue && originalRating.HasValue)
         {
             hotel.StarRating -= originalRating.Value;
