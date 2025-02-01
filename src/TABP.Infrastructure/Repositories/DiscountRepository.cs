@@ -36,7 +36,10 @@ public class DiscountRepository : IDiscountRepository
         var entityEntry = _context.Discounts.Add(discount);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Created Discount with Id: {Id}, HotelId: {HotelId}", entityEntry.Entity.Id, entityEntry.Entity.HotelId);
+        _logger.LogInformation("Created Discount with Id: {Id}, For Hotel with Id: {HotelId}", 
+            entityEntry.Entity.Id,
+            entityEntry.Entity.HotelId
+        );
 
         return entityEntry.Entity.Id;
     }
@@ -46,7 +49,9 @@ public class DiscountRepository : IDiscountRepository
         _context.Discounts.Remove(new Discount { Id = Id});
 
         await _context.SaveChangesAsync();
-        _logger.LogInformation($"Discount with discount Id: {Id} has been deleted");
+
+        _logger.LogInformation("Deleted Discount with Id: {Id}", 
+            Id);
     }
 
     public async Task<DiscountDTO> GetByIdAsync(Guid Id) =>
@@ -61,7 +66,8 @@ public class DiscountRepository : IDiscountRepository
         _context.Discounts.Update(discount);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Updated Discount with Id: {Id}", updatedDiscount.Id);
+        _logger.LogInformation("Updated Discount with Id: {Id}", 
+            updatedDiscount.Id);
     }
 
     public async Task<bool> ExistsAsync(Guid Id) =>

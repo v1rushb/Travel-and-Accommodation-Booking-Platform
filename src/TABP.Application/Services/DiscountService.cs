@@ -15,17 +15,20 @@ public class DiscountService : IDiscountService
     private readonly ILogger<DiscountService> _logger;
     private readonly IValidator<DiscountDTO> _discountValidator;
     private readonly IValidator<PaginationDTO> _paginationValidator;
+    private readonly ICurrentUserService _currentUserService;
 
     public DiscountService(
        IDiscountRepository discountRepository,
        ILogger<DiscountService> logger,
        IValidator<DiscountDTO> discountValidator,
-       IValidator<PaginationDTO> paginationValidator)
+       IValidator<PaginationDTO> paginationValidator,
+       ICurrentUserService currentUserService)
     {
         _discountRepository = discountRepository;
         _logger = logger;
         _discountValidator = discountValidator;
         _paginationValidator = paginationValidator;
+        _currentUserService = currentUserService;
     }
     public async Task AddAsync(DiscountDTO newDiscount)
     {
@@ -74,6 +77,12 @@ public class DiscountService : IDiscountService
         _paginationValidator.ValidateAndThrow(pagination);
 
         var expression = DiscountForAdminExpressionBuilder.Build(query);
+
+        _logger.LogInformation(
+            "Searching for Discounts with query {@DiscountSearchQuery} by User {UserId}",
+            query,
+            _currentUserService.GetUserId());
+
         return await _discountRepository.SearchForAdminAsync(
             expression,
             pagination.PageNumber,
