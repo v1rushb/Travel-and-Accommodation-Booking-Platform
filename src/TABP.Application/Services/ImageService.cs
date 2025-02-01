@@ -7,7 +7,7 @@ using FluentValidation;
 
 namespace TABP.Application.Services;
 
-internal class ImageService : IImageService
+public class ImageService : IImageService
 {
     private readonly IImageRepository _imageRepository;
     private readonly IValidator<ImageSizeDTO> _imageSizeValidator;
