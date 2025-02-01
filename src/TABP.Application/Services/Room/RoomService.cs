@@ -2,9 +2,10 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using TABP.Application.Utilities;
 using TABP.Domain.Abstractions.Repositories;
+using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Models.Room;
 
-namespace TABP.Domain.Abstractions.Services;
+namespace TABP.Application.Services.Room;
 
 public class RoomService : IRoomService
 {
@@ -28,12 +29,12 @@ public class RoomService : IRoomService
         _discountRepository = discountRepository;
     }
 
-    public async Task AddAsync(RoomDTO newRoom) 
+    public async Task AddAsync(RoomDTO newRoom)
     {
         await _roomValidator.ValidateAndThrowAsync(newRoom);
 
         var nextRoomNumber = await _hotelRepository.GetNextRoomNumberAsync(newRoom.HotelId);
-        
+
         newRoom.Number = nextRoomNumber;
         var roomId = await _roomRepository.AddAsync(newRoom);
 
@@ -58,7 +59,7 @@ public class RoomService : IRoomService
 
     // public async Task<IEnumerable<RoomDTO>> GetRoomsByHotelAsync(Guid hotelId) =>
     //     await _roomRepository.GetRoomsByHotelAsync(hotelId);
-        
+
     public async Task<bool> RoomNumberExistsForHotelAsync(Guid hotelId, Guid RoomId) =>
         await _roomRepository.RoomExistsForHotelAsync(hotelId, RoomId);
 
@@ -72,7 +73,7 @@ public class RoomService : IRoomService
 
     private async Task ValidateId(Guid Id)
     {
-        if(!await ExistsAsync(Id))
+        if (!await ExistsAsync(Id))
         {
             throw new KeyNotFoundException($"Id {Id} Does not exist.");
         }
@@ -84,7 +85,7 @@ public class RoomService : IRoomService
 
         var discount = await _discountRepository
             .GetHighestDiscountActiveForHotelRoomTypeAsync(room.HotelId, room.Type);
-        
+
         return DiscountedPriceCalculator.GetFinalDiscountedPrice(
             checkInDate,
             checkOutDate,

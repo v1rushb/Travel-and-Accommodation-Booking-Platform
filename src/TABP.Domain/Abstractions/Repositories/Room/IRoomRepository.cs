@@ -16,5 +16,5 @@ public interface IRoomRepository
     Task<IEnumerable<Room>> GetRoomsByHotelAsync(Guid HotelId);
 
     Task<bool> RoomExistsForHotelAsync(Guid HotelId, Guid RoomId);
-    Task<IEnumerable<RoomAdminResponseDTO>> SearchAdminAsync(Expression<Func<Room, bool>> predicate, int pageNumber, int pageSize);
+    Task<IEnumerable<RoomDTO>> SearchAsync(Expression<Func<Room, bool>> predicate, int pageNumber, int pageSize);
 }

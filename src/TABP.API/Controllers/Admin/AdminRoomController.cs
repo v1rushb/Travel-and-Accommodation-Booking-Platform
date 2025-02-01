@@ -14,7 +14,7 @@ namespace TABP.API.Controllers.Admin;
 
 [Authorize(Roles = nameof(RoleType.Admin))]
 [ApiController]
-[Route("api/admin/rooms")] 
+[Route("api/admin/hotel-rooms")] 
 public class RoomController : ControllerBase
 {
     private readonly IRoomService _roomService;

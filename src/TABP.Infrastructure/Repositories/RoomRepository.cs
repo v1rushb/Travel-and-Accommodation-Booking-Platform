@@ -35,7 +35,14 @@ public class RoomRepository : IRoomRepository
         var entityEntry = _context.Rooms.Add(room);
         await _context.SaveChangesAsync();
 
-         _logger.LogInformation("Added Room: {Number}, HotelId: {HotelId}", entityEntry.Entity.Number, entityEntry.Entity.HotelId);
+         _logger.LogInformation(
+            @"Created Room: {Number} With Id: {RoomId}
+            for Hotel with Id: {HotelId}",
+
+            newRoom.Number,
+            entityEntry.Entity.Id,
+            newRoom.HotelId
+        );
         return entityEntry.Entity.Id;
     }
 
@@ -45,7 +52,9 @@ public class RoomRepository : IRoomRepository
 
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation($"Room with Id: {Id} has been deleted");
+        _logger.LogInformation("Deleted Room with Id: {Id}", 
+            Id
+        );
     }
 
     public async Task<bool> ExistsAsync(Guid Id) =>
@@ -64,13 +73,17 @@ public class RoomRepository : IRoomRepository
         var room = _mapper.Map<Room>(updatedRoom); 
         _context.Rooms.Update(room);
         await _context.SaveChangesAsync();
-        _logger.LogInformation("Updated Room: {Number}, Id: {Id}", updatedRoom.Number, updatedRoom.Id);
+        _logger.LogInformation(
+            @"Updated Room: {Number} With Id: {Id}",
+
+            updatedRoom.Number,
+            updatedRoom.Id); 
     }
 
     public async Task<bool> RoomExistsForHotelAsync(Guid HotelId, Guid RoomId) =>
         await _context.Rooms.AnyAsync(room => room.HotelId == HotelId && room.Id == RoomId);
 
-    public async Task<IEnumerable<RoomAdminResponseDTO>> SearchAdminAsync(
+    public async Task<IEnumerable<RoomAdminResponseDTO>> SearchAsync(
         Expression<Func<Room, bool>> predicate,
         int pageNumber,
         int pageSize)
