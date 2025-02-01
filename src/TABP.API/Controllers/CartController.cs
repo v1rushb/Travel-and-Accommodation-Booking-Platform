@@ -5,7 +5,9 @@ using TABP.Domain.Models.Pagination;
 using TABP.API.Extensions;
 using TABP.Domain.Abstractions.Services.Cart;
 
-// [Authorize(Roles = nameof(RoleType.User))]
+namespace TABP.API.Controllers;
+
+[Authorize(Roles = nameof(RoleType.User))]
 [Authorize]
 [ApiController]
 [Route("api/cart")]

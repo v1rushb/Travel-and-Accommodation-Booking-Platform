@@ -55,6 +55,8 @@ public class CartService : ICartService
             lastCart.Status = BookingStatus.Cancelled;
             lastCart.ModificationDate = DateTime.UtcNow;
 
+            _logger.LogInformation("Cart with Id {CartId} has been cancelled", lastCart.Id);
+
             await _cartRepository.UpdateAsync(lastCart);
         }
 
@@ -72,6 +74,8 @@ public class CartService : ICartService
         var newCartId = await _cartRepository.CreateAsync(newCart);
         newCart.Id = newCartId;
 
+        _logger.LogInformation("Cart has been created for User {UserId}", currentUserId);
+
         return newCart;
     }
 
@@ -82,15 +86,18 @@ public class CartService : ICartService
         var pendingCart = await _cartRepository.GetLastPendingCartAsync(currentUserId);
         if(pendingCart is not null)
         {
+            _logger.LogInformation("Cart with Id {CartId} has been retrieved for User {UserId}", pendingCart.Id, currentUserId);
+            
             return pendingCart;
         }
 
+        _logger.LogInformation("No pending cart has been found for User {UserId}", currentUserId);
         return await CreateNewAsync();
     }
 
     public async Task AddItemAsync(CartItemDTO newCartItem)
     {
-        // validations for cartitem here. add is room booked etc.. (so important.)
+        // validations for cartitem here. add is room booked etc.. (so important.)  
         await _cartItemValidator.ValidateAndThrowAsync(newCartItem);
 
         var pendingCart = await GetOrCreatePendingCartAsync();
@@ -145,7 +152,8 @@ public class CartService : ICartService
     
     public async Task CheckOutAsync()
     {
-        var cart = await _cartRepository.GetLastPendingCartAsync(_currentUserService.GetUserId());
+        var cart = await _cartRepository
+            .GetLastPendingCartAsync(_currentUserService.GetUserId());
         
         bool IsInvalidCart = cart is null || cart.Items is null || cart.Items.Count == 0;
 
@@ -190,6 +198,9 @@ public class CartService : ICartService
         }
 
         var cartItems = await _cartRepository.GetAllCartItemsAsync(cart.Id, pagination.PageNumber, pagination.PageSize);
+
+        _logger.LogInformation("Cart with Id {CartId} has been retrieved for User {UserId}", cart.Id, currentUserId);
+
         return cartItems;
     }
 
@@ -213,6 +224,8 @@ public class CartService : ICartService
         }
         cart.TotalPrice = x;
         // await _cartRepository.UpdateAsync(cart);
+
+        _logger.LogInformation("Cart with Id {CartId} has been retrieved for User {UserId}", cart.Id, currentUserId);
         return cart;
     }
 }

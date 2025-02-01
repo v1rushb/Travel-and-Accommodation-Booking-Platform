@@ -35,7 +35,9 @@ public class CartRepository : ICartRepository
         var entity = await _context.Carts.AddAsync(cart);
         await _context.SaveChangesAsync();
 
-         _logger.LogInformation("Created Cart with Id: {CartId} for User: {UserId}", entity.Entity.Id, cart.UserId);
+        _logger.LogInformation("Created Cart with Id: {CartId} for User: {UserId}",
+            entity.Entity.Id,
+            cart.UserId);
 
         return entity.Entity.Id;
     }
@@ -45,7 +47,8 @@ public class CartRepository : ICartRepository
         _context.Carts.Remove(new Cart { Id = Id });
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Deleted Cart with Id: {CartId}", Id);
+        _logger.LogInformation("Deleted Cart with Id: {CartId}", 
+            Id);
     }
 
     public async Task<bool> ExistsAsync(Guid Id) =>
@@ -79,15 +82,15 @@ public class CartRepository : ICartRepository
         _context.CartItems.Add(cartItem);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Added Room {RoomId} to Cart {CartId}", cartItem.RoomId, cartItem.CartId); 
+        _logger.LogInformation("Added CartItem with Id: {CartItemId} To Cart with Id: {CartId}",
+            cartItem.Id,
+            cartItem.CartId);
     }
 
     public async Task DeleteItemAsync(Guid cartItemId)
     {
         _context.CartItems.Remove(new CartItem { Id = cartItemId });
         await _context.SaveChangesAsync();
-
-        _logger.LogInformation("Deleted CartItem with Id: {CartItemId}", cartItemId);
     }
 
     public async Task UpdateItemAsync(CartItemDTO cartItem)
@@ -121,6 +124,9 @@ public class CartRepository : ICartRepository
         _context.Carts.Update(cart);
 
         await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Updated Cart with Id: {CartId}",
+            updatedCart.Id);
     }
 
     public async Task<bool> RoomIsBookedForSameUserBetween(

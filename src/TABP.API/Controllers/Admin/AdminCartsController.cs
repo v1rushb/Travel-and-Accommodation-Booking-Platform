@@ -10,7 +10,7 @@ namespace TABP.API.Controllers.Admin;
 
 [Authorize(Roles = nameof(RoleType.Admin))]
 [ApiController]
-[Route("api/admin/carts")]
+[Route("api/admin/cart")]
 public class AdminCartsController : ControllerBase
 {
     private readonly ICartAdminService _cartAdminService;
@@ -21,7 +21,7 @@ public class AdminCartsController : ControllerBase
         _cartAdminService = cartAdminService;
     }
 
-    [HttpGet("carts/search")]
+    [HttpGet("search")]
     public async Task<IActionResult> SearchCartsAsync(
         [FromQuery] PaginationDTO pagination,
         [FromQuery] CartSearchQuery query)
