@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Hotel;
@@ -12,13 +13,16 @@ public class HotelVisitRepository : IHotelVisitRepository
 {
     private readonly HotelBookingDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ILogger<HotelVisitRepository> _logger;
     
     public HotelVisitRepository(
         HotelBookingDbContext context,
-        IMapper mapper)
+        IMapper mapper,
+        ILogger<HotelVisitRepository> logger)
     {
         _context = context;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<Guid> AddAsync(HotelVisitDTO newHotelVisit)
@@ -29,6 +33,15 @@ public class HotelVisitRepository : IHotelVisitRepository
         var entityEntry = _context.HotelVisits.Add(visit);
 
         await _context.SaveChangesAsync();
+
+        _logger.LogInformation(
+            @"Created Hotel Visit With Id: {VisitId}
+            Hotel with Id: {HotelId} 
+            Made by User with Id {UserId}",
+            
+            entityEntry.Entity.Id,
+            entityEntry.Entity.HotelId,
+            entityEntry.Entity.UserId);
 
         return entityEntry.Entity.Id;
     }
