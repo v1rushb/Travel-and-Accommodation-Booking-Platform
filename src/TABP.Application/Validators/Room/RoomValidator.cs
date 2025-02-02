@@ -1,8 +1,7 @@
-using System.Data;
 using FluentValidation;
 using TABP.Domain.Abstractions.Repositories;
-using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Constants.Room;
+using TABP.Domain.Enums;
 using TABP.Domain.Models.Room;
 
 namespace TABP.Application.Validators.Room;
@@ -33,6 +32,8 @@ public class RoomValidator : AbstractValidator<RoomDTO>
                 await hotelRepository.ExistsAsync(id))
             .WithMessage("{PropertyName} does not exist");
         
-        // validate type.
+        RuleFor(room => room.Type)
+            .Must(type => Enum.IsDefined(typeof(RoomType), type))
+            .WithMessage("Invalid RoomType. Allowed values: Pending, Approved, Rejected.");
     }
 }

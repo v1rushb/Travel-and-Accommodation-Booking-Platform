@@ -1,7 +1,5 @@
-using System.Data;
 using FluentValidation;
 using TABP.Domain.Abstractions.Repositories;
-using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Constants.Booking;
 using TABP.Domain.Models.RoomBooking;
 
@@ -17,7 +15,7 @@ internal class BookingValidator : AbstractValidator<RoomBookingDTO>
         RuleFor(booking => booking.UserId)
             .NotNull()
             .MustAsync(async (userId, cancellation) => await userRepository.ExistsAsync(userId))
-            .WithMessage("{PropertyName} does not exist."); // try that later.
+            .WithMessage("{PropertyName} does not exist.");
         
         RuleFor(booking => booking.RoomId)
             .NotNull()
@@ -53,10 +51,5 @@ internal class BookingValidator : AbstractValidator<RoomBookingDTO>
         RuleFor(booking => booking.Notes)
             .MaximumLength(BookingConstants.MaxNotesLength)
             .WithMessage("{PropertyName} can not exceed 500 characters.");
-
-        //  RuleFor(booking => booking.Status)
-        //     .IsInEnum()
-        //     .WithMessage("Invalid booking status."); // check how can u do this.
-
     }
 }

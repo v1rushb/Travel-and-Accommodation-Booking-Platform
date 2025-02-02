@@ -1,6 +1,7 @@
 using FluentValidation;
 using TAB.Domain.Constants.Discount;
 using TABP.Domain.Abstractions.Repositories.Review;
+using TABP.Domain.Enums;
 using TABP.Domain.Models.Discount;
 
 namespace TABP.Application.Validators.Discount;
@@ -35,9 +36,11 @@ internal class DiscountValidator : AbstractValidator<DiscountDTO>
                 !await hotelReviewRepository.ExistsAsync(hotelId))
             .WithMessage("{PropertyName} does not exist.");
 
-        // RuleFor(discount => discount)
-        //     .Must(value => Enum.IsDefined(typeof(RoomType), value))
-        //     .WithMessage("Invalid discount type value.");
+        RuleFor(x => x.roomType)
+            .Must(roomType => Enum.IsDefined(typeof(RoomType), roomType))
+            .WithMessage("Invalid RoomType. Allowed values: Pending, Approved, Rejected.");
+
+
 
     }
 }
