@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using TABP.Application.Utilities;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Exceptions;
 using TABP.Domain.Models.Room;
 
 namespace TABP.Application.Services.Room;
@@ -50,22 +51,20 @@ public class RoomService : IRoomService
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _roomRepository.ExistsAsync(Id);
 
-    public async Task<RoomDTO?> GetByIdAsync(Guid Id)
+    public async Task<RoomDTO> GetByIdAsync(Guid Id)
     {
         await ValidateId(Id);
 
         return await _roomRepository.GetByIdAsync(Id);
     }
 
-    // public async Task<IEnumerable<RoomDTO>> GetRoomsByHotelAsync(Guid hotelId) =>
-    //     await _roomRepository.GetRoomsByHotelAsync(hotelId);
-
     public async Task<bool> RoomNumberExistsForHotelAsync(Guid hotelId, Guid RoomId) =>
         await _roomRepository.RoomExistsForHotelAsync(hotelId, RoomId);
 
     public async Task UpdateAsync(RoomDTO updatedRoom)
     {
-        //some validations here.
+        await _roomValidator.ValidateAndThrowAsync(updatedRoom);
+        await ValidateId(updatedRoom.Id);
 
         updatedRoom.ModificationDate = DateTime.UtcNow;
         await _roomRepository.UpdateAsync(updatedRoom);
@@ -75,7 +74,7 @@ public class RoomService : IRoomService
     {
         if (!await ExistsAsync(Id))
         {
-            throw new KeyNotFoundException($"Id {Id} Does not exist.");
+            throw new EntityNotFoundException($"Id {Id} Does not exist.");
         }
     }
 

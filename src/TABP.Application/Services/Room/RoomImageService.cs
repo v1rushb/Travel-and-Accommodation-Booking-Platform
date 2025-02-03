@@ -1,6 +1,7 @@
 using SixLabors.ImageSharp;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Constants.Image;
+using TABP.Domain.Exceptions;
 
 namespace TABP.Application.Services.Room;
 
@@ -52,6 +53,6 @@ public class RoomImageService : IRoomImageService
     private async Task ValidateId(Guid Id)
     {
         if (!await _imageService.ExistsAsync(Id))
-            throw new KeyNotFoundException($"Id {Id} Does not exist.");
+            throw new EntityNotFoundException($"Id {Id} Does not exist.");
     }
 }
