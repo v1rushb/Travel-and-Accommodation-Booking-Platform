@@ -6,6 +6,5 @@ namespace TABP.Domain.Abstractions.Services;
 public interface IHotelVisitService
 {
     Task AddAsync(HotelVisitDTO newHotelVisit);
-    Task<bool> ExistsAsync(Guid Id);
     Task<IEnumerable<VisitedHotelDTO>> GetTop5VisitedHotels(VisitTimeOptionQuery query);
 }
