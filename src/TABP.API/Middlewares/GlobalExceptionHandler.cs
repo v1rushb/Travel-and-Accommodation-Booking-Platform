@@ -23,7 +23,7 @@ public class GlobalExceptionHandler : IExceptionHandler
 
         if(exception is FluentValidation.ValidationException validationException)
         {
-            _logger.LogCritical("asdaskdjhasdkjasghdjhasdkajshdkasjhdajhsgdasd");
+            _logger.LogError(validationException, validationException.Message);
             await HandleValidationExceptionAsync(context, validationException);
             return true;
         }
@@ -73,10 +73,16 @@ public class GlobalExceptionHandler : IExceptionHandler
         var statusCode = exception switch
         {
             BadRequestException => StatusCodes.Status400BadRequest,
-            NotFoundException => StatusCodes.Status404NotFound,
+            EntityNotFoundException => StatusCodes.Status404NotFound,
             InvalidUserCredentialsException => StatusCodes.Status401Unauthorized,
             ConfigurationException => StatusCodes.Status500InternalServerError,
             UserDuplicateException => StatusCodes.Status409Conflict,
+            EmailSendingException => StatusCodes.Status500InternalServerError,
+            CacheException => StatusCodes.Status503ServiceUnavailable,
+            RedisCacheException => StatusCodes.Status503ServiceUnavailable,
+            RedisCacheCallbackException => StatusCodes.Status500InternalServerError,
+            EntityImageLimitExceededException => StatusCodes.Status400BadRequest,
+            InvalidJWTConfigurationException => StatusCodes.Status500InternalServerError,
             _ => StatusCodes.Status500InternalServerError
         };
 
