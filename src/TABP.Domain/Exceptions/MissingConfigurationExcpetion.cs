@@ -1,7 +1,11 @@
 namespace TABP.Domain.Exceptions;
 
-public class MissingConfigurationException(string keyName)
-    : ConfigurationException($"The required configuration key '{keyName}' is not set or read properly.")
+public class MissingConfigurationException : ConfigurationException
 {
-    public string KeyName { get; } = keyName;
+    public MissingConfigurationException(string keyName)
+        : base($"The required configuration key '{keyName}' is not set or read properly.")
+    {
+        KeyName = keyName;
+    }
+    public string KeyName { get; }
 }

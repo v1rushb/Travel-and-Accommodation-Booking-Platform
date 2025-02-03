@@ -2,7 +2,9 @@ using TABP.Domain.Constants;
 
 namespace TABP.Domain.Exceptions;
 
-public class ConfigurationException(string message) : CustomException(message)
+public class ConfigurationException : CustomException
 {
-    public override string Title => CustomExceptionMessages.ConfigurationException.Title;
+    public ConfigurationException(string message)
+        : base(message, CustomExceptionMessages.Configuration.Title)
+    { }
 }

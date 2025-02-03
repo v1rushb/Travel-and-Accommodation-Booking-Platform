@@ -2,10 +2,9 @@ using TABP.Domain.Constants;
 
 namespace TABP.Domain.Exceptions;
 
-public class EntityImageLimitExceededException(string? message = null) : CustomException(message)
+public class EntityImageLimitExceededException : CustomException
 {
-    public override string Title => 
-        CustomExceptionMessages
-        .EntityImageLimitExceededException
-        .Title;
+    public EntityImageLimitExceededException(string? message = null)
+        : base(message ?? string.Empty, CustomExceptionMessages.EntityImageLimitExceeded.Title)
+    { }
 }

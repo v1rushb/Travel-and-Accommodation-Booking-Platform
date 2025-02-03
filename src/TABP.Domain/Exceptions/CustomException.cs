@@ -1,7 +1,11 @@
-using TABP.Domain.Constants;
-
 namespace TABP.Domain.Exceptions;
-public class CustomException(string message) : Exception(message)
+
+public abstract class CustomException : Exception
 {
-    public virtual string Title => CustomExceptionMessages.Title;
+    public string Title { get; }
+    protected CustomException(string message, string title, Exception exception = null) 
+        : base(message, exception)
+    {
+        Title = title;
+    }
 }

@@ -1,9 +1,6 @@
-using System.Data;
 using FluentValidation;
-using TABP.Application.Services;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Repositories.Review;
-using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Constants.Review;
 using TABP.Domain.Models.HotelReview;
 

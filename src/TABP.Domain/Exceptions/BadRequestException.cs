@@ -2,7 +2,9 @@ using TABP.Domain.Constants;
 
 namespace TABP.Domain.Exceptions;
 
-public class BadRequestException(string message) : CustomException(message)
+public class BadRequestException : CustomException
 {
-    public override string Title => CustomExceptionMessages.BadRequest.Title;
+    public BadRequestException(string message)
+        : base(message, CustomExceptionMessages.BadRequest.Title)
+    { }
 }
