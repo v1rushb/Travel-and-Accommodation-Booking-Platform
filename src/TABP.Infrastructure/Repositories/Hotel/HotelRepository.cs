@@ -80,4 +80,7 @@ public class HotelRepository : IHotelRepository
 
         return _mapper.Map<IEnumerable<HotelDTO>>(hotels);
     }
+
+    public async Task<string> GetHotelNameByIdAsync(Guid Id) =>
+        (await _context.Hotels.FirstOrDefaultAsync(hotel => hotel.Id == Id))?.Name;
 }
