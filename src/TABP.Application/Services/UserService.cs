@@ -2,6 +2,8 @@ using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Constants.Email;
+using TABP.Domain.Constants.User;
 using TABP.Domain.Enums;
 using TABP.Domain.Exceptions;
 using TABP.Domain.Models.Email;
@@ -57,7 +59,7 @@ public class UserService : IUserService
         return await _userRepository.AddAsync(newUser);
     }
 
-    public async Task<string> AuthenticateAsync(UserLoginDTO userLoginCredentials) // mayeb add fluent validation here?
+    public async Task<string> AuthenticateAsync(UserLoginDTO userLoginCredentials)
     {
         await _userLoginValidator.ValidateAndThrowAsync(userLoginCredentials);
 
@@ -72,14 +74,21 @@ public class UserService : IUserService
 
     private async Task SendWelcomeEmailAsync(UserDTO user)
     {
+        var body = await ProcessEmailBodyAsync(
+            UserEmailConstants.Body,
+            user.FirstName
+        );
+
         await _emailService.SendAsync(new EmailDTO
         {
             RecipientEmail = user.Email,
             RecipientName = user.FirstName,
-            Subject = "Welcome to TABP",
-            Body = $"Welcome to TABP, {user.FirstName}!"
+            Subject = UserEmailConstants.Subject,
+            Body = body
         });
     }
+    private async Task<string> ProcessEmailBodyAsync(string body, string firstName) =>
+        body.Replace("{user.FirstName}", firstName);
 
     private async Task<UserDTO> ValidateUsername(string loginUsername)
     {
