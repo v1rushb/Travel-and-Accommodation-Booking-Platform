@@ -64,6 +64,12 @@ public class CartItemRepository : ICartItemRepository
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _context.CartItems.AnyAsync(cartItem => cartItem.Id == Id);
 
+    public void Update(IEnumerable<CartItemDTO> cartItems)
+    {
+        var cartItemsToUpdate = _mapper.Map<IEnumerable<CartItem>>(cartItems);
+        _context.CartItems.UpdateRange(cartItemsToUpdate);
+    }
+
     // public async Task<bool> ExistsBetweenUserAndRoomAsync(Guid userId, Guid roomId) =>
     //     await _context.CartItems.AnyAsync(cartItem => cartItem.UserId == userId && cartItem.RoomId == roomId);
 
