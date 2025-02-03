@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Exceptions;
 
 namespace TABP.Infrastructure.Cache;
 
@@ -21,24 +22,34 @@ public class BlacklistService : IBlacklistService
         string token,
         TimeSpan expiration)
     {
-        var prefixedKey = $"{_blacklistKeyPrefix}{token}";
-        await _cache.SetStringAsync(
-            prefixedKey,
-            "yoinky",
-            new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = expiration
-            }
-        );
-        _logger.LogInformation("A new token has been added to the blacklist");
+        try {
+            var prefixedKey = $"{_blacklistKeyPrefix}{token}";
+            await _cache.SetStringAsync(
+                prefixedKey,
+                "yoinky",
+                new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = expiration
+                }
+            );
+            _logger.LogInformation("A new token has been added to the blacklist");
+        } catch (Exception ex)
+        {
+            throw new CacheException("Failed to add token to blacklist", ex);
+        }
     }
 
     public async Task<bool> IsTokenBlacklistedAsync(string token)
     {
-        var prefixedKey = $"{_blacklistKeyPrefix}{token}";
-        var cachedKey = await _cache.GetStringAsync(prefixedKey);
+        try {
+            var prefixedKey = $"{_blacklistKeyPrefix}{token}";
+            var cachedKey = await _cache.GetStringAsync(prefixedKey);
 
-        return cachedKey != null;
+            return cachedKey != null;
+        } catch (Exception ex)
+        {
+            throw new CacheException("Failed to check if token is blacklisted", ex);
+        }
     }
 
 
