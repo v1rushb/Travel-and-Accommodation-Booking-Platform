@@ -10,6 +10,7 @@ using TABP.Domain.Models.Hotel.Search;
 using Microsoft.AspNetCore.Authorization;
 using TABP.Domain.Enums;
 using TABP.Domain.Abstractions.Services.Hotel;
+using TABP.Domain.Models.Hotel.Sort;
 
 namespace TABP.API.Controllers.Admin;
 
@@ -82,12 +83,14 @@ public class HotelAdminController : ControllerBase
     [HttpGet("search")]
     public async Task<IActionResult> SearchHotelsForAdminAsync(
         [FromQuery] PaginationDTO pagination,
-        [FromQuery] HotelSearchQuery query)
+        [FromQuery] HotelSearchQuery query,
+        [FromQuery] HotelSortQuery sortQuery)
     {
         var hotels = await _hotelAdminService
             .SearchAsync(
                 query,
-                pagination
+                pagination,
+                sortQuery
             );
 
         var hotelCount = hotels.Count();

@@ -7,6 +7,8 @@ using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Hotel.Search;
 using Microsoft.AspNetCore.Authorization;
+using TABP.Domain.Entities;
+using TABP.Domain.Models.Hotel.Sort;
 
 namespace TABP.API.Controllers;
 
@@ -26,12 +28,14 @@ public class HotelController : ControllerBase
     [HttpGet("search")]
     public async Task<IActionResult> SearchAndFilterHotelsAsync(
         [FromQuery] PaginationDTO pagination,
-        [FromQuery] HotelSearchQuery query)
+        [FromQuery] HotelSearchQuery query,
+        [FromQuery] HotelSortQuery sortQuery)
     {
         var result = await _hotelUserService
             .SearchAsync(
                 query,
-                pagination
+                pagination,
+                sortQuery
             );
 
         var hotelSize = result.Count();
