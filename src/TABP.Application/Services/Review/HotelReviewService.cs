@@ -6,13 +6,13 @@ using TABP.Domain.Abstractions.Repositories.Review;
 using TABP.Domain.Entities;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Abstractions.Services.Review;
+using TABP.Domain.Exceptions;
 
 namespace TABP.Application.Services.Review;
 
 public class HotelReviewService : IHotelReviewService
 {
     private readonly IHotelReviewRepository _hotelReviewRepository;
-    private readonly ILogger<HotelReviewService> _logger;
     private readonly IValidator<HotelReviewDTO> _reviewValidator;
     private readonly ICurrentUserService _currentUserService;
     private readonly IHotelRepository _hotelRepository;
@@ -20,14 +20,12 @@ public class HotelReviewService : IHotelReviewService
 
     public HotelReviewService(
         IHotelReviewRepository hotelReviewRepository,
-        ILogger<HotelReviewService> logger,
         IValidator<HotelReviewDTO> reviewValidator,
         ICurrentUserService currentUserService,
         IHotelRepository hotelRepository,
         IUnitOfWork unitOfWork)
     {
         _hotelReviewRepository = hotelReviewRepository;
-        _logger = logger;
         _reviewValidator = reviewValidator;
         _currentUserService = currentUserService;
         _hotelRepository = hotelRepository;
@@ -42,7 +40,7 @@ public class HotelReviewService : IHotelReviewService
         newReview.UserId = _currentUserService
             .GetUserId();
 
-        var reviewId = await _hotelReviewRepository
+        await _hotelReviewRepository
             .AddAsync(newReview);
 
         await UpdateHotelStarRatingAsync(
@@ -51,8 +49,6 @@ public class HotelReviewService : IHotelReviewService
 
         await _unitOfWork
             .SaveChangesAsync();
-
-        // return reviewId;
     }
 
     public async Task DeleteAsync(Guid Id)
@@ -102,6 +98,7 @@ public class HotelReviewService : IHotelReviewService
 
     public async Task UpdateAsync(HotelReviewDTO updatedReview)
     {
+        await _reviewValidator.ValidateAndThrowAsync(updatedReview);
         await ValidateId(updatedReview.Id);
 
         await ValidateOwnership(
@@ -128,7 +125,7 @@ public class HotelReviewService : IHotelReviewService
     {
         if (!await ExistsAsync(Id))
         {
-            throw new KeyNotFoundException($"Id {Id} Does not exist.");
+            throw new EntityNotFoundException($"Id {Id} Does not exist.");
         }
     }
 
@@ -136,7 +133,7 @@ public class HotelReviewService : IHotelReviewService
     {
         if (!await ExistsAsync(reviewId, currentUserId))
         {
-            throw new KeyNotFoundException($"Review with Id {reviewId} does not exist for the current user.");
+            throw new EntityNotFoundException($"Review with Id {reviewId} does not exist for the current user.");
         }
     }
 

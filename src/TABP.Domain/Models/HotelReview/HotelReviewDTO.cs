@@ -1,5 +1,4 @@
 using TABP.Domain.Abstractions;
-using TABP.Domain.Enums;
 
 namespace TABP.Domain.Models.HotelReview;
 
