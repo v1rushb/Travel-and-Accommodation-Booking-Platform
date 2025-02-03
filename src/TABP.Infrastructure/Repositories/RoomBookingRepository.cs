@@ -27,7 +27,7 @@ public class RoomBookingRepository : IRoomBookingRepository
         _mapper = mapper;
     }
 
-    public async Task AddAsync(List<RoomBookingDTO> bookings)
+    public async Task AddAsync(IEnumerable<RoomBookingDTO> bookings)
     {
         var bookingList = _mapper.Map<List<RoomBooking>>(bookings);
         await _context.RoomBookings.AddRangeAsync(bookingList);

@@ -7,7 +7,7 @@ namespace TABP.Domain.Abstractions.Repositories;
 
 public interface IRoomBookingRepository
 {
-    Task AddAsync(List<RoomBookingDTO> bookings);
+    Task AddAsync(IEnumerable<RoomBookingDTO> bookings);
     Task<RoomBookingDTO> GetByIdAsync(Guid Id);
     Task<bool> ExistsAsync(Guid Id);
     // Task<IEnumerable<RoomBooking>> GetByUserAsync(Guid userId);
