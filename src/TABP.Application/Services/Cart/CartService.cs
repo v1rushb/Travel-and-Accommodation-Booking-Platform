@@ -1,3 +1,5 @@
+using System.Net;
+using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
@@ -5,6 +7,7 @@ using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Abstractions.Services.Booking;
 using TABP.Domain.Abstractions.Services.Cart;
 using TABP.Domain.Enums;
+using TABP.Domain.Exceptions;
 using TABP.Domain.Models.Cart;
 using TABP.Domain.Models.Cart.Search.Response;
 using TABP.Domain.Models.CartItem;
@@ -24,6 +27,7 @@ public class CartService : ICartService
     private readonly IValidator<PaginationDTO> _paginationValidator;
     private readonly IRoomService _roomService;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
     public CartService(
         ICartRepository cartRepository,
         IRoomBookingService roomBookingService,
@@ -33,7 +37,8 @@ public class CartService : ICartService
         IValidator<CartItemDTO> cartItemValidator,
         IValidator<PaginationDTO> paginationValidator,
         IRoomService roomService,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IMapper mapper)
     {
         _cartRepository = cartRepository;
         _roomBookingService = roomBookingService;
@@ -44,6 +49,7 @@ public class CartService : ICartService
         _paginationValidator = paginationValidator;
         _roomService = roomService;
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     public async Task<CartDTO> CreateNewAsync() // make private?
@@ -131,7 +137,7 @@ public class CartService : ICartService
     {
         if(!await _cartItemRepository.ExistsAsync(cartItemId))
         {
-            throw new KeyNotFoundException($"CartItem with ID {cartItemId} does not exist.");
+            throw new EntityNotFoundException($"CartItem with ID {cartItemId} does not exist.");
         }
     }
 
@@ -140,13 +146,13 @@ public class CartService : ICartService
         var cartItem = await _cartItemRepository.GetByIdAsync(cartItemId);
         if (cartItem is null)
         {
-            throw new KeyNotFoundException($"CartItem with ID {cartItemId} does not exist.");
+            throw new EntityNotFoundException($"CartItem with ID {cartItemId} does not exist.");
         }
 
         var cart = await _cartRepository.GetLastPendingCartAsync(userId);
         if (cart is null || cartItem.CartId != cart.Id)
         {
-            throw new KeyNotFoundException($"CartItem with ID {cartItemId} does not belong to the current user.");
+            throw new EntityNotFoundException($"CartItem with ID {cartItemId} does not belong to the current user.");
         }
     }
     
@@ -215,15 +221,21 @@ public class CartService : ICartService
             return new CartUserResponseDTO();
         
         var cartItems = cart.Items;
-        decimal x = 0;
+
+        decimal totalCartPrice = 0;
         foreach(var item in cartItems)
         {
             var price = await _roomService.GetBookingPriceForRoom(item.RoomId, item.CheckInDate, item.CheckOutDate);
             item.Price = price;
-            x+= price;
+            totalCartPrice+= price;
         }
-        cart.TotalPrice = x;
-        // await _cartRepository.UpdateAsync(cart);
+        cart.TotalPrice = totalCartPrice;
+        var cartDTO = _mapper.Map<CartDTO>(cart);
+        
+        await _cartRepository.UpdateAsync(cartDTO);
+        _cartItemRepository.Update(cartItems);
+
+        await _unitOfWork.SaveChangesAsync();
 
         _logger.LogInformation("Cart with Id {CartId} has been retrieved for User {UserId}", cart.Id, currentUserId);
         return cart;

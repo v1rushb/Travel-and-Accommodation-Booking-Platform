@@ -174,5 +174,4 @@ public class CartRepository : ICartRepository
     public async Task<CartUserResponseDTO> GetCartDetailsByUserIdAsync(Guid userId) =>
         _mapper.Map<CartUserResponseDTO>(
                 await GetLastPendingCartAsync(userId));
-
 }
