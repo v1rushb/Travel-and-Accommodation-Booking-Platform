@@ -33,7 +33,7 @@ public class EmailService : IEmailService
 
             if(!response.Successful)
             {
-                throw new Exception(string.Join(", ", response.ErrorMessages)); // make special exception for this
+                throw new EmailSendingException($"Failed to send email: {string.Join(", ", response.ErrorMessages)}");
             }
             _logger.LogInformation("Email sent successfully to {RecipientEmail}", emailDto.RecipientEmail);
         } catch (Exception ex) {
