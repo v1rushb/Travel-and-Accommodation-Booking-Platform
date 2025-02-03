@@ -1,6 +1,7 @@
 using FluentValidation;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services.City;
+using TABP.Domain.Exceptions;
 using TABP.Domain.Models.City;
 
 namespace TABP.Application.Services.City;
@@ -46,6 +47,7 @@ public class CityService : ICityService
 
     public async Task UpdateAsync(CityDTO updatedCity)
     {
+        await _cityValidator.ValidateAndThrowAsync(updatedCity);
         await ValidateId(updatedCity.Id);
 
         updatedCity.ModificationDate = DateTime.UtcNow;
@@ -56,6 +58,6 @@ public class CityService : ICityService
     public async Task ValidateId(Guid Id)
     {
         if(! await ExistsAsync(Id))
-            throw new KeyNotFoundException($"Id {Id} Does not exist.");
+            throw new EntityNotFoundException($"Id {Id} Does not exist.");
     }
 }

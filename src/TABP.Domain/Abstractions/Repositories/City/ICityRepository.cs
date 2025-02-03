@@ -9,7 +9,7 @@ public interface ICityRepository
 {
     Task<Guid> AddAsync(CityDTO newCity);
     Task<bool> ExistsAsync(Guid Id);
-    Task<CityDTO?> GetByIdAsync(Guid Id);
+    Task<CityDTO> GetByIdAsync(Guid Id);
     Task DeleteAsync(Guid Id);
     Task UpdateAsync(CityDTO updatedCity);
     Task<IEnumerable<CitySearchResponseDTO>> SearchAsync(Expression<Func<City, bool>> predicate, int pageNumber, int pageSize);
