@@ -72,14 +72,23 @@ public class HotelRepository : IHotelRepository
     public async Task<IEnumerable<HotelDTO>> SearchAsync(
         Expression<Func<Hotel, bool>> predicate,
         int pageNumber,
-        int pageSize)
+        int pageSize,
+        Func<IQueryable<Hotel>, IOrderedQueryable<Hotel>> orderBy = null)
     {
-        var hotels = await _context.Hotels
+        var query = _context.Hotels
+            .Include(h => h.City)
             .Where(predicate)
-            .PaginateAsync(pageNumber, pageSize);
+            .OrderByIf(orderBy != null, orderBy)
+            .Paginate(
+                pageNumber,
+                pageSize
+            );
 
-        return _mapper.Map<IEnumerable<HotelDTO>>(hotels);
+        return _mapper
+            .Map<IEnumerable<HotelDTO>>(query
+                .ToList());
     }
+
 
     public async Task<string> GetHotelNameByIdAsync(Guid Id) =>
         (await _context.Hotels.FirstOrDefaultAsync(hotel => hotel.Id == Id))?.Name;

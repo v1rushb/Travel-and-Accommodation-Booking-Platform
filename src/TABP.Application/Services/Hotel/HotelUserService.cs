@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Application.Filters.ExpressionBuilders.Generics;
+using TABP.Application.Sorting.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Abstractions.Services.Booking;
@@ -12,6 +13,7 @@ using TABP.Domain.Exceptions;
 using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotel.Search;
 using TABP.Domain.Models.Hotel.Search.Response;
+using TABP.Domain.Models.Hotel.Sort;
 using TABP.Domain.Models.HotelVisit;
 using TABP.Domain.Models.Pagination;
 
@@ -28,7 +30,7 @@ public class HotelUserService : IHotelUserService
     private readonly ICurrentUserService _currentUserService;
     private readonly IMapper _mapper;
     private readonly ILogger<HotelUserService> _logger;
-
+    private readonly IValidator<HotelSortQuery> _hotelSortQueryValidator;
 
     public HotelUserService(
         IHotelRepository hotelRepository,
@@ -39,7 +41,8 @@ public class HotelUserService : IHotelUserService
         ICurrentUserService currentUserService,
         IRoomBookingService roomBookingService,
         IMapper mapper,
-        ILogger<HotelUserService> logger)
+        ILogger<HotelUserService> logger,
+        IValidator<HotelSortQuery> hotelSortQueryValidator)
     {
         _hotelRepository = hotelRepository;
         _paginationValidator = paginationValidator;
@@ -50,21 +53,28 @@ public class HotelUserService : IHotelUserService
         _roomBookingService = roomBookingService;
         _mapper = mapper;
         _logger = logger;
+        _hotelSortQueryValidator = hotelSortQueryValidator;
     }
 
     public async Task<IEnumerable<HotelUserResponseDTO>> SearchAsync(
         HotelSearchQuery query,
-        PaginationDTO pagination)
+        PaginationDTO pagination,
+        HotelSortQuery sortQuery)
     {
         _paginationValidator.ValidateAndThrow(pagination);
+        _hotelSortQueryValidator.ValidateAndThrow(sortQuery);
 
-        var expression = HotelExpressionBuilder.Build(query);
+
+        var filterExpression = HotelExpressionBuilder.Build(query);
+        var orderBy = HotelSortExpressionBuilder.GetSortDelegate(sortQuery);
         var hotels = await _hotelRepository
             .SearchAsync(
-                expression,
+                filterExpression,
                 pagination.PageNumber,
-                pagination.PageSize
+                pagination.PageSize,
+                orderBy
             );
+        
 
         _logger.LogInformation(
             "Searching for Hotels with query {@HotelSearchQuery} by User {UserId}",

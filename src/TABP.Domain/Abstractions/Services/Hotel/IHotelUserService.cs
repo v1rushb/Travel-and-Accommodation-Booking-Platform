@@ -1,6 +1,7 @@
 using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotel.Search;
 using TABP.Domain.Models.Hotel.Search.Response;
+using TABP.Domain.Models.Hotel.Sort;
 using TABP.Domain.Models.HotelVisit;
 using TABP.Domain.Models.Pagination;
 
@@ -10,7 +11,8 @@ public interface IHotelUserService
 {
     Task<IEnumerable<HotelUserResponseDTO>> SearchAsync(
         HotelSearchQuery query,
-        PaginationDTO pagination);
+        PaginationDTO pagination,
+        HotelSortQuery sortQuery);
 
     Task<HotelPageResponseDTO> GetHotelPageAsync(Guid hotelId);
 
