@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using System.Collections.Concurrent;
 using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Exceptions;
 
 namespace TABP.Infrastructure.Cache;
 public class RedisCacheEventService : BackgroundService, ICacheEventService
@@ -31,53 +32,71 @@ public class RedisCacheEventService : BackgroundService, ICacheEventService
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("Key cannot be null or empty.", nameof(key));
 
-        await _cache.SetStringAsync(
-            key,
-            "__expiration_trigger__",
-            new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = expiration
-            }
-        );
+        try {
+            await _cache.SetStringAsync(
+                key,
+                "__expiration_trigger__",
+                new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = expiration
+                }
+            );
 
-        _expirationCallbacks[key] = onExpiredCallback;
+            _expirationCallbacks[key] = onExpiredCallback;
 
-        _logger.LogInformation(
-            "Scheduled expiration for key: {Key} in {ExpirationSeconds} seconds.",
-            key,
-            expiration.TotalSeconds
-        );
+            _logger.LogInformation(
+                "Scheduled expiration for key: {Key} in {ExpirationSeconds} seconds.",
+                key,
+                expiration.TotalSeconds
+            );
+        } catch (Exception ex)
+        {
+            throw new RedisCacheException("Failed to schedule key expiration in Redis.", ex);
+        }
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var subscriber = _redis.GetSubscriber();
-        await subscriber.SubscribeAsync("__keyevent@0__:expired", async (channel, expiredKey) =>
-        {
-            var keyStr = expiredKey.ToString();
-            _logger.LogInformation("Key {Key} expired.", keyStr);
-
-            if (_expirationCallbacks.TryRemove(keyStr, out var callback))
+        try {
+            await subscriber.SubscribeAsync("__keyevent@0__:expired", async (channel, expiredKey) =>
             {
-                try
+                var keyStr = expiredKey.ToString();
+                _logger.LogInformation("Key {Key} expired.", keyStr);
+
+                if (_expirationCallbacks.TryRemove(keyStr, out var callback))
                 {
-                    await callback();
+                    try
+                    {
+                        await callback();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new RedisCacheCallbackException($"Error invoking expiration callback for key: {keyStr}", ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error invoking expiration callback for key: {Key}", keyStr);
-                }
-            }
-        });
+            });
+        } catch (Exception ex)
+        {
+            throw new RedisCacheException("Failed to subscribe to Redis expiration events.", ex);
+        }
     }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("RedisCacheEventService is starting.");
 
-        // var server = _redis.GetServer(_redis.GetEndPoints().First());
-        // await server.ConfigSetAsync("notify-keyspace-events", "Ex");
+        try
+        {
+            // var server = _redis.GetServer(_redis.GetEndPoints().First()); // looks like it needs some admin thingy
+            // await server.ConfigSetAsync("notify-keyspace-events", "Ex");
 
-        await base.StartAsync(cancellationToken);
+            _logger.LogInformation("RedisCacheEventService is starting.");
+            await base.StartAsync(cancellationToken);
+            _logger.LogInformation("Redis Cache Event Service has started.");
+        }
+        catch (Exception ex)
+        {
+            throw new RedisCacheException("Failed to start Redis cache event service.", ex);
+        }
     }
 }
