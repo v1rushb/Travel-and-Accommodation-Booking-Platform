@@ -51,7 +51,7 @@ public class ImageService : IImageService
     {
         if(!await ExistsAsync(Id))
         {
-            throw new NotFoundException($"Image With Id: {Id} Does not exist.");
+            throw new EntityNotFoundException($"Image With Id: {Id} Does not exist.");
         }
     }
 }
