@@ -5,8 +5,10 @@ using TABP.Application.Utilities;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Abstractions.Services.Booking;
+using TABP.Domain.Constants.Email;
 using TABP.Domain.Entities;
 using TABP.Domain.Enums;
+using TABP.Domain.Exceptions;
 using TABP.Domain.Models.Booking;
 using TABP.Domain.Models.Cart;
 using TABP.Domain.Models.Email;
@@ -26,6 +28,7 @@ public class RoomBookingService : IRoomBookingService
     private readonly ICacheEventService _cacheEventService;
     private readonly IEmailService _emailService;
     private readonly IUserRepository _userRepository;
+    private readonly IHotelRepository _hotelRepository;
 
     public RoomBookingService(
         IRoomBookingRepository roomBookingRepository,
@@ -35,7 +38,8 @@ public class RoomBookingService : IRoomBookingService
         IValidator<RoomBookingDTO> bookingValidator,
         ICacheEventService cacheEventService,
         IEmailService emailService,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        IHotelRepository hotelRepository)
     {
         _roomBookingRepository = roomBookingRepository;
         _logger = logger;
@@ -45,13 +49,26 @@ public class RoomBookingService : IRoomBookingService
         _cacheEventService = cacheEventService;
         _emailService = emailService;
         _userRepository = userRepository;
+        _hotelRepository = hotelRepository;
     }
     
     public async Task AddAsync(CartDTO cart) // refactor method later.
     {
-        var items = cart.Items;
+        var bookings = await CreateBookingsAsync(cart);
+
+        foreach (var booking in bookings)
+        {
+            await ProcessBookingsAsync(booking);
+        }
+
+        await _roomBookingRepository.AddAsync(bookings);
+    }
+
+    private async Task<IEnumerable<RoomBookingDTO>> CreateBookingsAsync(CartDTO cart)
+    {
         var bookings = new List<RoomBookingDTO>();
-        foreach(var item in items)
+
+        foreach (var item in cart.Items)
         {
             var booking = new RoomBookingDTO
             {
@@ -66,53 +83,80 @@ public class RoomBookingService : IRoomBookingService
             };
 
             await _bookingValidator.ValidateAndThrowAsync(booking);
-
             bookings.Add(booking);
         }
-
-        foreach(var booking in bookings)
-        {
-            var room = await _roomService.GetByIdAsync(booking.RoomId);
-            var discount = await _discountRepository.GetHighestDiscountActiveForHotelRoomTypeAsync(room.HotelId, room.Type);
-
-            booking.TotalPrice = DiscountedPriceCalculator.GetFinalDiscountedPrice(
-                booking.CheckInDate,
-                booking.CheckOutDate,
-                room.PricePerNight,
-                discount.AmountPercentage);
-
-            // _logger.LogInformation("Booking with Id: {Id} has been added to User {UserId}, with Discount {Discount}%", booking.Id, cart.UserId, discount.AmountPercentage);
-            
-            await SchduleSendingBookingEndedEmailJob(booking);
-        }
-        await _roomBookingRepository.AddAsync(bookings); // just adds range of bookings.
+        return bookings;
     }
 
-    private async Task SchduleSendingBookingEndedEmailJob(RoomBookingDTO booking)
+    private async Task ProcessBookingsAsync(RoomBookingDTO booking)
+    {
+        var room = await _roomService.GetByIdAsync(booking.RoomId);
+
+        var discount = await _discountRepository
+            .GetHighestDiscountActiveForHotelRoomTypeAsync(room.HotelId, room.Type);
+
+        booking.TotalPrice = DiscountedPriceCalculator.GetFinalDiscountedPrice(
+            booking.CheckInDate,
+            booking.CheckOutDate,
+            room.PricePerNight,
+            discount.AmountPercentage);
+        
+        await ScheduleSendingBookingEndedEmailJob(booking);
+    }
+
+    private async Task ScheduleSendingBookingEndedEmailJob(RoomBookingDTO booking)
     {
         var user = await GetCorrespondingUser(booking.UserId);
         var timeToSendEmail = booking.CheckOutDate - DateTime.UtcNow;
         await _cacheEventService.ScheduleExpirationAsync(
             new Guid().ToString(),
             timeToSendEmail,
-            async () => await SendEndBookingEmailToUser(user)
+            async () => await SendEndBookingEmailToUser(user, booking)
         );
-        _logger.LogInformation("An Email has been scheduled to be sent to the user {UserId} at {CheckOutDate}", booking.UserId, booking.CheckOutDate);
+
+        _logger.LogInformation(
+            @"An Email has been scheduled to be sent to the user {UserId} at {CheckOutDate}",
+            booking.UserId,
+            booking.CheckOutDate
+        );
     }
 
     private async Task<UserDTO> GetCorrespondingUser(Guid userId) =>
         await _userRepository.GetByIdAsync(userId);
-    private async Task SendEndBookingEmailToUser(UserDTO recipient)
+    private async Task SendEndBookingEmailToUser(UserDTO recipient, RoomBookingDTO booking)
     {
+
+        var body = await ProcessBodyAsync(
+            BookingEmailConstants.Body,
+            recipient,
+            booking
+        );
+
         await _emailService.SendAsync(new EmailDTO
         {
             RecipientEmail = recipient.Email,
             RecipientName = recipient.FirstName,
-            Subject = "Your booking has ended",
-            Body = $"Your booking For Hotel ........." 
+            Subject = BookingEmailConstants.Subject,
+            Body = body,
         });
 
         _logger.LogInformation("Email sent to {RecipientEmail} Regarding his booking", recipient.Email);
+    }
+
+    private async Task<string> ProcessBodyAsync(string body, UserDTO recipient, RoomBookingDTO booking)
+    {
+        var hotelId = (await _roomService.GetByIdAsync(booking.RoomId))
+            .HotelId;
+
+        string hotelName = await _hotelRepository.GetHotelNameByIdAsync(hotelId);
+
+        return body
+            .Replace("{recipient.FirstName}", recipient.FirstName)
+            .Replace("{hotelName}", hotelName)
+            .Replace("{booking.RoomId}", booking.RoomId.ToString())
+            .Replace("{booking.CheckInDate:MMMM dd, yyyy}", booking.CheckInDate.ToString("MMMM dd, yyyy"))
+            .Replace("{booking.CheckOutDate:MMMM dd, yyyy}", booking.CheckOutDate.ToString("MMMM dd, yyyy"))
+            .Replace("{booking.TotalPrice:C}", booking.TotalPrice.ToString("C"));
     }
 
     public async Task<RoomBookingDTO> GetByIdAsync(Guid Id)
@@ -129,7 +173,7 @@ public class RoomBookingService : IRoomBookingService
     {
         if (!await ExistsAsync(Id))
         {
-            throw new KeyNotFoundException("Booking does not exist.");
+            throw new EntityNotFoundException("Booking does not exist.");
         }
     }
 
