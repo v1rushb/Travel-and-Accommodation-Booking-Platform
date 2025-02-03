@@ -8,6 +8,7 @@ using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Abstractions.Services.Booking;
 using TABP.Domain.Entities;
 using TABP.Domain.Enums;
+using TABP.Domain.Exceptions;
 using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotel.Search;
 using TABP.Domain.Models.Hotel.Search.Response;
@@ -99,7 +100,7 @@ public class HotelUserService : IHotelUserService
     public async Task<IEnumerable<FeaturedHotelDTO>> GetWeeklyFeaturedHotelsAsync()
     {
         var timeOption = (int)TimeOptions.LastWeek;
-        var expression = TimeOptionExpressionBuilder<Hotel>
+        var expression = TimeOptionExpressionBuilder<Domain.Entities.Hotel>
             .Build(new VisitTimeOptionQuery
             {
                 TimeOption = timeOption
@@ -162,6 +163,6 @@ public class HotelUserService : IHotelUserService
     private async Task ValidateId(Guid Id)
     {
         if (!await _hotelRepository.ExistsAsync(Id))
-            throw new KeyNotFoundException($"Id {Id} Does not exist.");
+            throw new EntityNotFoundException($"Id {Id} Does not exist.");
     }
 }

@@ -51,6 +51,6 @@ public class HotelImageService : IHotelImageService
     private async Task ValidateId(Guid Id)
     {
         if (!await _imageService.ExistsAsync(Id))
-            throw new KeyNotFoundException($"Id {Id} Does not exist.");
+            throw new EntityNotFoundException($"Id {Id} Does not exist.");
     }
 }
