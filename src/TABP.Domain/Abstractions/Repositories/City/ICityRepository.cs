@@ -12,6 +12,10 @@ public interface ICityRepository
     Task<CityDTO> GetByIdAsync(Guid Id);
     Task DeleteAsync(Guid Id);
     Task UpdateAsync(CityDTO updatedCity);
-    Task<IEnumerable<CitySearchResponseDTO>> SearchAsync(Expression<Func<City, bool>> predicate, int pageNumber, int pageSize);
+    Task<IEnumerable<CitySearchResponseDTO>> SearchAsync(
+        Expression<Func<City, bool>> predicate,
+        int pageNumber,
+        int pageSize,
+        Func<IQueryable<City>, IOrderedQueryable<City>> orderByDelegate = null);
     Task<bool> ExistsByNameAndCountryAsync(string name, string country);
 }

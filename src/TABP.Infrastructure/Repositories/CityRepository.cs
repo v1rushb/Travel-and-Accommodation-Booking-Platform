@@ -69,16 +69,21 @@ public class CityRepository : ICityRepository
     public async Task<IEnumerable<CitySearchResponseDTO>> SearchAsync(
         Expression<Func<City, bool>> predicate,
         int pageNumber,
-        int pageSize)
+        int pageSize,
+        Func<IQueryable<City>, IOrderedQueryable<City>> orderByDelegate = null)
         {
-            var cities = await _context.Cities
+            var cities = _context.Cities
                 .Include(city => city.Hotels)
                 .Where(predicate)
-                .PaginateAsync(
+                .OrderByIf(orderByDelegate != null, orderByDelegate)
+                .Paginate(
                     pageNumber,
-                    pageSize);
+                    pageSize
+                );
 
-            return _mapper.Map<IEnumerable<CitySearchResponseDTO>>(cities);
+            return _mapper
+                .Map<IEnumerable<CitySearchResponseDTO>>(await cities
+                    .ToListAsync()); 
         }
 
     public async Task<bool> ExistsByNameAndCountryAsync(string name, string country) => // check if could be replaced later.
