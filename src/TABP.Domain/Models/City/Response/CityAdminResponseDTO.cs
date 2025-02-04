@@ -9,4 +9,11 @@ public class CityAdminResponseDTO : Entity
     public DateTime CreationDate { get; set; }
     public DateTime ModificationDate { get; set; }
     // later: do the query options : includeHotels=true
+
+    public override string ToString() =>
+        @$"
+            Name: {Name},
+            CountryName: {CountryName},
+            CreationDate: {CreationDate},
+            ModificationDate: {ModificationDate}";
 }
