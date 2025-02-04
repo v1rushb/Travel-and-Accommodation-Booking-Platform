@@ -9,19 +9,16 @@ public static class HotelSortExpressionBuilder
     private static readonly Dictionary<string, Expression<Func<Hotel, object>>> SortExpressions = 
         new(StringComparer.OrdinalIgnoreCase)
     {
-        ["name"] = hotel => hotel.Name,
-        ["starRating"] = hotel => hotel.StarRating,
-        ["city"] = hotel => hotel.City.Name
+        ["Name"] = hotel => hotel.Name,
+        ["StarRating"] = hotel => hotel.StarRating,
+        ["City"] = hotel => hotel.City.Name
     };
 
     private static readonly Dictionary<string, Expression<Func<Hotel, object>>> AdminSortExpressions = 
-        new(StringComparer.OrdinalIgnoreCase)
+        new(SortExpressions, StringComparer.OrdinalIgnoreCase)
     {
-        ["name"] = hotel => hotel.Name,
-        ["starRating"] = hotel => hotel.StarRating,
-        ["city"] = hotel => hotel.City.Name,
-        ["creationDate"] = hotel => hotel.CreationDate,
-        ["modificationDate"] = hotel => hotel.ModificationDate
+        ["CreationDate"] = hotel => hotel.CreationDate,
+        ["ModificationDate"] = hotel => hotel.ModificationDate
     };
 
     public static Func<IQueryable<Hotel>, IOrderedQueryable<Hotel>> GetSortDelegate(
