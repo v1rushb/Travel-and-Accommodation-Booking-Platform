@@ -10,4 +10,14 @@ public class CartSearchQuery
     public DateTime? MinCreationDate { get; set; }
     public DateTime? MaxCreationDate { get; set; }
 
+    public override string ToString() =>
+    @$"
+                    MinTotalPrice: {MinTotalPrice}{(MinTotalPrice == 0 ? " (default)" : "")}, 
+                    MaxTotalPrice: {MaxTotalPrice}{(MaxTotalPrice == decimal.MaxValue ? " (default)" : "")}, 
+                    Status: {(Status != null && Status.Any() ? string.Join(", ", Status) : "None")}, 
+                    MinCheckOutDate: {MinCheckOutDate?.ToString("yyyy-MM-dd") ?? "None"}, 
+                    MaxCheckOutDate: {MaxCheckOutDate?.ToString("yyyy-MM-dd") ?? "None"}, 
+                    MinCreationDate: {MinCreationDate?.ToString("yyyy-MM-dd") ?? "None"}, 
+                    MaxCreationDate: {MaxCreationDate?.ToString("yyyy-MM-dd") ?? "None"}";
+
 }
