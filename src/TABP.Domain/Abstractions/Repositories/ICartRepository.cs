@@ -21,6 +21,10 @@ public interface ICartRepository
     Task<IEnumerable<CartItemDTO>> GetAllCartItemsAsync(Guid cartId, int pageNumber, int pageSize);
     Task<bool> RoomIsBookedForSameUserBetween(Guid roomId, Guid userId, DateTime StartingDate, DateTime EndingDate);
     Task<bool> RoomIsBookedByAnyUserBetween(Guid roomId, DateTime StartingDate, DateTime EndingDate);
-    Task<IEnumerable<CartAdminResponseDTO>> SearchAdminAsync(Expression<Func<Cart, bool>> predicate, int pageNumber, int pageSize);
+    Task<IEnumerable<CartAdminResponseDTO>> SearchAdminAsync(
+        Expression<Func<Cart, bool>> predicate,
+        int pageNumber,
+        int pageSize,
+        Func<IQueryable<Cart>, IOrderedQueryable<Cart>> orderByDelegate = null);
     Task<CartUserResponseDTO> GetCartDetailsByUserIdAsync(Guid userId);
 }

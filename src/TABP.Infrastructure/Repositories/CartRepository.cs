@@ -161,11 +161,16 @@ public class CartRepository : ICartRepository
     public async Task<IEnumerable<CartAdminResponseDTO>> SearchAdminAsync(
         Expression<Func<Cart, bool>> predicate,
         int pageNumber,
-        int pageSize)
+        int pageSize,
+        Func<IQueryable<Cart>, IOrderedQueryable<Cart>> orderByDelegate = null)
     {
         var carts = await _context.Carts
             .Where(predicate)
-            .PaginateAsync(pageNumber, pageSize);
+            .OrderByIf(orderByDelegate != null, orderByDelegate)
+            .PaginateAsync(
+                pageNumber,
+                pageSize
+            );
 
         return _mapper
             .Map<IEnumerable<CartAdminResponseDTO>>(carts);
