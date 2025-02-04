@@ -8,6 +8,7 @@ using TABP.Domain.Models.City.Search;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Enums;
 using TABP.Domain.Abstractions.Services.City;
+using TABP.Domain.Models.City.Sort;
 
 namespace TABP.API.Controllers.Admin;
 
@@ -107,12 +108,14 @@ public class CityAdminController : ControllerBase
     [HttpGet("search")]
     public async Task<IActionResult> SearchForAdminAsync(
         [FromQuery] PaginationDTO pagination,
-        [FromQuery] CitySearchQuery query)
+        [FromQuery] CitySearchQuery query,
+        [FromQuery] CitySortQuery sortQuery)
     {
         var result = await _cityAdminService
             .SearchAsync(
                 query,
-                pagination
+                pagination,
+                sortQuery
             );
 
         var citySize = result.Count();
