@@ -5,6 +5,7 @@ using TABP.Domain.Enums;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Room.Search;
 using TABP.API.Extensions;
+using TABP.Domain.Models.Room.Sort;
 
 namespace TABP.API.Controllers;
 
@@ -25,12 +26,14 @@ public class RoomController : ControllerBase
     [HttpGet("search")] 
     public async Task<IActionResult> SearchRoomsAsync(
         [FromQuery] PaginationDTO pagination,
-        [FromQuery] RoomSearchQuery query)
+        [FromQuery] RoomSearchQuery query,
+        [FromQuery] RoomSortQuery sortQuery)
     {
         var rooms = await _roomUserService
             .SearchAsync(
                 query,
-                pagination
+                pagination,
+                sortQuery
             );
 
         var roomCount = rooms.Count();

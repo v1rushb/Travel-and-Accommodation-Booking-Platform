@@ -9,6 +9,7 @@ using TABP.Domain.Models.Room;
 using TABP.Domain.Models.Room.Search;
 using TABP.Domain.Models.Room.Search.Response;
 using TABP.Domain.Enums;
+using TABP.Domain.Models.Room.Sort;
 
 namespace TABP.API.Controllers.Admin;
 
@@ -88,11 +89,13 @@ public class RoomController : ControllerBase
     [HttpGet("search")]
     public async Task<IActionResult> SearchRoomsForAdminAsync(
         [FromQuery] PaginationDTO pagination,
-        [FromQuery] RoomSearchQuery query)
+        [FromQuery] RoomSearchQuery query,
+        [FromQuery] RoomSortQuery sortQuery)
     {
         var rooms = await _roomAdminService.SearchAsync(
             query,
-            pagination
+            pagination,
+            sortQuery
         );
 
         var roomsCount = rooms.Count();
