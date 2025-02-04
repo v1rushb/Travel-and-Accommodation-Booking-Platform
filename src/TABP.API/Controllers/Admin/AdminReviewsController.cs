@@ -6,6 +6,7 @@ using TABP.API.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using TABP.Domain.Enums;
 using TABP.Domain.Abstractions.Services.Review;
+using TABP.Domain.Models.HotelReview.Sort;
 
 namespace TABP.API.Controllers.Admin;
 
@@ -24,12 +25,14 @@ public class AdminReviewsControllers : ControllerBase
     [HttpGet("search")]
     public async Task<IActionResult> SearchHotelReviewsAsync(
         [FromQuery] PaginationDTO pagination,
-        [FromQuery] AdminReviewSearchQuery query)
+        [FromQuery] AdminReviewSearchQuery query,
+        [FromQuery] ReviewSortQuery sortQuery)
     {
         var reviews = await _hotelReviewAdminService
             .SearchAsync(
                 query,
-                pagination
+                pagination,
+                sortQuery
             );
 
         var reviewCount = reviews.Count();

@@ -7,6 +7,7 @@ using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.HotelReview.Search;
 using TABP.API.Extensions;
 using TABP.Domain.Abstractions.Services.Review;
+using TABP.Domain.Models.HotelReview.Sort;
 
 namespace TABP.API.Controllers;
 
@@ -91,12 +92,14 @@ public class ReviewsController : ControllerBase
     [HttpGet("search")]
     public async Task<IActionResult> SearchReviewsAsync(
         [FromQuery] PaginationDTO pagination,
-        [FromQuery] ReviewSearchQuery query) 
+        [FromQuery] ReviewSearchQuery query,
+        [FromQuery] ReviewSortQuery sortQuery)
     {
         var reviews = await _hotelReviewUserService
             .SearchAsync(
                 query,
-                pagination
+                pagination,
+                sortQuery
             );
 
         var reviewsCount = reviews.Count();
