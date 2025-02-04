@@ -4,6 +4,7 @@ using TABP.API.Extensions;
 using TABP.Domain.Abstractions.Services.Cart;
 using TABP.Domain.Enums;
 using TABP.Domain.Models.Cart.Search;
+using TABP.Domain.Models.Cart.Sort;
 using TABP.Domain.Models.Pagination;
 
 namespace TABP.API.Controllers.Admin;
@@ -24,12 +25,14 @@ public class AdminCartsController : ControllerBase
     [HttpGet("search")]
     public async Task<IActionResult> SearchCartsAsync(
         [FromQuery] PaginationDTO pagination,
-        [FromQuery] CartSearchQuery query)
+        [FromQuery] CartSearchQuery query,
+        [FromQuery] CartSortQuery sortQuery)
     {
         var carts = await _cartAdminService
             .SearchAsync(
                 pagination,
-                query
+                query,
+                sortQuery
             );
 
         var cartCount = carts.Count();
