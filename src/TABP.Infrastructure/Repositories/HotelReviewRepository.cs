@@ -101,11 +101,16 @@ public class HotelReviewsRepository : IHotelReviewRepository
     public async Task<IEnumerable<HotelReviewDTO>> SearchAsync(
         Expression<Func<HotelReview, bool>> predicate,
         int pageNumber,
-        int pageSize)
+        int pageSize,
+        Func<IQueryable<HotelReview>, IOrderedQueryable<HotelReview>> orderByDelegate = null)
     {
         var reviews = await _context.HotelReviews
             .Where(predicate)
-            .PaginateAsync(pageNumber, pageSize);
+            .OrderByIf(orderByDelegate != null, orderByDelegate)
+            .PaginateAsync(
+                pageNumber,
+                pageSize
+            );
             
         return _mapper
             .Map<IEnumerable<HotelReviewDTO>>(reviews);
