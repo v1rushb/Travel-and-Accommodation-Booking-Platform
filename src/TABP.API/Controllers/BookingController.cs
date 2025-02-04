@@ -50,12 +50,14 @@ public class UserBookingController : ControllerBase
     [HttpGet("search")]
     public async Task<IActionResult> SearchUserBookingsAsync(
         [FromQuery] PaginationDTO pagination,
-        [FromQuery] BookingSearchQuery query)
+        [FromQuery] BookingSearchQuery query,
+        [FromQuery] BookingSortQuery sortQuery)
     {
         var bookings = await _roomBookingUserService
             .SearchAsync(
                 query,
-                pagination
+                pagination,
+                sortQuery
             );
 
         var bookingsCount = bookings.Count();

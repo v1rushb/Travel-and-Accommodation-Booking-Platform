@@ -5,6 +5,7 @@ using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Booking.Search;
 using TABP.API.Extensions;
 using TABP.Domain.Abstractions.Services.Booking;
+using TABP.Domain.Models.RoomBooking;
 
 namespace TABP.API.Controllers.Admin;
 
@@ -27,12 +28,14 @@ public class AdminBookingsController : ControllerBase
     [HttpGet("search")]
     public async Task<IActionResult> SearchBookingsAsync(
         [FromQuery] PaginationDTO pagination,
-        [FromQuery] AdminBookingSearchQuery query)
+        [FromQuery] AdminBookingSearchQuery query,
+        [FromQuery] BookingSortQuery sortQuery)
     {
         var bookings = await _roomBookingAdminService
             .SearchAsync(
                 query,
-                pagination
+                pagination,
+                sortQuery
             );
             
         var bookingCount = bookings.Count();
