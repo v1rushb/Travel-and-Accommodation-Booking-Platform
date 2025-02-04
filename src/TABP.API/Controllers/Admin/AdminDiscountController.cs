@@ -9,6 +9,7 @@ using TABP.API.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using TABP.Domain.Enums;
 using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Models.Discount.Sort;
 
 namespace TABP.API.Controllers.Admin;
 
@@ -86,9 +87,16 @@ public class DiscountController : ControllerBase
     [HttpGet("search")]
     public async Task<IActionResult> SearchForAdminAsync(
         [FromQuery] PaginationDTO pagination,
-        [FromQuery] DiscountSearchQuery query)
+        [FromQuery] DiscountSearchQuery query,
+        [FromQuery] DiscountSortQuery sortQuery)
     {
-        var discounts = await _discountService.SearchForAdminAsync(query, pagination);
+        var discounts = await _discountService
+            .SearchForAdminAsync(
+                query,
+                pagination,
+                sortQuery
+            );
+            
         var discountsSize = discounts.Count();
 
         Response.Headers.AddPaginationHeaders(discountsSize, pagination);
