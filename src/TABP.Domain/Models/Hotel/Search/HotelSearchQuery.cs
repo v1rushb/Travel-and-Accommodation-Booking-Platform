@@ -15,4 +15,25 @@ public class HotelSearchQuery
     public int? MaxStars { get; set; }
     public string? City { get; set; }
     public IEnumerable<int>? RoomTypes { get; set; }
+
+    public override string ToString()
+    {
+        var searchTermDisplay = !string.IsNullOrEmpty(SearchTerm) 
+        ? $"'{SearchTerm}'" 
+        : "None";
+
+        return @$"
+                    SearchTerm: {searchTermDisplay},
+                    CheckInDate: {CheckInDate?.ToString("yyyy-MM-dd") ?? "None"} - CheckOutDate: {CheckOutDate?.ToString("yyyy-MM-dd") ?? "None"},
+                    NumberOfAdults: {NumberOfAdults}{(NumberOfAdults == 2 ? " (default)" : "")}, 
+                    NumberOfChildren: {NumberOfChildren}{(NumberOfChildren == 0 ? " (default)" : "")}, 
+                    MinNumberOfRooms: {MinNumberOfRooms}{(MinNumberOfRooms == 0 ? " (default)" : "")}, 
+                    MaxNumberOfRooms: {MaxNumberOfRooms}{(MaxNumberOfRooms == int.MaxValue ? " (default)" : "")}, 
+                    MinPricePerNight: {MinPricePerNight}{(MinPricePerNight == 0 ? " (default)" : "")}, 
+                    MaxPricePerNight: {MaxPricePerNight}{(MaxPricePerNight == int.MaxValue ? " (default)" : "")}, 
+                    MinStars: {MinStars}, 
+                    MaxStars: {MaxStars}, 
+                    City: {City ?? "None"}, 
+                    RoomTypes: {(RoomTypes != null ? string.Join(", ", RoomTypes) : "None")}";
+    }
 }
