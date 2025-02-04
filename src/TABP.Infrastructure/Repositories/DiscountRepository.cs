@@ -78,13 +78,19 @@ public class DiscountRepository : IDiscountRepository
     public async Task<IEnumerable<DiscountForAdminResponseDTO>> SearchForAdminAsync(
         Expression<Func<Discount, bool>> predicate,
         int pageNumber,
-        int pageSize)
+        int pageSize,
+        Func<IQueryable<Discount>, IOrderedQueryable<Discount>> orderByDelegate = null)
     {
         var discounts = await _context.Discounts
             .Where(predicate)
-            .PaginateAsync(pageNumber, pageSize);
+            .OrderByIf(orderByDelegate != null, orderByDelegate)
+            .PaginateAsync(
+                pageNumber,
+                pageSize
+            );
 
-        return _mapper.Map<IEnumerable<DiscountForAdminResponseDTO>>(discounts);
+        return _mapper
+            .Map<IEnumerable<DiscountForAdminResponseDTO>>(discounts);
     }
 
     public async Task<DiscountDTO> GetHighestDiscountActiveForHotelRoomTypeAsync(Guid hotelId, RoomType type)

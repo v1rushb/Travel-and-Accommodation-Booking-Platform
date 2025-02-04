@@ -1,11 +1,13 @@
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using TABP.Application.Sorting.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Exceptions;
 using TABP.Domain.Models.Discount;
 using TABP.Domain.Models.Discount.Search;
 using TABP.Domain.Models.Discount.Search.Response;
+using TABP.Domain.Models.Discount.Sort;
 using TABP.Domain.Models.Pagination;
 
 namespace TABP.Application.Services;
@@ -17,19 +19,22 @@ public class DiscountService : IDiscountService
     private readonly IValidator<DiscountDTO> _discountValidator;
     private readonly IValidator<PaginationDTO> _paginationValidator;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IValidator<DiscountSortQuery> _discountSortQueryValidator;
 
     public DiscountService(
        IDiscountRepository discountRepository,
        ILogger<DiscountService> logger,
        IValidator<DiscountDTO> discountValidator,
        IValidator<PaginationDTO> paginationValidator,
-       ICurrentUserService currentUserService)
+       ICurrentUserService currentUserService,
+       IValidator<DiscountSortQuery> discountSortQueryValidator)
     {
         _discountRepository = discountRepository;
         _logger = logger;
         _discountValidator = discountValidator;
         _paginationValidator = paginationValidator;
         _currentUserService = currentUserService;
+        _discountSortQueryValidator = discountSortQueryValidator;
     }
     public async Task AddAsync(DiscountDTO newDiscount)
     {
@@ -71,21 +76,39 @@ public class DiscountService : IDiscountService
 
     public async Task<IEnumerable<DiscountForAdminResponseDTO>> SearchForAdminAsync(
         DiscountSearchQuery query,
-        PaginationDTO pagination)
+        PaginationDTO pagination,
+        DiscountSortQuery sortQuery)
     {
         _paginationValidator.ValidateAndThrow(pagination);
 
-        var expression = DiscountForAdminExpressionBuilder.Build(query);
+        sortQuery.IsAdmin = true;
+        _discountSortQueryValidator.ValidateAndThrow(sortQuery);
+
+        var filterExpression = DiscountForAdminExpressionBuilder.Build(query);
+        var orderByDelegate = DiscountSortExpressionBuilder
+            .GetSortDelegate(sortQuery);
 
         _logger.LogInformation(
-            "Searching for Discounts with query {@DiscountSearchQuery} by User {UserId}",
-            query,
-            _currentUserService.GetUserId());
+            @"
+                Searching For Discounts with query {DiscountSearchQuery}
+                Sorting: {DiscountSortQuery}
+                PageNumber: {PageNumber}
+                PageSize: {PageSize}
+                By User With Id: {UserId}",
+
+                query,
+                sortQuery,
+                pagination.PageNumber,
+                pagination.PageSize, 
+                _currentUserService.GetUserId()
+            );
 
         return await _discountRepository.SearchForAdminAsync(
-            expression,
+            filterExpression,
             pagination.PageNumber,
-            pagination.PageSize);
+            pagination.PageSize,
+            orderByDelegate
+        );
     }
 
     public async Task<IEnumerable<DiscountDTO>> GetActiveDiscountsForHotelAsync(Guid hotelId) =>
