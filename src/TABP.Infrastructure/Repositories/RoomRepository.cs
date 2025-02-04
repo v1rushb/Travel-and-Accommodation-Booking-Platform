@@ -85,12 +85,18 @@ public class RoomRepository : IRoomRepository
     public async Task<IEnumerable<RoomDTO>> SearchAsync(
         Expression<Func<Room, bool>> predicate,
         int pageNumber,
-        int pageSize)
+        int pageSize,
+        Func<IQueryable<Room>, IOrderedQueryable<Room>> orderBy = null)
     {
         var rooms = await _context.Rooms
             .Where(predicate)
-            .PaginateAsync(pageNumber, pageSize);
+            .OrderByIf(orderBy != null, orderBy)
+            .PaginateAsync(
+                pageNumber,
+                pageSize
+            );
 
-        return _mapper.Map<IEnumerable<RoomDTO>>(rooms);
+        return _mapper
+            .Map<IEnumerable<RoomDTO>>(rooms);
     }
 }

@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Room;
-using TABP.Domain.Models.Room.Search.Response;
 
 namespace TABP.Domain.Abstractions.Repositories;
 
@@ -16,5 +15,9 @@ public interface IRoomRepository
     Task<IEnumerable<Room>> GetRoomsByHotelAsync(Guid HotelId);
 
     Task<bool> RoomExistsForHotelAsync(Guid HotelId, Guid RoomId);
-    Task<IEnumerable<RoomDTO>> SearchAsync(Expression<Func<Room, bool>> predicate, int pageNumber, int pageSize);
+    Task<IEnumerable<RoomDTO>> SearchAsync(
+        Expression<Func<Room, bool>> predicate,
+        int pageNumber,
+        int pageSize,
+        Func<IQueryable<Room>, IOrderedQueryable<Room>> orderBy = null);
 }
