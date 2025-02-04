@@ -1,12 +1,12 @@
 using AutoMapper;
 using TABP.Domain.Enums;
 using TABP.Domain.Models.Booking.Search;
+using TABP.Domain.Models.Booking.Search.Response;
 using TABP.Domain.Models.City.Response;
 using TABP.Domain.Models.City.Search;
 using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotel.Search.Response;
 using TABP.Domain.Models.HotelReview;
-using TABP.Domain.Models.HotelReview.Search;
 using TABP.Domain.Models.HotelReview.Search.Response;
 using TABP.Domain.Models.Room;
 using TABP.Domain.Models.Room.Search.Response;
@@ -22,6 +22,7 @@ public class SearchProfile : Profile
 
         CreateMap<HotelDTO, HotelUserResponseDTO>();
         CreateMap<RoomBookingDTO, RoomAdminResponseDTO>();
+        CreateMap<RoomBookingDTO, BookingUserResponseDTO>();
         CreateMap<CitySearchResponseDTO, CityAdminResponseDTO>();
         CreateMap<HotelDTO, HotelAdminResponseDTO>();
         CreateMap<HotelReviewDTO, HotelReviewUserResponseDTO>()
