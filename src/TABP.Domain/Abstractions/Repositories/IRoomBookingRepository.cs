@@ -13,7 +13,11 @@ public interface IRoomBookingRepository
     // Task<IEnumerable<RoomBooking>> GetByUserAsync(Guid userId);
     // Task<IEnumerable<RoomBooking>> GetByRoomAsync(Guid roomId);
     Task<bool> RoomIsBookedBetween(Guid roomId, DateTime StartingDate, DateTime EndingDate);
-    Task<IEnumerable<RoomBookingDTO>> SearchAsync(Expression<Func<RoomBooking, bool>> predicate, int pageNumber, int pageSize);
+    Task<IEnumerable<RoomBookingDTO>> SearchAsync(
+        Expression<Func<RoomBooking, bool>> predicate,
+        int pageNumber,
+        int pageSize,
+        Func<IQueryable<RoomBooking>, IOrderedQueryable<RoomBooking>> orderByDelegate = null);
     // Task<IEnumerable<BookingAdminResponseDTO>> SearchAdminAsync(Expression<Func<RoomBooking, bool>> predicate, int pageNumber, int pageSize);
     Task<IEnumerable<HotelBookingDTO>> GetAllForHotelsAsync(Expression<Func<RoomBooking, bool>> predicate);
 }

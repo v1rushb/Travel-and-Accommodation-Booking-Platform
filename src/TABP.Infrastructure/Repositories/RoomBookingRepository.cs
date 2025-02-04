@@ -66,15 +66,19 @@ public class RoomBookingRepository : IRoomBookingRepository
     public async Task<IEnumerable<RoomBookingDTO>> SearchAsync(
         Expression<Func<RoomBooking, bool>> predicate,
         int pageNumber,
-        int pageSize)
+        int pageSize,
+        Func<IQueryable<RoomBooking>, IOrderedQueryable<RoomBooking>> orderByDelegate = null)
     {
         var bookings = await _context.RoomBookings
             .Where(predicate)
+            .OrderByIf(orderByDelegate != null, orderByDelegate)
             .PaginateAsync(
                 pageNumber,
-                pageSize);
+                pageSize
+            );
 
-        return _mapper.Map<IEnumerable<RoomBookingDTO>>(bookings);
+        return _mapper
+            .Map<IEnumerable<RoomBookingDTO>>(bookings);
     }
 
     public async Task<IEnumerable<HotelBookingDTO>> GetAllForHotelsAsync(Expression<Func<RoomBooking, bool>> predicate)
