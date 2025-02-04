@@ -75,18 +75,17 @@ public class HotelRepository : IHotelRepository
         int pageSize,
         Func<IQueryable<Hotel>, IOrderedQueryable<Hotel>> orderBy = null)
     {
-        var query = _context.Hotels
+        var hotels = await _context.Hotels
             .Include(h => h.City)
             .Where(predicate)
             .OrderByIf(orderBy != null, orderBy)
-            .Paginate(
+            .PaginateAsync(
                 pageNumber,
                 pageSize
             );
 
         return _mapper
-            .Map<IEnumerable<HotelDTO>>(query
-                .ToList());
+            .Map<IEnumerable<HotelDTO>>(hotels);
     }
 
 

@@ -77,8 +77,16 @@ public class HotelUserService : IHotelUserService
         
 
         _logger.LogInformation(
-            "Searching for Hotels with query {@HotelSearchQuery} by User {UserId}",
+            @"Searching for Hotels with query {HotelSearchQuery},
+            Sorting: {SortQuery},
+            Page Number: {PageNumber},
+            Page Size: {PageSize}
+            By User with Id: {UserId}",
+            
             query,
+            sortQuery,
+            pagination.PageNumber,
+            pagination.PageSize,
             _currentUserService.GetUserId());
 
         return _mapper.Map<IEnumerable<HotelUserResponseDTO>>(hotels);

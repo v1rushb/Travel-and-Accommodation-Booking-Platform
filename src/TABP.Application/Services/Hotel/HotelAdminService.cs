@@ -63,12 +63,13 @@ public class HotelAdminService : IHotelAdminService
 
         _logger.LogInformation(
             @"Searching for Hotels with query {HotelSearchQuery},
-            {HotelSortQuery}, 
+            Sorting: {HotelSortQuery}, 
             PageNumber: {PageNumber}, 
-            PageSize: {PageSize} By User {UserId}",
+            PageSize: {PageSize}
+            By User {UserId}",
 
             query,
-            sortByDelegate,
+            sortQuery,
             pagination.PageNumber,
             pagination.PageSize,
             _currentUserService.GetUserId());
