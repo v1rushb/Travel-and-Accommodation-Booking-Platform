@@ -102,7 +102,7 @@ public class ImageRepository : IImageRepository
 
     public async Task<int> GetCountAsync(Guid Id) =>
         await _context.Images
-            .CountAsync(image => image.Id == Id);
+            .CountAsync(image => image.EntityId == Id);
 
     public async Task<IEnumerable<Guid>> GetIdsForEntityAsync(Guid entityId) =>
         await _context.Images
