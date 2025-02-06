@@ -35,7 +35,7 @@ public class VisitsController : ControllerBase
         return Ok(hotels);
     }
 
-    [HttpGet("hotels/history")]
+    [HttpGet("hotel-history")]
     public async Task<IActionResult> GetHotelHistoryAsync(
         [FromQuery] VisitTimeOptionQuery query,
         [FromQuery] PaginationDTO pagination)
