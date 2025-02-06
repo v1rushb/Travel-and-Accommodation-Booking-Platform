@@ -1,14 +1,15 @@
 using System.Linq.Expressions;
 using TABP.Application.Extensions;
-using TABP.Domain.Entities;
 using TABP.Domain.Enums;
 using TABP.Domain.Models.Room.Search;
 
+namespace TABP.Application.Filters.ExpressionBuilders;
+
 public static class RoomExpressionBuilder
 {
-    public static Expression<Func<Room, bool>> Build(RoomSearchQuery query)
+    public static Expression<Func<AvailableRoom, bool>> Build(RoomSearchQuery query)
     {
-        var filter = Expressions.True<Room>();
+        var filter = Expressions.True<AvailableRoom>();
 
         filter = filter
         .AndIf(
@@ -80,13 +81,13 @@ public static class RoomExpressionBuilder
     private static bool HasValidMaxNumber(RoomSearchQuery query) =>
         query.MaxNumber < int.MaxValue;
 
-    private static Expression<Func<Room, bool>> GetNumberRangeFilter(int min, int max) =>
+    private static Expression<Func<AvailableRoom, bool>> GetNumberRangeFilter(int min, int max) =>
         room => room.Number >= min && room.Number <= max;
 
-    private static Expression<Func<Room, bool>> GetMinNumberFilter(int min) =>
+    private static Expression<Func<AvailableRoom, bool>> GetMinNumberFilter(int min) =>
         room => room.Number >= min;
 
-    private static Expression<Func<Room, bool>> GetMaxNumberFilter(int max) =>
+    private static Expression<Func<AvailableRoom, bool>> GetMaxNumberFilter(int max) =>
         room => room.Number <= max;
 
     private static bool HasValidAdultsCapacityRange(RoomSearchQuery query) =>
@@ -98,13 +99,13 @@ public static class RoomExpressionBuilder
     private static bool HasValidMaxAdultsCapacity(RoomSearchQuery query) =>
         query.MaxAdultsCapacity < int.MaxValue;
 
-    private static Expression<Func<Room, bool>> GetAdultsCapacityRangeFilter(int min, int max) =>
+    private static Expression<Func<AvailableRoom, bool>> GetAdultsCapacityRangeFilter(int min, int max) =>
         room => room.AdultsCapacity >= min && room.AdultsCapacity <= max;
 
-    private static Expression<Func<Room, bool>> GetMinAdultsCapacityFilter(int min) =>
+    private static Expression<Func<AvailableRoom, bool>> GetMinAdultsCapacityFilter(int min) =>
         room => room.AdultsCapacity >= min;
 
-    private static Expression<Func<Room, bool>> GetMaxAdultsCapacityFilter(int max) =>
+    private static Expression<Func<AvailableRoom, bool>> GetMaxAdultsCapacityFilter(int max) =>
         room => room.AdultsCapacity <= max;
 
     private static bool HasValidChildrenCapacityRange(RoomSearchQuery query) =>
@@ -116,13 +117,13 @@ public static class RoomExpressionBuilder
     private static bool HasValidMaxChildrenCapacity(RoomSearchQuery query) =>
         query.MaxChildrenCapacity < int.MaxValue;
 
-    private static Expression<Func<Room, bool>> GetChildrenCapacityRangeFilter(int min, int max) =>
+    private static Expression<Func<AvailableRoom, bool>> GetChildrenCapacityRangeFilter(int min, int max) =>
         room => room.ChildrenCapacity >= min && room.ChildrenCapacity <= max;
 
-    private static Expression<Func<Room, bool>> GetMinChildrenCapacityFilter(int min) =>
+    private static Expression<Func<AvailableRoom, bool>> GetMinChildrenCapacityFilter(int min) =>
         room => room.ChildrenCapacity >= min;
 
-    private static Expression<Func<Room, bool>> GetMaxChildrenCapacityFilter(int max) =>
+    private static Expression<Func<AvailableRoom, bool>> GetMaxChildrenCapacityFilter(int max) =>
         room => room.ChildrenCapacity <= max;
 
     private static bool HasValidPriceRange(RoomSearchQuery query) =>
@@ -134,16 +135,16 @@ public static class RoomExpressionBuilder
     private static bool HasValidMaxPrice(RoomSearchQuery query) =>
         query.MaxPricePerNight < int.MaxValue;
 
-    private static Expression<Func<Room, bool>> GetPriceRangeFilter(int min, int max) =>
+    private static Expression<Func<AvailableRoom, bool>> GetPriceRangeFilter(int min, int max) =>
         room => room.PricePerNight >= min && room.PricePerNight <= max;
 
-    private static Expression<Func<Room, bool>> GetMinPriceFilter(int min) =>
+    private static Expression<Func<AvailableRoom, bool>> GetMinPriceFilter(int min) =>
         room => room.PricePerNight >= min;
 
-    private static Expression<Func<Room, bool>> GetMaxPriceFilter(int max) =>
+    private static Expression<Func<AvailableRoom, bool>> GetMaxPriceFilter(int max) =>
         room => room.PricePerNight <= max;
 
-    private static Expression<Func<Room, bool>> GetRoomTypesFilter(IEnumerable<int> roomTypes)
+    private static Expression<Func<AvailableRoom, bool>> GetRoomTypesFilter(IEnumerable<int> roomTypes)
     {
         if (roomTypes == null || !roomTypes.Any())
             return room => true;

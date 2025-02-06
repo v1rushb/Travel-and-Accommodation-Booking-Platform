@@ -1,12 +1,11 @@
 using System.Linq.Expressions;
-using TABP.Domain.Entities;
 using TABP.Domain.Models.Room.Sort;
 
 namespace TABP.Application.Sorting.ExpressionBuilders;
 
 public static class RoomSortExpressionBuilder
 {
-    private static readonly Dictionary<string, Expression<Func<Room, object>>> SortExpressions = 
+    private static readonly Dictionary<string, Expression<Func<AvailableRoom, object>>> SortExpressions = 
         new(StringComparer.OrdinalIgnoreCase)
     {
         ["Number"] = room => room.Number,
@@ -15,14 +14,14 @@ public static class RoomSortExpressionBuilder
         ["ChildrenCapacity"] = room => room.ChildrenCapacity
     };
 
-    private static readonly Dictionary<string, Expression<Func<Room, object>>> AdminSortExpressions = 
+    private static readonly Dictionary<string, Expression<Func<AvailableRoom, object>>> AdminSortExpressions = 
         new(StringComparer.OrdinalIgnoreCase)
     {
         ["CreationDate"] = room => room.CreationDate,
         ["ModificationDate"] = room => room.ModificationDate
     };
 
-    public static Func<IQueryable<Room>, IOrderedQueryable<Room>> GetSortDelegate(
+    public static Func<IQueryable<AvailableRoom>, IOrderedQueryable<AvailableRoom>> GetSortDelegate(
         RoomSortQuery sortQuery)
     {
         var sortExpressions = sortQuery.IsAdmin ? AdminSortExpressions : SortExpressions;
