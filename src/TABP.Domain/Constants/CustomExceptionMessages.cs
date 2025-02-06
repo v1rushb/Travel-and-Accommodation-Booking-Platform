@@ -53,4 +53,9 @@ public static class CustomExceptionMessages
     {
         public static string Title => "User Duplicate";
     }
+
+    public static class EmptyCart
+    {
+        public static string Title => "Cart Cannot be empty.";
+    }
 }

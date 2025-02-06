@@ -121,7 +121,6 @@ public class CartService : ICartService
         
          _logger.LogInformation("Added Room {RoomId} to Cart {CartId} for User {UserId}", newCartItem.RoomId, pendingCart.Id, pendingCart.UserId);
     }
-
     public async Task DeleteItemAsync(Guid cartItemId)
     {
         var currentUserId = _currentUserService.GetUserId();
@@ -161,6 +160,8 @@ public class CartService : ICartService
         var cart = await _cartRepository
             .GetLastPendingCartAsync(_currentUserService.GetUserId());
         
+        ValidateCart(cart);
+        
         bool IsInvalidCart = cart is null || cart.Items is null || cart.Items.Count == 0;
 
         if(IsInvalidCart)
@@ -189,6 +190,12 @@ public class CartService : ICartService
             throw;
         }
 
+    }
+
+    private void ValidateCart(CartDTO cart)
+    {
+        if(cart == null)
+            throw new EmptyCartException("Cannot checkout an empty cart.");
     }
 
     public async Task<IEnumerable<CartItemDTO>> GetCartItemsAsync(

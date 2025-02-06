@@ -8,4 +8,10 @@ public abstract class CustomException : Exception
     {
         Title = title;
     }
+
+    protected CustomException(string title)
+        : base() 
+    {
+        Title = title;
+    }
 }

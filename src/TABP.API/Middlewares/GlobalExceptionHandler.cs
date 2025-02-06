@@ -83,6 +83,7 @@ public class GlobalExceptionHandler : IExceptionHandler
             RedisCacheCallbackException => StatusCodes.Status500InternalServerError,
             EntityImageLimitExceededException => StatusCodes.Status400BadRequest,
             InvalidJWTConfigurationException => StatusCodes.Status500InternalServerError,
+            EmptyCartException => StatusCodes.Status422UnprocessableEntity,
             _ => StatusCodes.Status500InternalServerError
         };
 
