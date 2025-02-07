@@ -27,6 +27,7 @@ public class HotelBookingDbContext : DbContext
     public DbSet<RoomBooking> RoomBookings { get; set; }
     public DbSet<Cart> Carts { get; set; }
     public DbSet<ImageEntity> Images { get; set; }
+    public DbSet<AvailableRoom> AvailableRooms { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -38,6 +39,11 @@ public class HotelBookingDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ConfigureEntities();
+        
+        modelBuilder
+            .MapViews()
+            .ConfigureEntities()
+            .ConfigureRelations()
+            .SeedTables();
     }
 }
