@@ -13,5 +13,6 @@ public interface IUserRepository
     Task<bool> ExistsByUsernameAsync(string username);
 
     Task<UserDTO> GetByUsernameWithRolesAsync(string username);
+    Task UpdateAsync(UserDTO user);
 
 }

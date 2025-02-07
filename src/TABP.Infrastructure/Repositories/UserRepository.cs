@@ -47,4 +47,12 @@ public class UserRepository : IUserRepository
        _mapper.Map<UserDTO>(await _context.Users
             .Include(users => users.Roles)
             .FirstOrDefaultAsync(user => user.Username == username));
+
+    public async Task UpdateAsync(UserDTO updatedUser)
+    {
+        var user = _mapper.Map<User>(updatedUser);
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
+        _logger.LogInformation("User has been updated.");
+    }
 }

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Constants.Email;
-using TABP.Domain.Constants.User;
 using TABP.Domain.Enums;
 using TABP.Domain.Exceptions;
 using TABP.Domain.Models.Email;
@@ -12,8 +11,6 @@ using TABP.Domain.Models.User;
 namespace TABP.Application.Services;
 
 
-// very dirty, clean asap.
-// missing all kinds of validations.
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
@@ -68,6 +65,9 @@ public class UserService : IUserService
             userLoginCredentials.Password,
             storedUser.Password,
             userLoginCredentials.Username);
+
+        storedUser.LastLogin = DateTime.UtcNow;
+        await _userRepository.UpdateAsync(storedUser);
 
         return _tokenGenerator.GenerateToken(storedUser);
     }
