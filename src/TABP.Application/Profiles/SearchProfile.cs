@@ -1,7 +1,10 @@
 using AutoMapper;
+using TABP.Domain.Entities;
 using TABP.Domain.Enums;
 using TABP.Domain.Models.Booking.Search;
 using TABP.Domain.Models.Booking.Search.Response;
+using TABP.Domain.Models.Cart;
+using TABP.Domain.Models.Cart.Search.Response;
 using TABP.Domain.Models.City.Response;
 using TABP.Domain.Models.City.Search;
 using TABP.Domain.Models.Hotel;
