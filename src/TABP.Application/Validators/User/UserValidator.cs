@@ -38,5 +38,9 @@ internal class UserValidator : AbstractValidator<UserDTO>
             .Length(UserConstants.MinPasswordLength, UserConstants.MaxPasswordLength)
             .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]).+$")
                     .WithMessage("{PropertyName} must have at least one uppercase letter, one lowercase letter, one digit, and one special character.");
+
+        RuleFor(user => user.Email)
+            .NotNull()
+            .EmailAddress();
     }
 }
