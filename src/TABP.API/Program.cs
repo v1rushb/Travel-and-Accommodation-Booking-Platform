@@ -12,8 +12,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// builder.Services.AddSingleton<IExceptionHandler, GlobalExceptionHandler>();
-
 builder.Services.BindConfiguration(builder.Configuration);
 
 builder.Services.RegisterInfrastructure(builder.Configuration);
@@ -28,7 +26,6 @@ builder.Services.AddProblemDetails()
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -44,10 +41,7 @@ app.UseMiddleware<Blacklist>();
 app.UseAuthorization();
 app.UseExceptionHandler();
 
-
-
 app.MapControllers()
     .RequireRateLimiting(nameof(RateLimitingPolicies.FixedWindow));
-
 
 app.Run();
