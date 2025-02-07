@@ -44,8 +44,7 @@ public class HotelReviewService : IHotelReviewService
             .AddAsync(newReview);
 
         await UpdateHotelStarRatingAsync(
-            newReview.HotelId,
-            newRating: newReview.Rating);
+            newReview.HotelId);
 
         await _unitOfWork
             .SaveChangesAsync();
@@ -65,8 +64,7 @@ public class HotelReviewService : IHotelReviewService
             .DeleteAsync(Id);
 
         await UpdateHotelStarRatingAsync(
-           persistedReview.HotelId,
-           originalRating: persistedReview.Rating);
+           persistedReview.HotelId);
 
         await _unitOfWork.SaveChangesAsync();
     }
@@ -107,16 +105,11 @@ public class HotelReviewService : IHotelReviewService
 
         updatedReview.ModificationDate = DateTime.UtcNow;
 
-        var persistedReview = await _hotelReviewRepository
-            .GetByIdAsync(updatedReview.Id);
-
         await _hotelReviewRepository
             .UpdateAsync(updatedReview);
 
         await UpdateHotelStarRatingAsync(
-            updatedReview.HotelId,
-            newRating: updatedReview.Rating,
-            originalRating: persistedReview.Rating);
+            updatedReview.HotelId);
 
         await _unitOfWork.SaveChangesAsync();
     }
@@ -143,28 +136,12 @@ public class HotelReviewService : IHotelReviewService
     //     return await _hotelReviewRepository.GetByUserAndHotelAsync(userId, hotelId);
     // }
 
-    private async Task UpdateHotelStarRatingAsync(
-        Guid hotelId,
-        decimal? newRating = null,
-        decimal? originalRating = null)
+    private async Task UpdateHotelStarRatingAsync(Guid hotelId)
     {
         var hotel = await _hotelRepository.GetByIdAsync(hotelId);
-
-        if (!newRating.HasValue && originalRating.HasValue)
-        {
-            hotel.StarRating -= originalRating.Value;
-            return;
-        }
-
-        if (newRating.HasValue && originalRating.HasValue)
-        {
-            hotel.StarRating += newRating.Value - originalRating.Value;
-            return;
-        }
-
-        if (newRating.HasValue)
-        {
-            hotel.StarRating += newRating.Value;
-        }
+        var averageRating = await _hotelReviewRepository.
+            GetAverageRatingByHotelAsync(hotelId);
+        hotel.StarRating = Convert.ToDecimal(averageRating);
+        _hotelRepository.Update(hotel);
     }
 }
