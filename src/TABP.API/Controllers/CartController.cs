@@ -34,10 +34,10 @@ public class CartController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetCartDetailsAsync()
     {
-        await _cartService
+        var cart = await _cartService
             .GetCurrentCartDetailsAsync();
 
-        return Ok();
+        return Ok(cart);
     }
 
     [HttpPost("checkout")]
