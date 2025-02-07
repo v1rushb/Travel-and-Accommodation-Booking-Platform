@@ -8,10 +8,11 @@ using TABP.Domain.Models.HotelReview.Search;
 using TABP.API.Extensions;
 using TABP.Domain.Abstractions.Services.Review;
 using TABP.Domain.Models.HotelReview.Sort;
+using TABP.Domain.Enums;
 
 namespace TABP.API.Controllers;
 
-[Authorize]
+[Authorize(Roles = $"{nameof(RoleType.User)},{nameof(RoleType.Admin)}")]
 [ApiController]
 [Route("api/hotel-reviews")]
 public class ReviewsController : ControllerBase
