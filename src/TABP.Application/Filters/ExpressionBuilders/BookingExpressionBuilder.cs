@@ -1,9 +1,6 @@
 using System.Linq.Expressions;
-using System.Runtime.Serialization;
 using TABP.Application.Extensions;
-using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
-using TABP.Domain.Enums;
 using TABP.Domain.Models.Booking.Search;
 
 namespace TABP.Application.Filters.ExpressionBuilders;
@@ -43,7 +40,7 @@ public static class BookingExpressionBuilder
             GetRoomNumberFilter(query.RoomNumber)
         )
         .AndIf(!HasValidRoomNumber(query.RoomNumber),
-            GetRoomNumberFilter(0)
+            GetRoomNumberFilter(-1)
         );
 
         filter = filter.AndIf(
@@ -92,9 +89,14 @@ public static class BookingExpressionBuilder
         booking => booking.Notes.Contains(notes);
 
     private static bool HasValidRoomNumber(int roomNumber) =>
-        roomNumber > 0;
-    private static Expression<Func<RoomBooking, bool>> GetRoomNumberFilter(int roomNumber) =>
-        booking => booking.Room.Number == roomNumber;
+        roomNumber >= 0;
+    private static Expression<Func<RoomBooking, bool>> GetRoomNumberFilter(int roomNumber)
+    {
+        if(roomNumber == -1)
+            return booking => true;
+
+        return booking => booking.Room.Number == roomNumber;
+    }
 
     private static bool HasValidHotelId(Guid? hotelId) =>
         hotelId.HasValue && hotelId != Guid.Empty;
