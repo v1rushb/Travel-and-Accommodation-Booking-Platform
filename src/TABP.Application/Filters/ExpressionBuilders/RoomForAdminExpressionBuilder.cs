@@ -156,6 +156,6 @@ public static class RoomExpressionBuilder
         if (!validTypes.Any())
             return room => false;
 
-        return room => validTypes.Contains((int)room.Type);
+        return room => validTypes.Contains(room.Type);
     }
 }
