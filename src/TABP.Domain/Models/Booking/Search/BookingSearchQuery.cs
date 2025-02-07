@@ -7,7 +7,7 @@ public class BookingSearchQuery
     public decimal MinPrice { get; set; } = 0;
     public decimal MaxPrice { get; set; } = decimal.MaxValue;
     public string Notes { get; set; }
-    public int RoomNumber { get; set; } = 1;
+    public int RoomNumber { get; set; } = -1;
     public Guid HotelId { get; set; }
 
     public override string ToString() =>
