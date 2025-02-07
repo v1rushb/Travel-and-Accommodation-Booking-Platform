@@ -161,13 +161,6 @@ public class CartService : ICartService
             .GetLastPendingCartAsync(_currentUserService.GetUserId());
         
         ValidateCart(cart);
-        
-        bool IsInvalidCart = cart is null || cart.Items is null || cart.Items.Count == 0;
-
-        if(IsInvalidCart)
-        {
-            throw new InvalidOperationException("No pending cart or cart is empty."); // do proper fluentvalidation here.
-        }
 
         try {
             await _roomBookingService.AddAsync(cart); // this throws exception if booking is not valid.
@@ -194,7 +187,9 @@ public class CartService : ICartService
 
     private void ValidateCart(CartDTO cart)
     {
-        if(cart == null)
+        bool IsInvalidCart = cart is null || cart.Items is null || cart.Items.Count == 0;
+        
+        if(IsInvalidCart)
             throw new EmptyCartException("Cannot checkout an empty cart.");
     }
 
@@ -223,9 +218,9 @@ public class CartService : ICartService
         var cart = await _cartRepository
             .GetCartDetailsByUserIdAsync(currentUserId);
 
-
         if(cart is null)
-            return new CartUserResponseDTO();
+            return _mapper
+                .Map<CartUserResponseDTO>(await CreateNewAsync());
         
         var cartItems = cart.Items;
 
@@ -238,6 +233,7 @@ public class CartService : ICartService
         }
         cart.TotalPrice = totalCartPrice;
         var cartDTO = _mapper.Map<CartDTO>(cart);
+        cartDTO.UserId = currentUserId;
         
         await _cartRepository.UpdateAsync(cartDTO);
         _cartItemRepository.Update(cartItems);

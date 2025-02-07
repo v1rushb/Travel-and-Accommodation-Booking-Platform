@@ -67,8 +67,24 @@ public class CartItemRepository : ICartItemRepository
     public void Update(IEnumerable<CartItemDTO> cartItems)
     {
         var cartItemsToUpdate = _mapper.Map<IEnumerable<CartItem>>(cartItems);
-        _context.CartItems.UpdateRange(cartItemsToUpdate);
+
+        foreach (var cartItem in cartItemsToUpdate)
+        {
+            var existingEntity = _context.CartItems
+                .Local
+                .FirstOrDefault(entry => entry.Id == cartItem.Id);
+
+            if (existingEntity != null)
+            {
+                _context.Entry(existingEntity).State = EntityState.Detached;
+            }
+
+            _context.CartItems.Update(cartItem);
+        }
+
+        _context.SaveChanges();
     }
+
 
     // public async Task<bool> ExistsBetweenUserAndRoomAsync(Guid userId, Guid roomId) =>
     //     await _context.CartItems.AnyAsync(cartItem => cartItem.UserId == userId && cartItem.RoomId == roomId);

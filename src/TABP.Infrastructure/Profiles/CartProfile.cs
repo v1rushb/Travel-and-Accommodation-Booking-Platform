@@ -13,5 +13,8 @@ public class CartProfile : Profile
         CreateMap<CartDTO, Cart>();
 
         CreateMap<Cart, CartAdminResponseDTO>();
+        CreateMap<CartDTO, CartUserResponseDTO>();
+        CreateMap<CartUserResponseDTO, CartDTO>();
+        
     }
 }

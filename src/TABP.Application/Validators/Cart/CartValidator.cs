@@ -39,6 +39,11 @@ public class CartItemValidator : AbstractValidator<CartItemDTO>
                     : "You already have a booking with this room within the selected dates.";
             });
         
+        RuleFor(cartItem => cartItem)
+            .Must(cartItem => 
+                IsValidBookingInterval(cartItem))
+            .WithMessage("Booking Should not exceed 30 days.");
+        
     }
 
     private async Task<bool> RoomNotAlreadyBooked(CartItemDTO cartItem, CancellationToken cancellationToken)
@@ -57,4 +62,7 @@ public class CartItemValidator : AbstractValidator<CartItemDTO>
             cartItem.CheckInDate,
             cartItem.CheckOutDate);
     }
+
+    private bool IsValidBookingInterval(CartItemDTO cartItem) =>
+        (cartItem.CheckOutDate - cartItem.CheckInDate).Days <= 30;
 }
