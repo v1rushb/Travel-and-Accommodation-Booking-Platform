@@ -4,11 +4,11 @@ using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Models.HotelVisit;
 using TABP.Domain.Models.Pagination;
 using TABP.API.Extensions;
-using TABP.Domain.Abstractions.Services.Hotel;
+using TABP.Domain.Enums;
 
 namespace TABP.API.Controllers;
 
-[Authorize]
+[Authorize(Roles = $"{nameof(RoleType.User)},{nameof(RoleType.Admin)}")]
 [ApiController]
 [Route("api/visits")]
 public class VisitsController : ControllerBase

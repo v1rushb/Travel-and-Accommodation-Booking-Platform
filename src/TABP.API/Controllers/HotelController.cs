@@ -7,12 +7,12 @@ using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Hotel.Search;
 using Microsoft.AspNetCore.Authorization;
-using TABP.Domain.Entities;
+using TABP.Domain.Enums;
 using TABP.Domain.Models.Hotel.Sort;
 
 namespace TABP.API.Controllers;
 
-[Authorize]
+[Authorize(Roles = $"{nameof(RoleType.User)},{nameof(RoleType.Admin)}")]
 [ApiController]
 [Route("api/hotels")]
 public class HotelController : ControllerBase

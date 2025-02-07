@@ -9,8 +9,7 @@ using TABP.Domain.Enums;
 
 namespace TABP.API.Controllers;
 
-// [Authorize(Roles = nameof(RoleType.Admin))]
-[Authorize]
+[Authorize(Roles = $"{nameof(RoleType.User)},{nameof(RoleType.Admin)}")]
 [ApiController]
 [Route("api")]
 public class ImageGetController : ControllerBase

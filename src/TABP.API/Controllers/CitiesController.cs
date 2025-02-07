@@ -8,8 +8,7 @@ using TABP.Domain.Abstractions.Services.City;
 
 namespace TABP.API.Controllers;
 
-// [Authorize(Roles = nameof(RoleType.User))]
-[Authorize]
+[Authorize(Roles = $"{nameof(RoleType.User)},{nameof(RoleType.Admin)}")]
 [ApiController]
 [Route("api/cities")]
 public class CitiesController : ControllerBase

@@ -7,9 +7,7 @@ using TABP.Domain.Abstractions.Services.Cart;
 
 namespace TABP.API.Controllers;
 
-// [Authorize(Roles = nameof(RoleType.User))]
-[Authorize]
-[Authorize]
+[Authorize(Roles = $"{nameof(RoleType.User)},{nameof(RoleType.Admin)}")]
 [ApiController]
 [Route("api/cart")]
 public class CartController : ControllerBase

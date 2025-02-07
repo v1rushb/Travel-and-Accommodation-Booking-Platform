@@ -12,8 +12,7 @@ using TABP.Domain.Abstractions.Services.Cart;
 
 namespace TABP.API.Controllers;
 
-// [Authorize(Roles = nameof(RoleType.User))]
-[Authorize]
+[Authorize(Roles = $"{nameof(RoleType.User)},{nameof(RoleType.Admin)}")]
 [ApiController]
 [Route("api/bookings")]
 public class UserBookingController : ControllerBase
