@@ -19,4 +19,5 @@ public interface IHotelRepository
         Func<IQueryable<Hotel>,IOrderedQueryable<Hotel>> orderBy 
             = null);
     Task<string> GetHotelNameByIdAsync(Guid Id);
+    void Update(HotelDTO Hotel);
 }

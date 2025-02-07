@@ -91,4 +91,11 @@ public class HotelRepository : IHotelRepository
 
     public async Task<string> GetHotelNameByIdAsync(Guid Id) =>
         (await _context.Hotels.FirstOrDefaultAsync(hotel => hotel.Id == Id))?.Name;
+
+    public void Update(HotelDTO updatedHotel)
+    {
+        var hotel = _mapper.Map<Hotel>(updatedHotel);
+        _context.Hotels.Update(hotel);
+    }
+
 }
