@@ -12,7 +12,8 @@ namespace TABP.Infrastructure.Migrations
         {
             migrationBuilder.Sql("""
                 CREATE VIEW vw_AvailableRooms AS
-                SELECT 
+                SELECT
+                    R.Id
                     R.Number,
                     R.Type,
                     R.AdultsCapacity,
@@ -27,9 +28,9 @@ namespace TABP.Infrastructure.Migrations
                 JOIN Hotels H ON R.HotelId = H.Id
                 WHERE NOT EXISTS (
                     SELECT 1
-                    FROM Bookings B
+                    FROM RoomBookings B
                     WHERE B.RoomId = R.Id
-                    AND GETDATE() BETWEEN B.StartingDate AND B.EndingDate
+                    AND GETDATE() BETWEEN B.CheckInDate AND B.CheckOutDate
                 );
                 """);
 
