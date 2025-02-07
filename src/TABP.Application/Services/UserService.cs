@@ -48,7 +48,7 @@ public class UserService : IUserService
             newUser.Password
         );
 
-        var role = await _roleRepository.GetByNameAsync(nameof(RoleType.Admin));
+        var role = await _roleRepository.GetByNameAsync(nameof(RoleType.User));
         newUser.Roles.Add(role); // should never be null
 
         await SendWelcomeEmailAsync(newUser);
