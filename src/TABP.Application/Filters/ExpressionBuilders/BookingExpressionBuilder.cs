@@ -44,13 +44,16 @@ public static class BookingExpressionBuilder
         );
 
         filter = filter.AndIf(
-            HasValidHotelId(query.HotelId),
-            GetHotelIdFilter(query.HotelId)
+            HasValidHotelId(query?.HotelId),
+            GetHotelIdFilter(query?.HotelId)
         );
 
         filter = filter
             .AndIf(HasValidUserId(userId),
                 GetUserIdFilter(userId));
+
+        filter = filter
+            .And(GetIdFilter(query?.Id));
 
         return filter;
     }
@@ -100,11 +103,23 @@ public static class BookingExpressionBuilder
 
     private static bool HasValidHotelId(Guid? hotelId) =>
         hotelId.HasValue && hotelId != Guid.Empty;
-    private static Expression<Func<RoomBooking, bool>> GetHotelIdFilter(Guid hotelId) =>
-        booking => booking.Room.HotelId == hotelId;
+    private static Expression<Func<RoomBooking, bool>> GetHotelIdFilter(Guid? hotelId)
+    {
+        if(hotelId.HasValue)
+            return booking => booking.Room.HotelId == hotelId;
+            
+        return booking => true;
+    }
 
     private static bool HasValidUserId(Guid? userId) =>
         userId.HasValue && userId != Guid.Empty;
     private static Expression<Func<RoomBooking, bool>> GetUserIdFilter(Guid? userId) =>
         booking => booking.UserId == userId;
+
+    private static Expression<Func<RoomBooking, bool>> GetIdFilter(Guid? Id)
+    {
+        if(Id.HasValue)
+            return booking => booking.Id == Id;
+        return booking => true;
+    }
 }
