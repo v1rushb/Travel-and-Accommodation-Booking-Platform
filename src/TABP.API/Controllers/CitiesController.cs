@@ -6,6 +6,7 @@ using TABP.Domain.Models.City.Search;
 using TABP.API.Extensions;
 using TABP.Domain.Abstractions.Services.City;
 using TABP.Domain.Models.City.Sort;
+using TABP.Domain.Models.HotelVisit;
 
 namespace TABP.API.Controllers;
 
@@ -44,5 +45,26 @@ public class CitiesController : ControllerBase
             );
 
         return Ok(result);
+    }
+
+    [HttpGet("tredny")]
+    public async Task<IActionResult> GetTrendyCities(
+        [FromQuery] VisitTimeOptionQuery timeQuery,
+        [FromQuery] PaginationDTO pagination)
+    {
+        var cities = await _cityUserService
+            .GetTrendingCities(
+                timeQuery,
+                pagination);
+        
+        var citiesSize = cities.Count();
+
+        Response.Headers
+            .AddPaginationHeaders(
+                citiesSize,
+                pagination
+            );
+
+        return Ok(cities);
     }
 }

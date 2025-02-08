@@ -2,12 +2,16 @@ using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using TABP.Application.Filters.ExpressionBuilders;
+using TABP.Application.Filters.ExpressionBuilders.Generics;
 using TABP.Application.Sorting.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services.City;
+using TABP.Domain.Entities;
 using TABP.Domain.Models.City.Search;
 using TABP.Domain.Models.City.Sort;
+using TABP.Domain.Models.HotelVisit;
 using TABP.Domain.Models.Pagination;
+using TABP.Models.City;
 
 namespace TABP.Application.Services.City;
 
@@ -19,6 +23,8 @@ public class CityUserService : ICityUserService
     private readonly ILogger<CityUserService> _logger;
     private readonly ICurrentUserService _currentUserService;
     private readonly IValidator<CitySortQuery> _sortValidator;
+    private readonly IValidator<VisitTimeOptionQuery> _timeOptionsValidator;
+    private readonly IHotelVisitRepository _visitsRepository;
 
     public CityUserService(
         ICityRepository cityRepository,
@@ -26,7 +32,9 @@ public class CityUserService : ICityUserService
         IMapper mapper,
         ILogger<CityUserService> logger,
         ICurrentUserService currentUserService,
-        IValidator<CitySortQuery> sortValidator)
+        IValidator<CitySortQuery> sortValidator,
+        IValidator<VisitTimeOptionQuery> timeOptionsValidator,
+        IHotelVisitRepository visitsRepository)
     {
         _cityRepository = cityRepository;
         _paginationValidator = paginationValidator;
@@ -34,6 +42,8 @@ public class CityUserService : ICityUserService
         _logger = logger;
         _currentUserService = currentUserService;
         _sortValidator = sortValidator;
+        _timeOptionsValidator = timeOptionsValidator;
+        _visitsRepository = visitsRepository;
     }
 
     public async Task<IEnumerable<CitySearchResponseDTO>> SearchAsync(
@@ -71,5 +81,33 @@ public class CityUserService : ICityUserService
                 _currentUserService.GetUserId());
         
         return _mapper.Map<IEnumerable<CitySearchResponseDTO>>(cities);
+    }
+
+    public async Task<IEnumerable<CityVisitDTO>> GetTrendingCities(
+        VisitTimeOptionQuery timeQuery,
+        PaginationDTO pagination)
+    {
+        _paginationValidator.ValidateAndThrow(pagination);
+        _timeOptionsValidator.ValidateAndThrow(timeQuery);
+
+        var filterExpression = TimeOptionExpressionBuilder<HotelVisit>
+            .Build(timeQuery);
+
+        var visitedHotels = await _visitsRepository
+            .GetVisitedHotels(
+                filterExpression,
+                pagination.PageNumber,
+                pagination.PageSize
+            );
+        
+        var trendyCities = visitedHotels
+            .GroupBy(hotel => hotel.CityName)
+            .Select(group => new CityVisitDTO
+            {
+                Name = group.Key,
+                Visits = group.Sum(hotel => hotel.Visits)
+            });
+
+        return trendyCities;
     }
 }
