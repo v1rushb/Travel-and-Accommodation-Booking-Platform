@@ -54,7 +54,7 @@ public class RoomAdminService : IRoomAdminService
 
         _logger.LogInformation(
             @"Searching for Rooms with query {RoomSearchQuery},
-            {RoomSortQuery}, 
+            With Sort Query: {RoomSortQuery}, 
             PageNumber: {PageNumber}, 
             PageSize: {PageSize}
             By User {UserId}",
