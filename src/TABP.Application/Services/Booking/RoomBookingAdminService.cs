@@ -69,7 +69,7 @@ public class RoomBookingAdminService : IRoomBookingAdminService
                 PageSize: {PageSize}
                 by User With Id: {UserId}",
 
-                query,
+                inQuery,
                 sortQuery,
                 pagination.PageNumber,
                 pagination.PageSize,
