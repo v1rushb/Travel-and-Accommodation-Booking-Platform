@@ -5,5 +5,5 @@ public class FeaturedHotelDTO
     public string Name { get; set; }
     public Guid HotelId { get; set; }
     public decimal StarRating { get; set; }
-    public int Bookings { get; set; }
+    public int WeeklyBookings { get; set; }
 }

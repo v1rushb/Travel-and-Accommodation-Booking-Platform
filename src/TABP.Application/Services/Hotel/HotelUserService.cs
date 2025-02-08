@@ -146,11 +146,12 @@ public class HotelUserService : IHotelUserService
                 Name = hotel.Name,
                 HotelId = hotel.Id,
                 StarRating = hotel.StarRating,
-                Bookings = bookingCountByHotel.TryGetValue(hotel.Id, out int value) ? value : 0
+                WeeklyBookings = bookingCountByHotel
+                    .TryGetValue(hotel.Id, out int value) ? value : 0
 
             })
-            .OrderByDescending(h => h.Bookings)
-            .ThenByDescending(h => h.StarRating)
+            .OrderByDescending(hotel => hotel.WeeklyBookings)
+            .ThenByDescending(hotel => hotel.StarRating)
             .ToList();
 
         return featuredHotels;
