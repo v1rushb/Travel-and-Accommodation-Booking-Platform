@@ -15,6 +15,7 @@ public class HotelSearchQuery
     public int? MaxStars { get; set; }
     public string? City { get; set; }
     public IEnumerable<int>? RoomTypes { get; set; }
+    public Guid? Id { get; set; } = null;
 
     public override string ToString()
     {
@@ -34,6 +35,11 @@ public class HotelSearchQuery
                     MinStars: {MinStars}, 
                     MaxStars: {MaxStars}, 
                     City: {City ?? "None"}, 
-                    RoomTypes: {(RoomTypes != null ? string.Join(", ", RoomTypes) : "None")}";
+                    RoomTypes: {(RoomTypes != null ? string.Join(", ", RoomTypes) : "None")}
+                    Id: {GetIdStateString()}";
     }
+
+    private string GetIdStateString() =>
+        Id.HasValue ? Id.Value.ToString() : "None";
+
 }
