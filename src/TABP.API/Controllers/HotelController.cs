@@ -66,4 +66,13 @@ public class HotelController : ControllerBase
 
         return Ok(hotels);
     }
+
+    [HttpGet("best-deals")]
+    public async Task<IActionResult> GetBestDealsAsync()
+    {
+        var hotels = await _hotelUserService
+            .GetDealsAsync();
+        
+        return Ok(hotels);
+    }
 }
