@@ -6,6 +6,7 @@ using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.HotelVisit;
+using TABP.Models.City;
 
 namespace TABP.Application.Services;
 
@@ -40,6 +41,6 @@ public class HotelVisitService : IHotelVisitService
             query);
 
         return await _hotelVisitRepository
-            .GetTop5VisitedHotels(expression);
+            .GetVisitedHotels(expression, 1, 5);
     }
 }
