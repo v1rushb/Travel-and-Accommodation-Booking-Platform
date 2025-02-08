@@ -67,9 +67,21 @@ public static class RoomExpressionBuilder
                 GetMaxNumberFilter(query.MaxNumber)
             );
 
-        filter = filter.And(GetRoomTypesFilter(query.roomType));
+        filter = filter
+            .And(GetRoomTypesFilter(query.roomType));
+
+        filter = filter
+            .And(GetIdFilter(query?.Id));
 
         return filter;
+    }
+
+    private static Expression<Func<AvailableRoom, bool>> GetIdFilter(Guid? Id)
+    {
+        if(Id.HasValue)
+            return room => room.Id == Id;
+        
+        return room => true;
     }
 
     private static bool HasValidNumberRange(RoomSearchQuery query) =>
