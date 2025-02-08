@@ -8,7 +8,8 @@ public class BookingSearchQuery
     public decimal MaxPrice { get; set; } = decimal.MaxValue;
     public string Notes { get; set; }
     public int RoomNumber { get; set; } = -1;
-    public Guid HotelId { get; set; }
+    public Guid? HotelId { get; set; }
+    public Guid? Id { get; set; } = null;
 
     public override string ToString() =>
     @$"
@@ -17,5 +18,12 @@ public class BookingSearchQuery
             MaxPrice: {MaxPrice}{(MaxPrice == decimal.MaxValue ? " (default)" : "")}, 
             Notes: {Notes ?? "None"}, 
             RoomNumber: {RoomNumber}{(RoomNumber == 1 ? " (default)" : "")},    
-            HotelId: {HotelId}";
+            HotelId: {GetHotelIdState()}
+            Id: {GetIdStateString()}";
+
+    private string GetIdStateString() =>
+        Id.HasValue ? Id.Value.ToString() : "None";
+
+    private string GetHotelIdState() =>
+        HotelId.HasValue ? HotelId.Value.ToString() : "None";
 }

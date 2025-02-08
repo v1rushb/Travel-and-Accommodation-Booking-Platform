@@ -1,8 +1,9 @@
+using TABP.Domain.Abstractions;
 using TABP.Domain.Enums;
 
 namespace TABP.Domain.Models.Booking.Search.Response;
 
-public class BookingUserResponseDTO
+public class BookingUserResponseDTO : Entity
 {
     public DateTime CheckInDate { get; set; }
     public DateTime CheckOutDate { get; set; }
