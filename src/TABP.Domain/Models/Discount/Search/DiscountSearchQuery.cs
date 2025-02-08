@@ -1,6 +1,4 @@
 
-using TABP.Domain.Enums;
-
 namespace TABP.Domain.Models.Discount.Search;
 
 public class DiscountSearchQuery
@@ -11,6 +9,7 @@ public class DiscountSearchQuery
     public decimal MinAmountPercentage { get; set; } = 0;
     public decimal MaxAmountPercentage { get; set; } = 100;
     public IEnumerable<int> RoomType { get; set; }
+    public Guid? Id { get; set; } = null;
 
     public override string ToString() =>
     @$"
@@ -19,5 +18,9 @@ public class DiscountSearchQuery
                     EndingDate: {EndingDate.ToString("yyyy-MM-dd") ?? "default"},
                     MinAmountPercentage: {MinAmountPercentage}{(MinAmountPercentage == 0 ? " (default)" : "")}, 
                     MaxAmountPercentage: {MaxAmountPercentage}{(MaxAmountPercentage == 100 ? " (default)" : "")},   
-                    RoomType: {(RoomType != null && RoomType.Any() ? string.Join(", ", RoomType) : "default")}";
+                    RoomType: {(RoomType != null && RoomType.Any() ? string.Join(", ", RoomType) : "default")}
+                    Id: {GetIdStateString()}";
+
+    private string GetIdStateString() =>
+        Id.HasValue ? Id.Value.ToString() : "None";
 }
