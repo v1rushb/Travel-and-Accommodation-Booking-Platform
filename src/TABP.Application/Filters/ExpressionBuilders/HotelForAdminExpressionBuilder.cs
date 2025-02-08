@@ -79,8 +79,19 @@ public static class HotelExpressionBuilder
         GetCityFilter(query.City!)
     );
 
+    filter = filter
+        .And(GetIdFilter(query?.Id));
+
     return filter;
 }
+
+    private static Expression<Func<Hotel, bool>> GetIdFilter(Guid? Id)
+    {
+        if(Id.HasValue)
+            return hotel => hotel.Id == Id;
+        
+        return hotel => true;
+    }
 
     private static Expression<Func<Hotel, bool>> GetMinStarsFilter(int minStars) =>
         hotel => hotel.StarRating >= minStars;
