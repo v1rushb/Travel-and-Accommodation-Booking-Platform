@@ -165,6 +165,7 @@ public class CartRepository : ICartRepository
         Func<IQueryable<Cart>, IOrderedQueryable<Cart>> orderByDelegate = null)
     {
         var carts = await _context.Carts
+            .Include(cart => cart.Items)
             .Where(predicate)
             .OrderByIf(orderByDelegate != null, orderByDelegate)
             .PaginateAsync(
