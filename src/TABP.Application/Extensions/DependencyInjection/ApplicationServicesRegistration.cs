@@ -37,6 +37,8 @@ using TABP.Domain.Models.RoomBooking;
 using TABP.Domain.Models.User;
 using TABP.Application.Services.Room;
 using TABP.Application.Validators.Room;
+using TABP.Domain.Models.HotelVisit;
+using TABP.Application.Validators.TimeOption;
 
 namespace TABP.Application.Extensions.DependencyInjection;
 
@@ -134,5 +136,6 @@ public static class ApplicationServicesRegistration
         services.AddScoped<IValidator<PaginationDTO>, PaginationValidator>();
         services.AddScoped<IValidator<ImageSizeDTO>, ImageSizeValidator>();
         services.AddScoped<IValidator<IEnumerable<Image>>, ImageValidator>();
+        services.AddScoped<IValidator<VisitTimeOptionQuery>, TimeOptionsValidator>();
     }
 }
