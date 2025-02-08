@@ -1,7 +1,7 @@
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using TABP.Application.Filters.ExpressionBuilders.Generics;
-using TABP.Application.Utilities;
+using TABP.Domain.Utilities;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Abstractions.Services.Booking;

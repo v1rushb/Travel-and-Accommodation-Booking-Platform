@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using TABP.Application.Utilities;
+using TABP.Domain.Utilities;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Room;

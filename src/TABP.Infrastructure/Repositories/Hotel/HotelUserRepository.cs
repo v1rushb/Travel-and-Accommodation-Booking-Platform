@@ -9,7 +9,7 @@ using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotel.Search.Response;
 using TABP.Infrastructure.Extensions.Helpers;
 using TABP.Domain.Rooms;
-using TABP.Application.Utilities;
+using TABP.Domain.Utilities;
 
 namespace TABP.Infrastructure.Repositories;
 

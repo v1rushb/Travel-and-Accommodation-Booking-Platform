@@ -1,4 +1,4 @@
-namespace TABP.Application.Utilities;
+namespace TABP.Domain.Utilities;
 
 public static class DiscountedPriceCalculator
 {

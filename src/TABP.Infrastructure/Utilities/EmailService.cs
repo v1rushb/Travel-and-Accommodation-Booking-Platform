@@ -1,8 +1,6 @@
 using FluentEmail.Core;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using TABP.Domain.Abstractions.Services;
-using TABP.Domain.Models.Configurations;
 using TABP.Domain.Models.Email;
 
 namespace TABP.Infrastructure.Utilities;
