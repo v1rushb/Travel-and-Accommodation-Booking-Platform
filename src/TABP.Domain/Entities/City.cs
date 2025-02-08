@@ -1,8 +1,9 @@
 using TABP.Domain.Abstractions;
+using TABP.Domain.Abstractions.Services.Generics;
 
 namespace TABP.Domain.Entities;
 
-public class City : Entity
+public class City : Entity, IHasCreationDate
 {
     public string Name { get; set; }
     public string CountryName { get; set; }
