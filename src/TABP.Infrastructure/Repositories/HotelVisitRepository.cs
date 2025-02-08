@@ -53,13 +53,14 @@ public class HotelVisitRepository : IHotelVisitRepository
         Expression<Func<HotelVisit, bool>> predicate)
     {
         var hotels = await _context.HotelVisits
-            // .Where(predicate)
+            .Where(predicate)
             .GroupBy(visit => visit.HotelId)
             .Select(group => new VisitedHotelDTO
             {
                 Id = group.Key,
                 Name = group.First().Hotel.Name,
-                Visits = group.Count()
+                Visits = group.Count(),
+                StarRating = group.First().Hotel.StarRating
             })
             .OrderByDescending(hotel => hotel.Visits)
             .Take(5)
