@@ -38,7 +38,18 @@ public static class DiscountForAdminExpressionBuilder
             GetRoomTypeFilter(query.RoomType)
         );
 
+        filter = filter
+            .And(GetIdFilter(query?.Id));
+
         return filter;
+    }
+
+    private static Expression<Func<Discount, bool>> GetIdFilter(Guid? Id)
+    {
+        if(Id.HasValue)
+            return discount => discount.Id == Id;
+        
+        return discount => true;
     }
 
     private static bool HasValidSearchTerm(DiscountSearchQuery query) =>
