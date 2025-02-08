@@ -1,5 +1,3 @@
-using TABP.Domain.Enums;
-
 namespace TABP.Domain.Models.HotelReview.Search;
 
 public class ReviewSearchQuery
@@ -11,6 +9,7 @@ public class ReviewSearchQuery
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public Guid HotelId { get; set; }
+    public Guid? Id { get; set; } = null;
 
     public override string ToString()
     {
@@ -24,7 +23,11 @@ public class ReviewSearchQuery
                 CreationDate: {CreationDate},
                 StartDate: {StartDate?.ToString("yyyy-MM-dd") ?? "None"},
                 EndDate: {EndDate?.ToString("yyyy-MM-dd") ?? "None"},
-                HotelId: {HotelId}";
+                HotelId: {HotelId}
+                Id: {GetIdStateString()}";
     }
+
+    private string GetIdStateString() =>
+        Id.HasValue ? Id.Value.ToString() : "None";
 
 }
