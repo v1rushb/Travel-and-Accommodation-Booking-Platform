@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Linq.Expressions;
 using TABP.Application.Extensions;
 using TABP.Domain.Entities;
@@ -9,7 +8,7 @@ namespace TABP.Application.Filters.ExpressionBuilders;
 
 public static class ReviewExpressionBuilder
 {
-    public static Expression<Func<HotelReview, bool>> Build(ReviewSearchQuery query, Guid? userId = null) // hmm maybe not?
+    public static Expression<Func<HotelReview, bool>> Build(ReviewSearchQuery query, Guid? userId = null)
     {
         var filter = Expressions.True<HotelReview>();
 
@@ -31,9 +30,19 @@ public static class ReviewExpressionBuilder
             .AndIf(HasValidUserId(userId),
                 GetUserIdFilter(userId));
 
+            filter = filter
+                .And(GetIdFilter(query?.Id));
             
 
         return filter;
+    }
+
+    private static Expression<Func<HotelReview, bool>> GetIdFilter(Guid? Id)
+    {
+        if(Id.HasValue)
+            return review => review.Id == Id;
+        
+        return review => true;
     }
 
     private static bool HasValidSearchTerm(ReviewSearchQuery query) =>
