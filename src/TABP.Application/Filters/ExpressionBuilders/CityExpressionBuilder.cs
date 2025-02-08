@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using TABP.Application.Extensions;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.City.Search;
@@ -18,7 +19,9 @@ public static class CityExpressionBuilder
 
             .AndIf(HasValidCountry(query),
                 GetCountryFilter(query.Country))
-            ;
+            .AndIf(HasValidId(query),
+                GetIdFilter(query)
+            );
 
         return filter;
     }
@@ -33,4 +36,14 @@ public static class CityExpressionBuilder
 
     private static Expression<Func<City, bool>> GetCountryFilter(string country) =>
         city => city.CountryName.Contains(country);
+
+    private static bool HasValidId(CitySearchQuery query) =>
+        query.Id.HasValue;
+
+    private static Expression<Func<City, bool>> GetIdFilter(CitySearchQuery query)
+    {
+        if(query.Id.HasValue)
+            return city => city.Id == query.Id.Value;
+        return city => true;
+    }
 }
