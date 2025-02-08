@@ -9,6 +9,7 @@ public class CartSearchQuery
     public DateTime? MaxCheckOutDate { get; set; }
     public DateTime? MinCreationDate { get; set; }
     public DateTime? MaxCreationDate { get; set; }
+    public Guid? Id { get; set; } = null;
 
     public override string ToString() =>
     @$"
@@ -18,6 +19,9 @@ public class CartSearchQuery
                     MinCheckOutDate: {MinCheckOutDate?.ToString("yyyy-MM-dd") ?? "None"}, 
                     MaxCheckOutDate: {MaxCheckOutDate?.ToString("yyyy-MM-dd") ?? "None"}, 
                     MinCreationDate: {MinCreationDate?.ToString("yyyy-MM-dd") ?? "None"}, 
-                    MaxCreationDate: {MaxCreationDate?.ToString("yyyy-MM-dd") ?? "None"}";
+                    MaxCreationDate: {MaxCreationDate?.ToString("yyyy-MM-dd") ?? "None"}
+                    Id: {GetIdStateString()}";
 
+    private string GetIdStateString() =>
+        Id.HasValue ? Id.Value.ToString() : "None";
 }

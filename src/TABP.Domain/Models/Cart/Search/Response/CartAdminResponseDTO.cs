@@ -1,9 +1,10 @@
+using TABP.Domain.Abstractions;
 using TABP.Domain.Enums;
 using TABP.Domain.Models.CartItem;
 
 namespace TABP.Domain.Models.Cart.Search.Response;
 
-public class CartAdminResponseDTO
+public class CartAdminResponseDTO : Entity
 {
     public Guid UserId { get; set; }
     public decimal TotalPrice { get; set; }
