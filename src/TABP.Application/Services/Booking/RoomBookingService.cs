@@ -183,7 +183,14 @@ public class RoomBookingService : IRoomBookingService
     public async Task<IEnumerable<HotelBookingDTO>> GetByHotelAsync()
     {
         var timeOption = TimeOptions.LastWeek;
-        var expression = TimeOptionExpressionBuilder<RoomBooking>.Build(new VisitTimeOptionQuery{ TimeOption = (int)timeOption });
+        
+        var timeOptionQuery = new VisitTimeOptionQuery
+        {
+            TimeOption = Enum.Parse(typeof(TimeOptions), timeOption.ToString())
+                    .ToString()
+        };
+
+        var expression = TimeOptionExpressionBuilder<RoomBooking>.Build(timeOptionQuery);
         return await _roomBookingRepository
             .GetAllForHotelsAsync(expression);
     }
