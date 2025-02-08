@@ -2,6 +2,9 @@ namespace TABP.Domain.Models.HotelVisit;
 
 public class VisitTimeOptionQuery
 {
-    public int? TimeOption { get; set; }
+    public string? TimeOption { get; set; }
 
+    public override string ToString() =>
+        @$"
+            TimeOption: {TimeOption ?? "None"}";
 }
