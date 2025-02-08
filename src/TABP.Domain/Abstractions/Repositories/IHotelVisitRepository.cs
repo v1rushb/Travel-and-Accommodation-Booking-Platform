@@ -12,5 +12,8 @@ public interface IHotelVisitRepository
     // Task<IEnumerable<HotelVisit>> GetByUserAsync(Guid userId, DateTime? startDate = null, DateTime? endDate = null);
     // Task<IEnumerable<HotelVisit>> GetByHotelAsync(Guid hotelId, DateTime? startDate = null, DateTime? endDate = null);
     // Task<IEnumerable<HotelVisit>> GetByUserAndHotelAsync(Guid userId, Guid hotelId, DateTime? startDate = null, DateTime? endDate = null);
-    Task<IEnumerable<VisitedHotelDTO>> GetTop5VisitedHotels(Expression<Func<HotelVisit, bool>> predicate);
+    Task<IEnumerable<VisitedHotelDTO>> GetVisitedHotels(
+        Expression<Func<HotelVisit, bool>> predicate,
+        int pageNumber,
+        int pageSize);
 }

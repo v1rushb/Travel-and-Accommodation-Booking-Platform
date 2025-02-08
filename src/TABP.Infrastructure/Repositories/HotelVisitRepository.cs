@@ -6,6 +6,7 @@ using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.HotelVisit;
+using TABP.Infrastructure.Extensions.Helpers;
 
 namespace TABP.Infrastructure.Repositories;
 
@@ -49,8 +50,10 @@ public class HotelVisitRepository : IHotelVisitRepository
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _context.HotelVisits.AnyAsync(visit => visit.Id == Id);
 
-    public async Task<IEnumerable<VisitedHotelDTO>> GetTop5VisitedHotels(
-        Expression<Func<HotelVisit, bool>> predicate)
+    public async Task<IEnumerable<VisitedHotelDTO>> GetVisitedHotels(
+        Expression<Func<HotelVisit, bool>> predicate,
+        int pageNumber,
+        int pageSize)
     {
         var hotels = await _context.HotelVisits
             .Where(predicate)
@@ -60,11 +63,15 @@ public class HotelVisitRepository : IHotelVisitRepository
                 Id = group.Key,
                 Name = group.First().Hotel.Name,
                 Visits = group.Count(),
-                StarRating = group.First().Hotel.StarRating
+                StarRating = group.First().Hotel.StarRating,
+                CityName = group.First().Hotel.City.Name
             })
             .OrderByDescending(hotel => hotel.Visits)
-            .Take(5)
-            .ToListAsync();
+            .PaginateAsync(
+                pageNumber,
+                pageSize
+            );
+            
 
         return hotels;
     }
