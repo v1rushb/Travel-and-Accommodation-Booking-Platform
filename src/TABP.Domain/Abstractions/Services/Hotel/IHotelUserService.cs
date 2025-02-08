@@ -1,3 +1,4 @@
+using TABP.Domain.Hotels;
 using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotel.Search;
 using TABP.Domain.Models.Hotel.Search.Response;
@@ -22,4 +23,6 @@ public interface IHotelUserService
         PaginationDTO pagination,
         VisitTimeOptionQuery query,
         Guid? userId = null);
+
+    Task<IEnumerable<HotelDealDTO>> GetDealsAsync();
 }

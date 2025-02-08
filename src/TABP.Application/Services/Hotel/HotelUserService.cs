@@ -10,6 +10,7 @@ using TABP.Domain.Abstractions.Services.Booking;
 using TABP.Domain.Entities;
 using TABP.Domain.Enums;
 using TABP.Domain.Exceptions;
+using TABP.Domain.Hotels;
 using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotel.Search;
 using TABP.Domain.Models.Hotel.Search.Response;
@@ -190,4 +191,7 @@ public class HotelUserService : IHotelUserService
         if (!await _hotelRepository.ExistsAsync(Id))
             throw new EntityNotFoundException($"Id {Id} Does not exist.");
     }
+
+    public async Task<IEnumerable<HotelDealDTO>> GetDealsAsync() =>
+        await _hotelUserRepository.GetDealsAsync();
 }
