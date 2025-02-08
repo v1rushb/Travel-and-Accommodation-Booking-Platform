@@ -12,30 +12,18 @@ public static class TimeOptionExpressionBuilder<T> where T : class, IHasCreation
     {
         var filter = Expressions.True<T>();
 
-        filter =
-            filter.AndIf(
-                HasValidTimeOption(query),
-                GetTimeOptionFilter(query)
-            );
+        filter = filter
+            .And(GetTimeOptionFilter(query));
 
         return filter;
     }
 
-    private static bool HasValidTimeOption(VisitTimeOptionQuery query)
-    {
-        if(query.TimeOption.HasValue)
-        {
-            return Enum.IsDefined(typeof(TimeOptions), query.TimeOption.Value);
-        }
-        return false;
-    }
-
     private static Expression<Func<T, bool>> GetTimeOptionFilter(VisitTimeOptionQuery query)
     {
-        if(!query.TimeOption.HasValue)
+        if(string.IsNullOrEmpty(query.TimeOption))
             return visit => true;
 
-        var timeOption = Enum.Parse<TimeOptions>(query.TimeOption.ToString());
+        var timeOption = Enum.Parse<TimeOptions>(query.TimeOption!, true);
 
         DateTime? filterDate = timeOption switch
         {
