@@ -113,7 +113,8 @@ public class RoomRepository : IRoomRepository
             .ToList();
 
         var discountData = await _context.Discounts
-            .Where(discount => hotelIds.Contains(discount.HotelId))
+            .Where(discount => hotelIds.Contains(discount.HotelId) && 
+                discount.StartingDate <= DateTime.UtcNow && discount.EndingDate >= DateTime.UtcNow)
             .GroupBy(discount => discount.HotelId)
             .Select(group => new 
                 {
