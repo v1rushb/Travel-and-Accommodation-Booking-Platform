@@ -31,6 +31,7 @@ public class HotelUserService : IHotelUserService
     private readonly IMapper _mapper;
     private readonly ILogger<HotelUserService> _logger;
     private readonly IValidator<HotelSortQuery> _hotelSortQueryValidator;
+    private readonly IValidator<VisitTimeOptionQuery> _timeOptionsValidator;
 
     public HotelUserService(
         IHotelRepository hotelRepository,
@@ -42,7 +43,8 @@ public class HotelUserService : IHotelUserService
         IRoomBookingService roomBookingService,
         IMapper mapper,
         ILogger<HotelUserService> logger,
-        IValidator<HotelSortQuery> hotelSortQueryValidator)
+        IValidator<HotelSortQuery> hotelSortQueryValidator,
+        IValidator<VisitTimeOptionQuery> timeOptionsValidator)
     {
         _hotelRepository = hotelRepository;
         _paginationValidator = paginationValidator;
@@ -54,6 +56,7 @@ public class HotelUserService : IHotelUserService
         _mapper = mapper;
         _logger = logger;
         _hotelSortQueryValidator = hotelSortQueryValidator;
+        _timeOptionsValidator = timeOptionsValidator;
     }
 
     public async Task<IEnumerable<HotelUserResponseDTO>> SearchAsync(
@@ -117,11 +120,12 @@ public class HotelUserService : IHotelUserService
 
     public async Task<IEnumerable<FeaturedHotelDTO>> GetWeeklyFeaturedHotelsAsync()
     {
-        var timeOption = (int)TimeOptions.LastWeek;
+        var timeOption = TimeOptions.LastWeek;
         var expression = TimeOptionExpressionBuilder<Domain.Entities.Hotel>
             .Build(new VisitTimeOptionQuery
             {
-                TimeOption = timeOption
+                TimeOption = Enum.Parse(typeof(TimeOptions), timeOption.ToString())
+                    .ToString()
             });
 
         var mostVisitedHotels = await _hotelUserRepository
@@ -161,12 +165,14 @@ public class HotelUserService : IHotelUserService
         VisitTimeOptionQuery query,
         Guid? userId = null)
     {
+        _timeOptionsValidator.ValidateAndThrow(query);
+        
         var targetUserId = userId ?? _currentUserService.GetUserId();
 
         var expression = TimeOptionExpressionBuilder<HotelVisit>
             .Build(new VisitTimeOptionQuery
             {
-                TimeOption = query.TimeOption ?? (int)TimeOptions.AllTime
+                TimeOption = query.TimeOption
             });
 
         return await _hotelUserRepository
