@@ -2,7 +2,6 @@ using System.Linq.Expressions;
 using TABP.Application.Extensions;
 using TABP.Domain.Entities;
 using TABP.Domain.Enums;
-using TABP.Domain.Models.Cart;
 using TABP.Domain.Models.Cart.Search;
 
 public static class CartExpressionBuilder
@@ -38,7 +37,17 @@ public static class CartExpressionBuilder
                 GetUserIdFilter(UserId)
             );
 
+        filter = filter
+            .And(GetIdFilter(query?.Id));
         return filter;
+    }
+
+    private static Expression<Func<Cart, bool>> GetIdFilter(Guid? Id)
+    {
+        if(Id.HasValue)
+            return cart => cart.Id == Id;
+        
+        return cart => true;
     }
 
     private static bool HasValidPriceRange(CartSearchQuery query) =>
