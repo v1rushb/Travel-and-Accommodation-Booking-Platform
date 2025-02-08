@@ -8,7 +8,7 @@ public class RoomSortQuery
 
     public override string ToString() =>
         @$"
-        SortBy: {SortBy},
-        SortOrder: {SortOrder},
-        IsAdmin: {IsAdmin}";
+                SortBy: {SortBy},
+                SortOrder: {SortOrder},
+                IsAdmin: {IsAdmin}";
 }

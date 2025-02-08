@@ -11,6 +11,7 @@ public class RoomSearchQuery
     public int MaxChildrenCapacity { get; set; } = int.MaxValue;
     public int MinPricePerNight { get; set; } = 0;
     public int MaxPricePerNight { get; set; } = int.MaxValue;
+    public Guid? Id { get; set; } = null;
 
     public override string ToString() =>
     @$"
@@ -22,7 +23,9 @@ public class RoomSearchQuery
                 MinChildrenCapacity: {MinChildrenCapacity}{(MinChildrenCapacity == 0 ? " (default)" : "")}, 
                 MaxChildrenCapacity: {MaxChildrenCapacity}{(MaxChildrenCapacity == int.MaxValue ? " (default)" : "")}, 
                 MinPricePerNight: {MinPricePerNight}{(MinPricePerNight == 0 ? " (default)" : "")}, 
-                MaxPricePerNight: {MaxPricePerNight}{(MaxPricePerNight == int.MaxValue ? " (default)" : "")}";
+                MaxPricePerNight: {MaxPricePerNight}{(MaxPricePerNight == int.MaxValue ? " (default)" : "")}
+                Id: {GetIdStateString()}";
 
-
+    private string GetIdStateString() =>
+        Id.HasValue ? Id.Value.ToString() : "None";
 }
