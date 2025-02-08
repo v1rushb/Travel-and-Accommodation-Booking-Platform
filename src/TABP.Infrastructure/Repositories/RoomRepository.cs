@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using TABP.Application.Utilities;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Room;
@@ -95,8 +96,53 @@ public class RoomRepository : IRoomRepository
                 pageNumber,
                 pageSize
             );
-
-        return _mapper
+        
+        var mappedRooms = _mapper
             .Map<IEnumerable<RoomDTO>>(rooms);
+
+        await SetRoomDiscountedPrice(mappedRooms);
+
+        return mappedRooms;
+    }
+
+    private async Task SetRoomDiscountedPrice(IEnumerable<RoomDTO> rooms)
+    {
+        var hotelIds = rooms
+            .Select(room => room.HotelId)
+            .Distinct()
+            .ToList();
+
+        var discountData = await _context.Discounts
+            .Where(discount => hotelIds.Contains(discount.HotelId))
+            .GroupBy(discount => discount.HotelId)
+            .Select(group => new 
+                {
+                    HotelId = group.Key,
+                    Discount = group.OrderByDescending(discount => discount.AmountPercentage)
+                        .FirstOrDefault()
+                })
+            .ToListAsync();
+
+        var discounts = discountData
+            .ToDictionary(
+                discount => discount.HotelId,
+                discount => discount.Discount?.AmountPercentage 
+                    ?? 0);
+
+        var discountTasks = rooms.Select(room => 
+        {
+            var discountPercentage = discounts
+                .GetValueOrDefault(room.HotelId, 0);
+
+            room.PricePerNight = (int) DiscountedPriceCalculator.GetFinalDiscountedPrice(
+                DateTime.UtcNow.AddMinutes(-10),
+                DateTime.UtcNow.AddDays(1),
+                room.PricePerNight,
+                discountPercentage);
+
+            return Task.CompletedTask;
+        });
+
+        await Task.WhenAll(discountTasks);
     }
 }
