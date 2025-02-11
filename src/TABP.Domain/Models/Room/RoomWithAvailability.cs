@@ -1,6 +1,6 @@
 using TABP.Domain.Abstractions;
 
-public class AvailableRoom : Entity
+public class RoomWithAvailability : Entity
 {
     public int Number { get; set; }
     public int Type { get; set; }
@@ -12,4 +12,5 @@ public class AvailableRoom : Entity
     public decimal StarRating { get; set; }
     public DateTime CreationDate { get; set; }
     public DateTime ModificationDate { get; set; }
+    public bool IsAvailable { get; set; } = true;
 }

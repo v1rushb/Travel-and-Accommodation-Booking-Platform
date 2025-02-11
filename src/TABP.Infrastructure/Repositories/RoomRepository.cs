@@ -84,12 +84,12 @@ public class RoomRepository : IRoomRepository
         await _context.Rooms.AnyAsync(room => room.HotelId == HotelId && room.Id == RoomId);
 
     public async Task<IEnumerable<RoomDTO>> SearchAsync(
-        Expression<Func<AvailableRoom, bool>> predicate,
+        Expression<Func<RoomWithAvailability, bool>> predicate,
         int pageNumber,
         int pageSize,
-        Func<IQueryable<AvailableRoom>, IOrderedQueryable<AvailableRoom>> orderBy = null)
+        Func<IQueryable<RoomWithAvailability>, IOrderedQueryable<RoomWithAvailability>> orderBy = null)
     {
-        var rooms = await _context.AvailableRooms
+        var rooms = await _context.RoomsWithAvailability
             .Where(predicate)
             .OrderByIf(orderBy != null, orderBy)
             .PaginateAsync(

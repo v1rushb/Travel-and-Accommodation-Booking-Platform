@@ -12,6 +12,6 @@ internal class RoomProfile : Profile
         CreateMap<RoomDTO, Room>();
         CreateMap<Room, RoomDTO>();
         CreateMap<Room, RoomAdminResponseDTO>();
-        CreateMap<AvailableRoom, RoomDTO>();
+        CreateMap<RoomWithAvailability, RoomDTO>();
     }
 }

@@ -16,8 +16,8 @@ public interface IRoomRepository
 
     Task<bool> RoomExistsForHotelAsync(Guid HotelId, Guid RoomId);
     Task<IEnumerable<RoomDTO>> SearchAsync(
-        Expression<Func<AvailableRoom, bool>> predicate,
+        Expression<Func<RoomWithAvailability, bool>> predicate,
         int pageNumber,
         int pageSize,
-        Func<IQueryable<AvailableRoom>, IOrderedQueryable<AvailableRoom>> orderBy = null);
+        Func<IQueryable<RoomWithAvailability>, IOrderedQueryable<RoomWithAvailability>> orderBy = null);
 }
