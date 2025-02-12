@@ -40,9 +40,12 @@ public class CartItemValidator : AbstractValidator<CartItemDTO>
             });
         
         RuleFor(cartItem => cartItem)
-            .Must(cartItem => 
-                IsValidBookingInterval(cartItem))
+            .Must(IsValidMaxBookingInterval)
             .WithMessage("Booking Should not exceed 30 days.");
+
+        RuleFor(cartItem => cartItem)
+            .Must(IsValidMinBookingInterval)
+            .WithMessage("Booking Should be atleast for 1 day.");
         
     }
 
@@ -63,6 +66,9 @@ public class CartItemValidator : AbstractValidator<CartItemDTO>
             cartItem.CheckOutDate);
     }
 
-    private bool IsValidBookingInterval(CartItemDTO cartItem) =>
+    private bool IsValidMaxBookingInterval(CartItemDTO cartItem) =>
         (cartItem.CheckOutDate - cartItem.CheckInDate).Days <= 30;
+
+    private bool IsValidMinBookingInterval(CartItemDTO cartItem) =>
+        (cartItem.CheckOutDate - cartItem.CheckInDate).Days >= 1;
 }
