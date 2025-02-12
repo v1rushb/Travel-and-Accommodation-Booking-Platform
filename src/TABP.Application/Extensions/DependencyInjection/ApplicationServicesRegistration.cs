@@ -107,6 +107,7 @@ public static class ApplicationServicesRegistration
         services.AddScoped<IRoomBookingService, RoomBookingService>();
         services.AddScoped<IRoomBookingAdminService, RoomBookingAdminService>();
         services.AddScoped<IRoomBookingUserService, RoomBookingUserService>();
+        services.AddScoped<IRoomBookingEmailService, RoomBookingEmailService>(); 
     }
 
     private static void AddCartServices(this IServiceCollection services)
