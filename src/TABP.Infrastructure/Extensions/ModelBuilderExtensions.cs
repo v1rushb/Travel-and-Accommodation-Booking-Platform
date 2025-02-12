@@ -17,9 +17,9 @@ public static class ModelBuilderExtensions
 
     public static ModelBuilder MapViews(this ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<AvailableRoom>()
-        .ToView("vw_AvailableRooms")
-        .HasKey(r => r.Id);
+        modelBuilder.Entity<RoomWithAvailability>()
+        .ToView("vw_RoomWithAvailability")
+        .HasKey(room => room.Id);
 
         return modelBuilder;
     }
