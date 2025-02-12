@@ -76,6 +76,7 @@ public class HotelUserService : IHotelUserService
                 filterExpression,
                 pagination.PageNumber,
                 pagination.PageSize,
+                null,
                 orderBy
             );
         
