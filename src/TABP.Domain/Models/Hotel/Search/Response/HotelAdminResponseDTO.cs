@@ -13,4 +13,5 @@ public class HotelAdminResponseDTO : Entity
     public DateTime CreationDate { get; set; }
     public DateTime ModificationDate { get; set; }
     public Guid CityId { get; set; }
+    public decimal Revenue { get; set; }
 }
