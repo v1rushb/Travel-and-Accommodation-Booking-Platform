@@ -6,5 +6,5 @@ public class VisitTimeOptionQuery
 
     public override string ToString() =>
         @$"
-            TimeOption: {TimeOption ?? "None"}";
+                TimeOption: {TimeOption ?? "None"}";
 }
