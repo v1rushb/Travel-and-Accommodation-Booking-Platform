@@ -11,70 +11,37 @@ namespace TABP.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql("""
-                CREATE VIEW vw_AvailableRooms AS
+                CREATE VIEW vw_RoomAvailabilityDetails AS
                 SELECT
-                    R.Id
-                    R.Number,
-                    R.Type,
-                    R.AdultsCapacity,
-                    R.ChildrenCapacity,
-                    R.PricePerNight,
-                    R.HotelId,
-                    H.Name AS HotelName,
-                    H.StarRating,
-                    R.CreationDate,
-                    R.ModificationDate
-                FROM Rooms R
-                JOIN Hotels H ON R.HotelId = H.Id
-                WHERE NOT EXISTS (
-                    SELECT 1
-                    FROM RoomBookings B
-                    WHERE B.RoomId = R.Id
-                    AND GETDATE() BETWEEN B.CheckInDate AND B.CheckOutDate
-                );
-                """);
-
-            migrationBuilder.Sql("""
-                CREATE VIEW vw_HotelRevenue AS
-                SELECT 
-                    H.Id AS HotelId,
-                    H.Name,
-                    H.BriefDescription,
-                    H.DetailedDescription,
-                    H.StarRating,
-                    H.OwnerName,
-                    H.Geolocation,
-                    H.CreationDate,
-                    H.ModificationDate,
-                    H.CityId,
-                    C.Name AS CityName,
-                    C.CountryName AS CityCountryName,
-                    SUM(R.PricePerNight * DATEDIFF(DAY, B.StartingDate, B.EndingDate)) AS TotalRevenue
-                FROM Hotels H
-                JOIN Rooms R ON H.Id = R.HotelId
-                JOIN Bookings B ON R.Id = B.RoomId
-                JOIN Cities C ON H.CityId = C.Id
-                WHERE B.EndingDate < GETDATE()
-                GROUP BY 
-                    H.Id, 
-                    H.Name, 
-                    H.BriefDescription, 
-                    H.DetailedDescription, 
-                    H.StarRating, 
-                    H.OwnerName, 
-                    H.Geolocation, 
-                    H.CreationDate, 
-                    H.ModificationDate, 
-                    H.CityId,
-                    C.Name,
-                    C.CountryName;
+                    Room.Id,
+                    Room.Number,
+                    Room.Type,
+                    Room.AdultsCapacity,
+                    Room.ChildrenCapacity,
+                    Room.PricePerNight,
+                    Room.HotelId,
+                    Hotel.Name AS HotelName,
+                    Hotel.StarRating,
+                    Room.CreationDate,
+                    Room.ModificationDate,
+                    CASE
+                        WHEN EXISTS (
+                            SELECT 1
+                            FROM RoomBookings Booking
+                            WHERE Booking.RoomId = Room.Id
+                            AND GETDATE() BETWEEN Booking.CheckInDate AND Booking.CheckOutDate
+                        ) THEN 0
+                        ELSE 1
+                    END AS IsAvailable
+                FROM Rooms Room
+                JOIN Hotels Hotel ON Room.HotelId = Hotel.Id;
                 """);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP VIEW vw_AvailableRooms, vw_HotelRevenue");
+            migrationBuilder.Sql("DROP VIEW vw_AvailableRooms");
         }
     }
 }
