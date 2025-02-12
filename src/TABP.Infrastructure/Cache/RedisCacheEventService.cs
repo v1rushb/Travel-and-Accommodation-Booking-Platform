@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
@@ -45,10 +46,11 @@ public class RedisCacheEventService : BackgroundService, ICacheEventService
             _expirationCallbacks[key] = onExpiredCallback;
 
             _logger.LogInformation(
-                "Scheduled expiration for key: {Key} in {ExpirationSeconds} seconds.",
+                "Scheduled expiration for key: {Key} in {ExpirationTime}",
                 key,
-                expiration.TotalSeconds
+                $"{expiration.Hours}h {expiration.Minutes}m {expiration.Seconds}s"
             );
+
         } catch (Exception ex)
         {
             throw new RedisCacheException("Failed to schedule key expiration in Redis.", ex);
