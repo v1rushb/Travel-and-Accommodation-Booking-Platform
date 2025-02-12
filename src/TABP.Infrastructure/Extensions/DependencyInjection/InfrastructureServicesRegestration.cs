@@ -30,9 +30,10 @@ public static class InfrastructureServicesRegistration
         services.AddScoped<ICartRepository, CartRepository>();
         services.AddScoped<IImageRepository, ImageRepository>();
         AddCache(services, configuration);
-        services.AddHostedService<RedisCacheEventService>();
         services.AddSingleton<IBlacklistService, BlacklistService>();
-        services.AddTransient<ICacheEventService, RedisCacheEventService>();
+        services.AddSingleton<RedisCacheEventService>();
+        services.AddSingleton<ICacheEventService>(service => service.GetRequiredService<RedisCacheEventService>());
+        services.AddHostedService(service => service.GetRequiredService<RedisCacheEventService>());
         services.AddTransient<IEmailService, EmailService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IHotelUserRepository, HotelUserRepository>();
