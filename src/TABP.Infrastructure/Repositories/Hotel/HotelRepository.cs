@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Hotel;
+using TABP.Domain.Models.Hotels;
 using TABP.Infrastructure.Extensions.Helpers;
 
 namespace TABP.Infrastructure.Repositories;
@@ -69,23 +70,30 @@ public class HotelRepository : IHotelRepository
                 .Max(room => room.Number))
             .FirstOrDefaultAsync() + 1;
 
-    public async Task<IEnumerable<HotelDTO>> SearchAsync(
+    public async Task<IEnumerable<HotelInsightDTO>> SearchAsync(
         Expression<Func<Hotel, bool>> predicate,
         int pageNumber,
         int pageSize,
-        Func<IQueryable<Hotel>, IOrderedQueryable<Hotel>> orderBy = null)
+        Expression<Func<RoomBooking, bool>> revenuePredicate,
+        Func<IQueryable<HotelInsightDTO>, IOrderedQueryable<HotelInsightDTO>> orderBy = null)
     {
         var hotels = await _context.Hotels
-            .Include(h => h.City)
+            .Include(hotel => hotel.City)
             .Where(predicate)
+            .WithInsights(revenuePredicate)
             .OrderByIf(orderBy != null, orderBy)
             .PaginateAsync(
                 pageNumber,
                 pageSize
             );
 
+            // System.Console.WriteLine(hotels.First().Revenue);
+            foreach(var hotel in hotels)
+            {
+                System.Console.WriteLine(hotel.Revenue);
+            }
         return _mapper
-            .Map<IEnumerable<HotelDTO>>(hotels);
+            .Map<IEnumerable<HotelInsightDTO>>(hotels);
     }
 
 

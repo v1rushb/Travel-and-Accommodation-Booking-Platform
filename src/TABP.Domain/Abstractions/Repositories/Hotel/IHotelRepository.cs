@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Hotel;
+using TABP.Domain.Models.Hotels;
 
 namespace TABP.Domain.Abstractions.Repositories;
 
@@ -12,11 +13,12 @@ public interface IHotelRepository
     Task UpdateAsync(HotelDTO updatedHotel);
     Task<HotelDTO> GetByIdAsync(Guid Id);
     Task<int> GetNextRoomNumberAsync(Guid hotelId);
-    Task<IEnumerable<HotelDTO>> SearchAsync(
+    Task<IEnumerable<HotelInsightDTO>> SearchAsync(
         Expression<Func<Hotel, bool>> predicate,
         int pageNumber,
         int pageSize,
-        Func<IQueryable<Hotel>,IOrderedQueryable<Hotel>> orderBy 
+        Expression<Func<RoomBooking, bool>> revenuePredicate,
+        Func<IQueryable<HotelInsightDTO>,IOrderedQueryable<HotelInsightDTO>> orderBy 
             = null);
     Task<string> GetHotelNameByIdAsync(Guid Id);
     void Update(HotelDTO Hotel);
