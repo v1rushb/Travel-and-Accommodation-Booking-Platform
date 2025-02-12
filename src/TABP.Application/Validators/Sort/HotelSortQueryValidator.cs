@@ -12,13 +12,12 @@ public class HotelSortQueryValidator : AbstractValidator<HotelSortQuery>
         "city"
     };
 
-    private static readonly HashSet<string> SortByOptionsForAdmin = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly HashSet<string> SortByOptionsForAdmin = 
+        new(SortByOptions, StringComparer.OrdinalIgnoreCase)
     {
-        "name",
-        "starrating",
-        "city",
-        "creationdate",
-        "modificationdate"
+        "CreationDate",
+        "ModificationDate",
+        "Revenue"
     };
 
     private static readonly HashSet<string> SortOrderOptions = new(StringComparer.OrdinalIgnoreCase)
