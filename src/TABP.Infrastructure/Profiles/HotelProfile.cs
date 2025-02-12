@@ -3,6 +3,7 @@ using TABP.Domain.Entities;
 using TABP.Domain.Enums;
 using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotel.Search.Response;
+using TABP.Domain.Models.Hotels;
 
 namespace TABP.Infrastructure.Profiles;
 
@@ -23,5 +24,6 @@ internal class HotelProfile : Profile
                 opt => opt.MapFrom(src => (HotelRating)src.StarRating));
 
         CreateMap<FeaturedHotelDTO, HotelDTO>();
+        CreateMap<HotelInsightDTO, Hotel>();
     }
 }
