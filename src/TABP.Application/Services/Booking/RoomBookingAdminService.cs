@@ -5,6 +5,7 @@ using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Application.Sorting.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services.Booking;
+using TABP.Domain.Abstractions.Utilities.Injectable;
 using TABP.Domain.Models.Booking.Search;
 using TABP.Domain.Models.Booking.Search.Response;
 using TABP.Domain.Models.Pagination;

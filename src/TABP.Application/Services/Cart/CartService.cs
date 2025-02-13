@@ -6,6 +6,7 @@ using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Abstractions.Services.Booking;
 using TABP.Domain.Abstractions.Services.Cart;
+using TABP.Domain.Abstractions.Utilities.Injectable;
 using TABP.Domain.Enums;
 using TABP.Domain.Exceptions;
 using TABP.Domain.Models.Cart;

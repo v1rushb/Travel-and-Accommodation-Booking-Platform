@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using TABP.Domain.Enums;
+using TABP.Domain.Abstractions.Utilities.Injectable;
 
 namespace TABP.API.Utilities.Injectable;
 

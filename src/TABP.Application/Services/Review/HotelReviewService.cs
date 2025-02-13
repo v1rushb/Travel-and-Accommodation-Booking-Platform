@@ -7,6 +7,7 @@ using TABP.Domain.Entities;
 using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Abstractions.Services.Review;
 using TABP.Domain.Exceptions;
+using TABP.Domain.Abstractions.Utilities.Injectable;
 
 namespace TABP.Application.Services.Review;
 

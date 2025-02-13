@@ -5,6 +5,7 @@ using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Application.Sorting.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services.City;
+using TABP.Domain.Abstractions.Utilities.Injectable;
 using TABP.Domain.Models.City.Response;
 using TABP.Domain.Models.City.Search;
 using TABP.Domain.Models.City.Sort;

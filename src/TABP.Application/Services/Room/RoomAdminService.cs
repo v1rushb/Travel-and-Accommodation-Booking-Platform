@@ -5,6 +5,7 @@ using TABP.Application.Filters.ExpressionBuilders;
 using TABP.Application.Sorting.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Abstractions.Utilities.Injectable;
 using TABP.Domain.Models.Pagination;
 using TABP.Domain.Models.Room.Search;
 using TABP.Domain.Models.Room.Search.Response;

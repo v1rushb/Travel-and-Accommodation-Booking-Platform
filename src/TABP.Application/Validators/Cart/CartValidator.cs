@@ -1,5 +1,6 @@
 using FluentValidation;
 using TABP.Domain.Abstractions.Repositories;
+using TABP.Domain.Abstractions.Utilities.Injectable;
 using TABP.Domain.Models.Cart;
 using TABP.Domain.Models.CartItem;
 

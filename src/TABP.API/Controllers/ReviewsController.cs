@@ -9,6 +9,7 @@ using TABP.API.Extensions;
 using TABP.Domain.Abstractions.Services.Review;
 using TABP.Domain.Models.HotelReview.Sort;
 using TABP.Domain.Enums;
+using TABP.Domain.Abstractions.Utilities.Injectable;
 
 namespace TABP.API.Controllers;
 

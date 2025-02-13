@@ -5,6 +5,7 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using TABP.Domain.Abstractions.Utilities.Injectable;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using TABP.API.Utilities.Injectable;

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using TABP.Application.Sorting.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services;
+using TABP.Domain.Abstractions.Utilities.Injectable;
 using TABP.Domain.Exceptions;
 using TABP.Domain.Models.Discount;
 using TABP.Domain.Models.Discount.Search;

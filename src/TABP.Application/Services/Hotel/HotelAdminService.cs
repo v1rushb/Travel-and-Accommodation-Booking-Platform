@@ -6,6 +6,7 @@ using TABP.Application.Filters.ExpressionBuilders.Generics;
 using TABP.Application.Sorting.ExpressionBuilders;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Abstractions.Services.Hotel;
+using TABP.Domain.Abstractions.Utilities.Injectable;
 using TABP.Domain.Entities;
 using TABP.Domain.Models.Hotel.Search;
 using TABP.Domain.Models.Hotel.Search.Response;
