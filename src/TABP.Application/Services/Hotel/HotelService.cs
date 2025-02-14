@@ -1,6 +1,5 @@
 using FluentValidation;
 using TABP.Domain.Abstractions.Repositories;
-using TABP.Domain.Abstractions.Services;
 using TABP.Domain.Abstractions.Services.Hotel;
 using TABP.Domain.Exceptions;
 using TABP.Domain.Models.Hotel;
