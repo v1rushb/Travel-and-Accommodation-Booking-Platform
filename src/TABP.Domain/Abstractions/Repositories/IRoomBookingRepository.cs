@@ -82,4 +82,3 @@ public interface IRoomBookingRepository
         Expression<Func<RoomBooking, bool>> predicate
     );
 }
-}
