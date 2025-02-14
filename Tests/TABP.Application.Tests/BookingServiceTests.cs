@@ -1,7 +1,6 @@
 using FluentAssertions;
 using FluentValidation;
 using Moq;
-using Microsoft.Extensions.Logging;
 using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Models.RoomBooking;
 using TABP.Domain.Enums;
@@ -14,6 +13,7 @@ using TABP.Domain.Models.Room;
 using TABP.Domain.Models.Discount;
 using AutoFixture;
 using TABP.Domain.Exceptions;
+using TABP.Domain.Abstractions.Utilities.Injectable;
 
 namespace TABP.Application.Tests;
 public class BookingServiceTests
@@ -24,11 +24,7 @@ public class BookingServiceTests
     private readonly Mock<IDiscountRepository> _mockDiscountRepo;
     private readonly Mock<ICurrentUserService> _mockCurrentUser;
     private readonly Mock<IValidator<RoomBookingDTO>> _mockValidator;
-    private readonly Mock<ILogger<RoomBookingService>> _mockLogger;
-    private readonly Mock<ICacheEventService> _mockCacheEventService;
-    private readonly Mock<IEmailService> _mockEmailService;
-    private readonly Mock<IUserRepository> _mockUserRepo;
-    private readonly Mock<IHotelRepository> _mockHotelRepo;
+    private readonly Mock<IRoomBookingEmailService> _mockBookingEmailService;
     private readonly IRoomBookingService _sut;
 
     public BookingServiceTests()
@@ -39,11 +35,8 @@ public class BookingServiceTests
         _mockDiscountRepo = new Mock<IDiscountRepository>();
         _mockCurrentUser = new Mock<ICurrentUserService>();
         _mockValidator = new Mock<IValidator<RoomBookingDTO>>();
-        _mockLogger = new Mock<ILogger<RoomBookingService>>();
-        _mockCacheEventService = new Mock<ICacheEventService>();
-        _mockEmailService = new Mock<IEmailService>();
-        _mockUserRepo = new Mock<IUserRepository>();
-        _mockHotelRepo = new Mock<IHotelRepository>();
+        _mockBookingEmailService = new Mock<IRoomBookingEmailService>();
+
 
 
         _mockValidator
@@ -58,14 +51,10 @@ public class BookingServiceTests
 
         _sut = new RoomBookingService(
             _mockBookingRepo.Object,
-            _mockLogger.Object,
             _mockDiscountRepo.Object,
             _mockRoomService.Object,
             _mockValidator.Object,
-            _mockCacheEventService.Object,
-            _mockEmailService.Object,
-            _mockUserRepo.Object,
-            _mockHotelRepo.Object
+            _mockBookingEmailService.Object
         );
     }
 
