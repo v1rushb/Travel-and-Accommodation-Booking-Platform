@@ -25,14 +25,9 @@ public class RoomBookingService : IRoomBookingService
 
     public RoomBookingService(
         IRoomBookingRepository roomBookingRepository,
-        ILogger<RoomBookingService> logger,
         IDiscountRepository discountRepository,
         IRoomService roomService,
         IValidator<RoomBookingDTO> bookingValidator,
-        ICacheEventService cacheEventService,
-        IEmailService emailService,
-        IUserRepository userRepository,
-        IHotelRepository hotelRepository,
         IRoomBookingEmailService bookingEmailService)
     {
         _roomBookingRepository = roomBookingRepository;
