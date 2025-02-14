@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using TABP.Domain.Models.Discount.Sort;
 using FluentAssertions;
 using TABP.Domain.Exceptions;
+using TABP.Domain.Abstractions.Utilities.Injectable;
 
 namespace TABP.Application.Tests;
 

@@ -9,6 +9,7 @@ using TABP.Application.Services.Review;
 using TABP.Domain.Models.Hotel;
 using FluentAssertions;
 using TABP.Domain.Exceptions;
+using TABP.Domain.Abstractions.Utilities.Injectable;
 
 namespace TABP.Application.Tests;
 public class HotelReviewServiceTests

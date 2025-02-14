@@ -13,6 +13,7 @@ using TABP.Application.Services.Cart;
 using TABP.Domain.Models.Pagination;
 using AutoMapper;
 using TABP.Domain.Exceptions;
+using TABP.Domain.Abstractions.Utilities.Injectable;
 
 namespace TABP.Application.Tests;
 public class CartServiceTests
