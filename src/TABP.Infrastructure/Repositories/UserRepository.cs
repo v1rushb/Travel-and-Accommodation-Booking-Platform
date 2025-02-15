@@ -53,9 +53,14 @@ public class UserRepository : IUserRepository
     public async Task UpdateAsync(UserDTO updatedUser)
     {
         var existingUser = await _context.Users
-            .FirstOrDefaultAsync(user => user.Id == updatedUser.Id);
+            .FirstAsync(user => user.Id == updatedUser.Id);
         
         _mapper.Map(updatedUser, existingUser);
+        
+        _context.Entry(existingUser)
+            .Property(user => user.LastLogin)
+            .IsModified = true;
+
         await _context.SaveChangesAsync();
     }
 }
