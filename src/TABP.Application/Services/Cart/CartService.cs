@@ -1,4 +1,3 @@
-using System.Net;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -27,7 +26,6 @@ public class CartService : ICartService
     private readonly IValidator<CartItemDTO> _cartItemValidator;
     private readonly IValidator<PaginationDTO> _paginationValidator;
     private readonly IRoomService _roomService;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     public CartService(
         ICartRepository cartRepository,
@@ -38,7 +36,6 @@ public class CartService : ICartService
         IValidator<CartItemDTO> cartItemValidator,
         IValidator<PaginationDTO> paginationValidator,
         IRoomService roomService,
-        IUnitOfWork unitOfWork,
         IMapper mapper)
     {
         _cartRepository = cartRepository;
@@ -49,7 +46,6 @@ public class CartService : ICartService
         _cartItemValidator = cartItemValidator;
         _paginationValidator = paginationValidator;
         _roomService = roomService;
-        _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
@@ -237,9 +233,6 @@ public class CartService : ICartService
         cartDTO.UserId = currentUserId;
         
         await _cartRepository.UpdateAsync(cartDTO);
-        _cartItemRepository.Update(cartItems);
-
-        await _unitOfWork.SaveChangesAsync();
 
         _logger.LogInformation("Cart with Id {CartId} has been retrieved for User {UserId}", cart.Id, currentUserId);
         return cart;
