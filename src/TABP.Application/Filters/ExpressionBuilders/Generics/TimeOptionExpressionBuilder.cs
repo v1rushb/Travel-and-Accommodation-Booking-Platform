@@ -27,7 +27,7 @@ public static class TimeOptionExpressionBuilder<T> where T : class, IHasCreation
 
         DateTime? filterDate = timeOption switch
         {
-            TimeOptions.Today => DateTime.Now.Date,
+            TimeOptions.Today => DateTime.Now.AddDays(-1).Date,
             TimeOptions.LastWeek => DateTime.Now.AddDays(-7).Date,
             TimeOptions.LastMonth => DateTime.Now.AddMonths(-1).Date,
             TimeOptions.LastYear => DateTime.Now.AddYears(-1).Date,
