@@ -125,7 +125,7 @@ public class HotelUserService : IHotelUserService
     public async Task<IEnumerable<FeaturedHotelDTO>> GetWeeklyFeaturedHotelsAsync()
     {
         var timeOption = TimeOptions.LastWeek;
-        var expression = TimeOptionExpressionBuilder<Domain.Entities.Hotel>
+        var expression = TimeOptionExpressionBuilder<HotelVisit>
             .Build(new VisitTimeOptionQuery
             {
                 TimeOption = Enum.Parse(typeof(TimeOptions), timeOption.ToString())
@@ -153,12 +153,15 @@ public class HotelUserService : IHotelUserService
             {
                 Id = hotel.Id,
                 Name = hotel.Name,
+                WeeklyVisits = hotel.Visits,
+                UniqueVisitors = hotel.UniqueVisitors,
                 StarRating = hotel.StarRating,
                 WeeklyBookings = bookingCountByHotel
                     .TryGetValue(hotel.Id, out int value) ? value : 0
 
             })
             .OrderByDescending(hotel => hotel.WeeklyBookings)
+            .ThenByDescending(hotel => hotel.WeeklyVisits)
             .ThenByDescending(hotel => hotel.StarRating)
             .ToList();
 
