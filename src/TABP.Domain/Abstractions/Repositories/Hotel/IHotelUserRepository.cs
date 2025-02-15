@@ -31,7 +31,7 @@ public interface IHotelUserRepository
     /// returns a collection of <see cref="VisitedHotelDTO"/> representing weekly featured hotels.
     /// </returns>
     Task<IEnumerable<VisitedHotelDTO>> GetWeeklyFeaturedHotelsAsync(
-        Expression<Func<Hotel, bool>> predicate);
+        Expression<Func<HotelVisit, bool>> predicate);
 
     /// <summary>
     /// Asynchronously retrieves the history of hotels visited by a user, based on a predicate and with pagination.

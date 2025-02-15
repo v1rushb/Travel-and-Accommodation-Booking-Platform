@@ -42,14 +42,19 @@ public class HotelUserRepository : IHotelUserRepository
     }
     
     public async Task<IEnumerable<VisitedHotelDTO>> GetWeeklyFeaturedHotelsAsync(
-        Expression<Func<Hotel, bool>> predicate)
+        Expression<Func<HotelVisit, bool>> predicate)
     {
         var hotels = await _context.Hotels
-            .Where(predicate)
             .Select(hotel => new VisitedHotelDTO
             {
                 Id = hotel.Id,
-                Visits = hotel.HotelVisits.Count,
+                Visits = hotel.HotelVisits
+                    .AsQueryable()
+                    .Count(predicate),
+                UniqueVisitors = hotel.HotelVisits
+                    .Select(visit => visit.UserId)
+                    .Distinct()
+                    .Count(),
                 StarRating = hotel.StarRating,
                 Name = hotel.Name
             })
