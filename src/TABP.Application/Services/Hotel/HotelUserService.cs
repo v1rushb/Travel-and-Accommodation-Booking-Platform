@@ -12,6 +12,7 @@ using TABP.Domain.Entities;
 using TABP.Domain.Enums;
 using TABP.Domain.Exceptions;
 using TABP.Domain.Hotels;
+using TABP.Domain.Models.Discount;
 using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotel.Search;
 using TABP.Domain.Models.Hotel.Search.Response;
@@ -108,7 +109,7 @@ public class HotelUserService : IHotelUserService
         var discounts = await _discountRepository
             .GetActiveDiscountsForHotelAsync(hotelId);
 
-        hotel.Discounts = discounts;
+        hotel.Discounts = _mapper.Map<IEnumerable<DiscountUserResponseDTO>>(discounts);
 
         await _hotelVisitService.AddAsync(new HotelVisitDTO
         {
@@ -150,8 +151,8 @@ public class HotelUserService : IHotelUserService
         var featuredHotels = mostVisitedHotels
             .Select(hotel => new FeaturedHotelDTO
             {
+                Id = hotel.Id,
                 Name = hotel.Name,
-                HotelId = hotel.Id,
                 StarRating = hotel.StarRating,
                 WeeklyBookings = bookingCountByHotel
                     .TryGetValue(hotel.Id, out int value) ? value : 0
