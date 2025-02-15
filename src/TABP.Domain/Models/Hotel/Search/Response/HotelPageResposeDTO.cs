@@ -13,5 +13,5 @@ public class HotelPageResponseDTO : Entity
     public HotelRating StarRating { get; set; }
     public string Geolocation { get; set; }
     public CitySearchResponseDTO City { get; set; }
-    public IEnumerable<DiscountDTO> Discounts { get; set; }
+    public IEnumerable<DiscountUserResponseDTO> Discounts { get; set; }
 }
