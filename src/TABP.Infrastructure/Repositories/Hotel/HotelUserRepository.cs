@@ -46,16 +46,15 @@ public class HotelUserRepository : IHotelUserRepository
     {
         var hotels = await _context.Hotels
             .Where(predicate)
-            .GroupBy(hotel => hotel.Id)
-            .Select(group => new VisitedHotelDTO
+            .Select(hotel => new VisitedHotelDTO
             {
-                Id = group.Key,
-                Visits = group.Count(),
-                StarRating = group.Max(hotel =>
-                     hotel.StarRating),
-                Name = group.First().Name
+                Id = hotel.Id,
+                Visits = hotel.HotelVisits.Count,
+                StarRating = hotel.StarRating,
+                Name = hotel.Name
             })
             .OrderByDescending(hotel => hotel.Visits)
+            .ThenByDescending(hotel => hotel.StarRating)
             .Take(5)
             .ToListAsync();
 
