@@ -85,9 +85,6 @@ public class HotelReviewService : IHotelReviewService
         return await _hotelReviewRepository.GetByIdAsync(Id);
     }
 
-    // public async Task<IEnumerable<HotelReview>> GetReviewsByHotelAsync(Guid hotelId) =>
-    //     await _hotelReviewRepository.GetReviewsByHotelAsync(hotelId);
-
     public async Task<decimal> GetReviewsByHotelCountAsync(Guid hotelId) =>
         await _hotelReviewRepository.GetReviewsByHotelCountAsync(hotelId);
 
@@ -130,17 +127,11 @@ public class HotelReviewService : IHotelReviewService
         }
     }
 
-    // public async Task<HotelReview?> GetByUserAndHotelAsync(Guid userId, Guid hotelId) {
-    //     await ValidateId(hotelId);
-
-    //     return await _hotelReviewRepository.GetByUserAndHotelAsync(userId, hotelId);
-    // }
-
     private async Task UpdateHotelStarRatingAsync(Guid hotelId)
     {
         var hotel = await _hotelRepository.GetByIdAsync(hotelId);
-        var averageRating = await _hotelReviewRepository.
-            GetAverageRatingByHotelAsync(hotelId);
+        var averageRating = await _hotelReviewRepository
+            .GetAverageRatingByHotelAsync(hotelId);
         hotel.StarRating = Convert.ToDecimal(averageRating);
         _hotelRepository.Update(hotel);
     }

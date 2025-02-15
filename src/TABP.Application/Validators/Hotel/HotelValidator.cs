@@ -30,7 +30,7 @@ internal class HotelValidator : AbstractValidator<HotelDTO>
                               HotelConstants.MaxStarRating);
 
         RuleFor(hotel => hotel.Geolocation)
-            .NotNull(); // add regex later.
+            .NotNull();
         
         RuleFor(hotel => hotel.CityId)
             .MustAsync(async (cityId, cancellation) => await cityService.ExistsAsync(cityId))

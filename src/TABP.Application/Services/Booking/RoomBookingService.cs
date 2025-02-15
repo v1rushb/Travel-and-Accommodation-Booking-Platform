@@ -37,7 +37,7 @@ public class RoomBookingService : IRoomBookingService
         _bookingEmailService = bookingEmailService;
     }
     
-    public async Task AddAsync(CartDTO cart) // refactor method later.
+    public async Task AddAsync(CartDTO cart)
     {
         var bookings = await CreateBookingsAsync(cart);
 

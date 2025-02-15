@@ -4,7 +4,6 @@ using TABP.Domain.Models.Booking.Search;
 using TABP.Domain.Models.Booking.Search.Response;
 using TABP.Domain.Models.City.Response;
 using TABP.Domain.Models.City.Search;
-using TABP.Domain.Models.Hotel;
 using TABP.Domain.Models.Hotel.Search.Response;
 using TABP.Domain.Models.HotelReview;
 using TABP.Domain.Models.HotelReview.Search.Response;
