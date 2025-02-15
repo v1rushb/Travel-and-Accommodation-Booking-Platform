@@ -1,6 +1,6 @@
 using FluentValidation;
 using TAB.Domain.Constants.Discount;
-using TABP.Domain.Abstractions.Repositories.Review;
+using TABP.Domain.Abstractions.Repositories;
 using TABP.Domain.Enums;
 using TABP.Domain.Models.Discount;
 
@@ -8,7 +8,8 @@ namespace TABP.Application.Validators.Discount;
 
 internal class DiscountValidator : AbstractValidator<DiscountDTO>
 {
-    public DiscountValidator(IHotelReviewRepository hotelReviewRepository)
+    public DiscountValidator(
+        IHotelRepository hotelRepository)
     {
         RuleFor(discount => discount.Reason)
             .NotNull()
@@ -19,6 +20,10 @@ internal class DiscountValidator : AbstractValidator<DiscountDTO>
             .NotNull()
             .InclusiveBetween(DiscountConstants.MinAmountPercent,
                             DiscountConstants.MaxPercent);
+
+        RuleFor(discount => discount.HotelId)
+            .NotNull()
+            .WithMessage("{PropertyName} does not exist.");
 
         RuleFor(discount => discount)
             .Must(discount => discount.StartingDate < discount.EndingDate)
@@ -33,14 +38,11 @@ internal class DiscountValidator : AbstractValidator<DiscountDTO>
         RuleFor(discount => discount.HotelId)
             .NotNull()
             .MustAsync(async (hotelId, cancellation) => 
-                !await hotelReviewRepository.ExistsAsync(hotelId))
+                await hotelRepository.ExistsAsync(hotelId))
             .WithMessage("{PropertyName} does not exist.");
 
-        RuleFor(x => x.roomType)
+        RuleFor(discount => discount.roomType)
             .Must(roomType => Enum.IsDefined(typeof(RoomType), roomType))
             .WithMessage("Invalid RoomType. Allowed values: Pending, Approved, Rejected.");
-
-
-
     }
 }
