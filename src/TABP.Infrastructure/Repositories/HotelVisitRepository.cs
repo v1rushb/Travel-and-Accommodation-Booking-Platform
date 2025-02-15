@@ -63,6 +63,10 @@ public class HotelVisitRepository : IHotelVisitRepository
                 Id = group.Key,
                 Name = group.First().Hotel.Name,
                 Visits = group.Count(),
+                UniqueVisitors = group
+                    .Select(visit => visit.UserId)
+                    .Distinct()
+                    .Count(),
                 StarRating = group.First().Hotel.StarRating,
                 CityName = group.First().Hotel.City.Name
             })
