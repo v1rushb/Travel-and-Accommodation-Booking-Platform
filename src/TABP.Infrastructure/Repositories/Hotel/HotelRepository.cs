@@ -87,11 +87,6 @@ public class HotelRepository : IHotelRepository
                 pageSize
             );
 
-            // System.Console.WriteLine(hotels.First().Revenue);
-            foreach(var hotel in hotels)
-            {
-                System.Console.WriteLine(hotel.Revenue);
-            }
         return _mapper
             .Map<IEnumerable<HotelInsightDTO>>(hotels);
     }

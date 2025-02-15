@@ -30,7 +30,7 @@ public class CartRepository : ICartRepository
 
     public async Task<Guid> CreateAsync(CartDTO newCartItem)
     {
-        var cart = _mapper.Map<Cart>(newCartItem); // add mapping here. ----------------------------------------------------
+        var cart = _mapper.Map<Cart>(newCartItem);
         
         var entity = await _context.Carts.AddAsync(cart);
         await _context.SaveChangesAsync();

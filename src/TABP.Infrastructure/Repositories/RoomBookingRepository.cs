@@ -49,7 +49,7 @@ public class RoomBookingRepository : IRoomBookingRepository
     public async Task<RoomBookingDTO> GetByIdAsync(Guid Id) =>
         _mapper.Map<RoomBookingDTO>(
             await _context.RoomBookings
-            .FirstOrDefaultAsync(booking => booking.Id == Id)); // include user and room later if needed. (check ur need after implementing logic or final refactor.)
+            .FirstOrDefaultAsync(booking => booking.Id == Id));
 
     public async Task<bool> RoomIsBookedBetween(Guid roomId, DateTime StartingDate, DateTime EndingDate) =>
         await _context.RoomBookings.AnyAsync(booking => booking.RoomId == roomId && booking.CheckInDate >= StartingDate && booking.CheckOutDate <= EndingDate);
@@ -93,5 +93,4 @@ public class RoomBookingRepository : IRoomBookingRepository
 
         return bookings;
     }
-
 }

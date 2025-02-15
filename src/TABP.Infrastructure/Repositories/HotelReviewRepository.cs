@@ -81,9 +81,6 @@ public class HotelReviewsRepository : IHotelReviewRepository
             .Select(review => (int) review.Rating)
             .AverageAsync(rating => rating);
     
-    // public async Task<IEnumerable<HotelReview>> GetReviewsByHotelAsync(Guid hotelId) =>
-    //     await _context.HotelReviews.Where(review => review.HotelId == hotelId).ToListAsync();
-
     public async Task<IEnumerable<HotelReview>> GetReviewsByUserAsync(Guid userId) =>
         await _context.HotelReviews
             .Include(review => review.User)
@@ -93,10 +90,6 @@ public class HotelReviewsRepository : IHotelReviewRepository
     public async Task<bool> ExistsAsync(Guid Id, Guid? userId = null) =>
         await _context.HotelReviews
             .AnyAsync(review => (review.Id == Id) && (!userId.HasValue || (review.UserId == userId.Value)));
-
-    // public async Task<HotelReview?> GetByUserAndHotelAsync(Guid userId, Guid hotelId) =>
-    //     await _context.HotelReviews
-    //         .FirstOrDefaultAsync(review => (review.UserId == userId) && (review.HotelId == hotelId));
 
     public async Task<IEnumerable<HotelReviewDTO>> SearchAsync(
         Expression<Func<HotelReview, bool>> predicate,

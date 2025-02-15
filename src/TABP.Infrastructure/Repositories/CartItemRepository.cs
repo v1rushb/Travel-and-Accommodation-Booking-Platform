@@ -84,11 +84,4 @@ public class CartItemRepository : ICartItemRepository
 
         _context.SaveChanges();
     }
-
-
-    // public async Task<bool> ExistsBetweenUserAndRoomAsync(Guid userId, Guid roomId) =>
-    //     await _context.CartItems.AnyAsync(cartItem => cartItem.UserId == userId && cartItem.RoomId == roomId);
-
-    // public async Task<IEnumerable<CartItem>> GetByUserAsync(Guid userId) =>
-    //     await _context.CartItems.Where(cartItem => cartItem.UserId == userId).ToListAsync();
 }

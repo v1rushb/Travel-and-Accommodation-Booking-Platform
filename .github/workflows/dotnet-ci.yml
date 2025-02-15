@@ -8,6 +8,7 @@ on:
   pull_request:
     branches:
       - main
+      - dev
 
 jobs:
   build-and-test:
@@ -16,6 +17,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -26,13 +28,10 @@ jobs:
           dotnet-version: '8.0'
 
       - name: Restore Dependencies
-        run: dotnet restore
+        run: dotnet restore TABP.sln
 
       - name: Build Solution
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build TABP.sln --configuration Release --no-restore
 
-      - name: Run Tests
-        run: |
-          dotnet test TABP.API.IntegrationTests/TABP.API.IntegrationTests.csproj --configuration Release --no-build --verbosity normal
-          dotnet test TABP.Application.Tests/TABP.Application.Tests.csproj --configuration Release --no-build --verbosity normal
-          dotnet test TABP.Domain.Tests/TABP.Domain.Tests.csproj --configuration Release --no-build --verbosity normal
+      - name: Run All Tests
+        run: dotnet test TABP.sln --configuration Release --no-build --verbosity normal
