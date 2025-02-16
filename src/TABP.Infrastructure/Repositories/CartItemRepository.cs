@@ -63,25 +63,4 @@ public class CartItemRepository : ICartItemRepository
 
     public async Task<bool> ExistsAsync(Guid Id) =>
         await _context.CartItems.AnyAsync(cartItem => cartItem.Id == Id);
-
-    public void Update(IEnumerable<CartItemDTO> cartItems)
-    {
-        var cartItemsToUpdate = _mapper.Map<IEnumerable<CartItem>>(cartItems);
-
-        foreach (var cartItem in cartItemsToUpdate)
-        {
-            var existingEntity = _context.CartItems
-                .Local
-                .FirstOrDefault(entry => entry.Id == cartItem.Id);
-
-            if (existingEntity != null)
-            {
-                _context.Entry(existingEntity).State = EntityState.Detached;
-            }
-
-            _context.CartItems.Update(cartItem);
-        }
-
-        _context.SaveChanges();
-    }
 }

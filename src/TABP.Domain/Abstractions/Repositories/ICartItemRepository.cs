@@ -40,10 +40,4 @@ public interface ICartItemRepository
     /// <returns>A <see cref="Task{CartItemDTO}"/> representing the asynchronous operation, and upon completion,
     /// returns the <see cref="CartItemDTO"/> if found; otherwise, <c>null</c>.</returns>
     Task<CartItemDTO> GetByIdAsync(Guid Id);
-
-    /// <summary>
-    /// Updates a collection of cart items in the repository. This is a void return synchronous operation.
-    /// </summary>
-    /// <param name="cartItems">An <see cref="IEnumerable{CartItemDTO}"/> containing the updated data for the cart items.</param>
-    void Update(IEnumerable<CartItemDTO> cartItems);
 }
