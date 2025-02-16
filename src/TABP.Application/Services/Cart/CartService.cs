@@ -72,8 +72,6 @@ public class CartService : ICartService
             ModificationDate = DateTime.UtcNow,
         };
 
-        // validate here.
-
         var newCartId = await _cartRepository.CreateAsync(newCart);
         newCart.Id = newCartId;
 
@@ -100,7 +98,6 @@ public class CartService : ICartService
 
     public async Task AddItemAsync(CartItemDTO newCartItem)
     {
-        // validations for cartitem here. add is room booked etc.. (so important.)  
         await _cartItemValidator.ValidateAndThrowAsync(newCartItem);
 
         var pendingCart = await GetOrCreatePendingCartAsync();

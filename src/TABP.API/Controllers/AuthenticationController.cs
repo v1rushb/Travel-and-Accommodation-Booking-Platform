@@ -7,9 +7,6 @@ using TABP.Domain.Models.User;
 
 namespace TABP.API.Controllers;
 
-// do exception handling later.
-// missing some important logic. do later.
-
 [ApiController]
 [Route("api/auth")]
 public class AuthenticationController : ControllerBase
@@ -31,7 +28,6 @@ public class AuthenticationController : ControllerBase
         _blacklistService = blacklistService;
     }
     
-    //Incomplete
     [HttpPost("user-register")]
     public async Task<IActionResult> RegisterUserAsync(UserRegisterationDTO newUser)
     {
@@ -54,7 +50,7 @@ public class AuthenticationController : ControllerBase
         return Ok(authenticationToken);
     }
 
-    [HttpPost("user-logout")] //refactor later.
+    [HttpPost("user-logout")]
     [Authorize]
     public async Task<IActionResult> LogoutUserAsync()
     {
@@ -64,7 +60,7 @@ public class AuthenticationController : ControllerBase
         {
             return Unauthorized(new { Message = "Invalid authorization header" });
         }
-        var token = authHeader["Bearer ".Length..].Trim(); // check later.
+        var token = authHeader["Bearer ".Length..].Trim();
 
         var handler = new JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(token);

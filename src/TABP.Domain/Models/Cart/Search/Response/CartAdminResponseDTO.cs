@@ -8,7 +8,7 @@ public class CartAdminResponseDTO : Entity
 {
     public Guid UserId { get; set; }
     public decimal TotalPrice { get; set; }
-    public BookingStatus Status { get; set; } // for now
+    public BookingStatus Status { get; set; }
     public DateTime ModificationDate { get; set; }
     public DateTime? CheckOutDate { get; set; }
     public DateTime? CreationDate { get; set; }

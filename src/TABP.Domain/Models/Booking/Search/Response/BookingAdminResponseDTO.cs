@@ -13,5 +13,4 @@ public class BookingAdminResponseDTO
     public Guid UserId { get; set; }
     public DateTime CreationDate { get; set; }
     public DateTime ModificationDate { get; set; }
-    // probably add cart items here.
 }

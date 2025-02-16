@@ -37,8 +37,6 @@ public class HotelAdminController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateHotelAsync([FromBody] HotelForCreationDTO newHotel)
     {
-        // do some high level exception handling.
-
         await _hotelService.AddAsync(_mapper.Map<HotelDTO>(newHotel));
 
         return Created();

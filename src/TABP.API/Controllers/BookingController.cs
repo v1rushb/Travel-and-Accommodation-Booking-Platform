@@ -69,34 +69,4 @@ public class UserBookingController : ControllerBase
 
         return Ok(bookings);
     }
-
-    //do the update.
-    // [HttpPatch("{bookingId:guid}")]
-    // public async Task<IActionResult> PatchBookingAsync(
-    //     Guid bookingId,
-    //     [FromBody] JsonPatchDocument<RoomBookingForUpdateDTO> patchDoc)
-    // {
-    //     var booking = await _roomBookingService.GetByIdAsync(bookingId);
-    //     var bookingToPartiallyUpdate = GetBookingForPartialUpdate(patchDoc, booking);
-
-    //     if(!ModelState.IsValid)
-    //     {
-    //         return BadRequest(ModelState);
-    //     }
-
-    //     _mapper.Map(bookingToPartiallyUpdate, booking);
-    //     await _roomBookingService.UpdateAsync(booking);
-
-    //     return NoContent();
-    // }
-
-    // private RoomBookingForUpdateDTO GetBookingForPartialUpdate(
-    //     JsonPatchDocument<RoomBookingForUpdateDTO> patchDoc,
-    //     RoomBookingDTO booking)
-    // {
-    //     var bookingToUpdate = _mapper.Map<RoomBookingForUpdateDTO>(booking);
-    //     patchDoc.ApplyTo(bookingToUpdate, ModelState);
-
-    //     return bookingToUpdate;
-    // }
 }

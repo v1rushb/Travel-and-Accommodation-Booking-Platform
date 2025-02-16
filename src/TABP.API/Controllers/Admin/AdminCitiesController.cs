@@ -59,7 +59,7 @@ public class CityAdminController : ControllerBase
 
     [HttpPatch("{cityId:guid}")]
     public async Task<IActionResult> PatchCityAsync(
-        Guid cityId, JsonPatchDocument<CityForUpdateDTO> patchDoc) // exception handling later
+        Guid cityId, JsonPatchDocument<CityForUpdateDTO> patchDoc)
     {
         var cityToUpdate = await _cityService
             .GetByIdAsync(cityId);

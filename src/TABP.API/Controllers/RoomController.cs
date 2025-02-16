@@ -9,8 +9,7 @@ using TABP.Domain.Models.Room.Sort;
 
 namespace TABP.API.Controllers;
 
-// [Authorize(Roles = nameof(RoleType.User))]
-[Authorize]
+[Authorize(Roles = $"{nameof(RoleType.User)},{nameof(RoleType.Admin)}")]
 [ApiController]
 [Route("api/hotel-rooms")]
 public class RoomController : ControllerBase
