@@ -27,7 +27,6 @@ public class CartServiceTests
     private readonly Mock<IValidator<CartItemDTO>> _mockCartItemValidator;
     private readonly Mock<IValidator<PaginationDTO>> _mockPaginationValidator;
     private readonly Mock<IRoomService> _mockRoomService;
-    private readonly Mock<IUnitOfWork> _mockUnitOfWork;
     private readonly Mock<IMapper> _mockMapper;
 
 
@@ -44,7 +43,6 @@ public class CartServiceTests
         _mockCartItemValidator = new Mock<IValidator<CartItemDTO>>();
         _mockPaginationValidator = new Mock<IValidator<PaginationDTO>>();
         _mockRoomService = new Mock<IRoomService>();
-        _mockUnitOfWork = new Mock<IUnitOfWork>();
         _mockMapper = new Mock<IMapper>();
 
         _mockCartItemValidator
@@ -70,7 +68,6 @@ public class CartServiceTests
             _mockCartItemValidator.Object,
             _mockPaginationValidator.Object,
             _mockRoomService.Object,
-            _mockUnitOfWork.Object,
             _mockMapper.Object
         );
     }
