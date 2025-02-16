@@ -76,6 +76,7 @@ public class HotelUserRepository : IHotelUserRepository
     {
         var query = await _context.Hotels
         .Where(hotel => hotel.HotelVisits
+            .AsQueryable()
             .Any(visit => visit.UserId == userId))
         .Select(hotel => new
         {
