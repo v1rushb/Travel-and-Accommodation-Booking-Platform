@@ -1,0 +1,97 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    env:
+      SQL_SA_PASSWORD: ${{ secrets.SQL_SA_PASSWORD }}
+      ConnectionStrings__SQLString: "Server=localhost,1433;Database=TABP;User Id=sa;Password=${{ secrets.SQL_SA_PASSWORD }};TrustServerCertificate=True;"
+      ConnectionStrings__Redis: "localhost:6379"
+
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0'
+
+      - name: Pull SQL Server Image
+        run: docker pull mcr.microsoft.com/mssql/server:2022-latest
+
+      - name: Start SQL Server Container
+        run: |
+          docker run -d --name TABP \
+            -e SA_PASSWORD="$SQL_SA_PASSWORD" \
+            -e ACCEPT_EULA=Y \
+            -e MSSQL_PID=Express \
+            -e MSSQL_MEMORY_LIMIT_MB=2048 \
+            -p 1433:1433 \
+            mcr.microsoft.com/mssql/server:2022-latest
+
+      - name: Debug Db docker instance
+        run: |
+          docker logs TABP
+
+      - name: Wait for SQL Server to Start
+        run: |
+          for i in {1..4}; do
+            if docker exec -i TABP /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -P "$SQL_SA_PASSWORD" -Q "SELECT 1;"; then
+              echo "SQL Server is ready."
+              break
+            else
+              echo "Waiting for SQL Server to start..."
+              sleep 10
+            fi
+          done
+
+      - name: Debug Db docker instance
+        run: |
+          docker logs TABP
+
+      - name: Create Database (If Not Exists)
+        run: |
+          docker exec -i TABP /opt/mssql-tools18/bin/sqlcmd -S localhost,1433 -U sa -P "$SQL_SA_PASSWORD" -C -Q "IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'TABP') CREATE DATABASE TABP;"
+
+      - name: Restore Dependencies
+        run: dotnet restore TABP.sln
+
+      - name: Build Solution
+        run: dotnet build TABP.sln --configuration Release --no-restore
+
+      - name: Install dotnet EF Tool
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Add .NET tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Apply Migrations
+        working-directory: src/TABP.Infrastructure
+        run: dotnet ef database update --startup-project ../TABP.API/TABP.API.csproj --context HotelBookingDbContext --connection "$ConnectionStrings__SQLString"
+
+      - name: Run API Integration Tests
+        run: dotnet test Tests/TABP.API.IntegrationTests/TABP.API.IntegrationTests.csproj --configuration Release --no-build --verbosity normal
+
+      - name: Run Application Tests
+        run: dotnet test Tests/TABP.Application.Tests/TABP.Application.Tests.csproj --configuration Release --no-build --verbosity normal
+
+      - name: Run Domain Tests
+        run: dotnet test Tests/TABP.Domain.Tests/TABP.Domain.Tests.csproj --configuration Release --no-build --verbosity normal
