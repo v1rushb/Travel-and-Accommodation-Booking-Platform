@@ -37,18 +37,27 @@ public class ProjectDependenciesTests
     {
         // Arrange
         var infrastructureAssembly = Assembly.Load(InfrastructureNamespace);
-
-        var allowedNamespaces = new[] { ApplicationNamespace, APINamespace };
+        
+        var disallowedNamespaces = new[] { ApplicationNamespace, APINamespace };
 
         // Act
-        var result = Types
+        var failingTypes = Types
             .InAssembly(infrastructureAssembly)
-            .ShouldNot()
-            .HaveDependencyOnAny(allowedNamespaces)
-            .GetResult();
+            .That()
+            .HaveDependencyOnAny(disallowedNamespaces)
+            .GetTypes();
 
         // Assert
-        result.IsSuccessful.Should().BeTrue();
+        failingTypes.Should().BeEmpty(
+            $"Infrastructure layer should not depend on {string.Join(" or ", disallowedNamespaces)}, " +
+            $"but the following types do: {FormatTypes(failingTypes)}");
+    }
+
+    private static string FormatTypes(IEnumerable<Type> types) // very good helper method. check later.
+    {
+        return types.Any() 
+            ? string.Join(", ", types.Select(t => t.FullName)) 
+            : "none";
     }
 
     [Fact]

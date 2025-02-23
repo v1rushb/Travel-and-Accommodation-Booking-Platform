@@ -32,7 +32,7 @@ public class TokenGenerator : ITokenGenerator
             _jwtConfigValidator.ValidateAndThrow(_jwtConfig);
         } catch (ValidationException ex)
         {
-            var errorMessages = string.Join("; ", ex.Errors.Select(e => e.ErrorMessage));
+            var errorMessages = string.Join("; ", ex.Errors.Select(err => err.ErrorMessage));
 
             throw new InvalidJWTConfigurationException($"Invalid JWT Configuration: {errorMessages}");
         }
