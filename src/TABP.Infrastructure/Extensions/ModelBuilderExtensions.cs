@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TAB.Domain.Constants.Discount;
 using TABP.Domain.Constants.City;
@@ -154,7 +153,106 @@ public static class ModelBuilderExtensions
         SeedBookings(modelBuilder);
         SeedHotelVisits(modelBuilder, hotels);
         SeedHotelReviews(modelBuilder, hotels);
+        SeedRoles(modelBuilder);
+        SeedUsers(modelBuilder);
+        SeedUserRoles(modelBuilder);
     }
+
+    private static void SeedUserRoles(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity("RoleUser").HasData(
+            new { UsersId = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4D9"), RolesId = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4A2") },
+            new { UsersId = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4D8"), RolesId = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4A4") },
+            new { UsersId = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4D7"), RolesId = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4A2") },
+            new { UsersId = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4D6"), RolesId = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4A4") }
+        );
+    }
+
+private static void SeedUsers(ModelBuilder modelBuilder)
+        {
+            var users = new List<User>
+            {
+                new User
+                {
+                    Id = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4D9"),
+                    Username = "v1rushb",
+                    Password = "123456789aA@_",
+                    FirstName = "Bashar",
+                    LastName = "Herbawi",
+                    Email = "cs.bashar.herbawi@gmail.com",
+                },
+                new User
+                {
+                    Id = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4D8"),
+                    Username = "user",
+                    Password = "123456789aA@_",
+                    FirstName = "user",
+                    LastName = "user",
+                    Email = "user@gmail.com",
+                },
+                new User
+                {
+                    Id = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4D7"),
+                    Username = "admin",
+                    Password = "123456789aA@_",
+                    FirstName = "admin",
+                    LastName = "admin",
+                    Email = "admin@gmail.com",
+                },
+                new User
+                {
+                    Id = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4D6"),
+                    Username = "user2",
+                    Password = "123456789aA@_",
+                    FirstName = "user2",
+                    LastName = "user2",
+                    Email = "user2@gmail.com",
+                },
+                 new User
+                {
+                    Id = Guid.Parse("5E91FD72-53C3-43EE-3D87-08DD3498AAA5"),
+                    Username = "user3",
+                    Password = "123456789aA@_",
+                    FirstName = "user3",
+                    LastName = "user3",
+                    Email = "user3@gmail.com",
+                },
+                 new User
+                {
+                    Id = Guid.Parse("39AD172A-602E-4118-29D9-08DD398180C1"),
+                    Username = "user4",
+                    Password = "123456789aA@_",
+                    FirstName = "user4",
+                    LastName = "user4",
+                    Email = "user4@gmail.com",
+                }
+            };
+
+            modelBuilder.Entity<User>()
+                .HasData(users);
+        }
+
+        private static void SeedRoles(ModelBuilder modelBuilder)
+        {
+            var roles = new List<Role>
+            {
+                new Role
+                {
+                    Id = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4A4"),
+                    Name = "User",
+                    Description = "Regular user role",
+                },
+                new Role
+                {
+                    Id = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4A2"),
+                    Name = "Admin",
+                    Description = "Administrator role",
+                },
+            };
+
+            modelBuilder.Entity<Role>()
+                .HasData(roles);
+        }
 
     private static void SeedCities(ModelBuilder modelBuilder)
     {
