@@ -176,7 +176,7 @@ private static void SeedUsers(ModelBuilder modelBuilder)
                 {
                     Id = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4D9"),
                     Username = "v1rushb",
-                    Password = "123456789aA@_",
+                    Password = "AQAAAAIAAYagAAAAEPiNb8pIVNt5yr/azQOh/fuB3eDA15yC3FszFLpDQKowXsaFxCCfFQNkk/sUbrpYlw==",
                     FirstName = "Bashar",
                     LastName = "Herbawi",
                     Email = "cs.bashar.herbawi@gmail.com",
@@ -185,7 +185,7 @@ private static void SeedUsers(ModelBuilder modelBuilder)
                 {
                     Id = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4D8"),
                     Username = "user",
-                    Password = "123456789aA@_",
+                    Password = "AQAAAAIAAYagAAAAEPiNb8pIVNt5yr/azQOh/fuB3eDA15yC3FszFLpDQKowXsaFxCCfFQNkk/sUbrpYlw==",
                     FirstName = "user",
                     LastName = "user",
                     Email = "user@gmail.com",
@@ -194,7 +194,7 @@ private static void SeedUsers(ModelBuilder modelBuilder)
                 {
                     Id = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4D7"),
                     Username = "admin",
-                    Password = "123456789aA@_",
+                    Password = "AQAAAAIAAYagAAAAEPiNb8pIVNt5yr/azQOh/fuB3eDA15yC3FszFLpDQKowXsaFxCCfFQNkk/sUbrpYlw==",
                     FirstName = "admin",
                     LastName = "admin",
                     Email = "admin@gmail.com",
@@ -203,28 +203,46 @@ private static void SeedUsers(ModelBuilder modelBuilder)
                 {
                     Id = new Guid("F5EEA915-AF74-46F2-E615-08DD5415A4D6"),
                     Username = "user2",
-                    Password = "123456789aA@_",
+                    Password = "AQAAAAIAAYagAAAAEPiNb8pIVNt5yr/azQOh/fuB3eDA15yC3FszFLpDQKowXsaFxCCfFQNkk/sUbrpYlw==",
                     FirstName = "user2",
                     LastName = "user2",
                     Email = "user2@gmail.com",
                 },
-                 new User
+                new User
                 {
                     Id = Guid.Parse("5E91FD72-53C3-43EE-3D87-08DD3498AAA5"),
                     Username = "user3",
-                    Password = "123456789aA@_",
+                    Password = "AQAAAAIAAYagAAAAEPiNb8pIVNt5yr/azQOh/fuB3eDA15yC3FszFLpDQKowXsaFxCCfFQNkk/sUbrpYlw==",
                     FirstName = "user3",
                     LastName = "user3",
                     Email = "user3@gmail.com",
                 },
-                 new User
+                new User
                 {
                     Id = Guid.Parse("39AD172A-602E-4118-29D9-08DD398180C1"),
                     Username = "user4",
-                    Password = "123456789aA@_",
+                    Password = "AQAAAAIAAYagAAAAEPiNb8pIVNt5yr/azQOh/fuB3eDA15yC3FszFLpDQKowXsaFxCCfFQNkk/sUbrpYlw==",
                     FirstName = "user4",
                     LastName = "user4",
                     Email = "user4@gmail.com",
+                },
+                new User
+                {
+                    Id = Guid.Parse("923043b5-e9c8-4ded-9cfa-08dd3e211f93"),
+                    Username = "user5",
+                    Password = "AQAAAAIAAYagAAAAEPiNb8pIVNt5yr/azQOh/fuB3eDA15yC3FszFLpDQKowXsaFxCCfFQNkk/sUbrpYlw==",
+                    FirstName = "user5",
+                    LastName = "user5",
+                    Email = "user5@gmail.com",
+                },
+                new User
+                {
+                    Id = Guid.Parse("f82bff97-d6d4-4d47-424e-08dd3e217c75"),
+                    Username = "user6",
+                    Password = "AQAAAAIAAYagAAAAEPiNb8pIVNt5yr/azQOh/fuB3eDA15yC3FszFLpDQKowXsaFxCCfFQNkk/sUbrpYlw==",
+                    FirstName = "user6",
+                    LastName = "user6",
+                    Email = "user6@gmail.com",
                 }
             };
 
@@ -555,7 +573,7 @@ private static void SeedUsers(ModelBuilder modelBuilder)
                 PricePerNight = 50,
                 CreationDate = DateTime.Parse("2024-02-09 19:26:58.9308602"),
                 ModificationDate = DateTime.Parse("2024-02-09 19:26:58.9308604"),
-                HotelId = Guid.Parse("B7535EAC-A5B4-49BB-1269-08DC29A09A1F")
+                HotelId = Guid.Parse("98123CA9-624E-4743-1268-08DC29A09A1F")
             },
             new Room
             {
@@ -567,7 +585,7 @@ private static void SeedUsers(ModelBuilder modelBuilder)
                 PricePerNight = 50,
                 CreationDate = DateTime.Parse("2025-01-19 14:34:10.187"),
                 ModificationDate = DateTime.Parse("2025-01-19 14:34:10.187"),
-                HotelId = Guid.Parse("B7535EAC-A5B4-49BB-1269-08DC29A09A1F")
+                HotelId = Guid.Parse("98123CA9-624E-4743-1268-08DC29A09A1F")
             },
             new Room
             {
@@ -579,7 +597,7 @@ private static void SeedUsers(ModelBuilder modelBuilder)
                 PricePerNight = 100,
                 CreationDate = DateTime.Parse("2025-01-19 14:34:10.187"),
                 ModificationDate = DateTime.Parse("2025-01-19 14:34:10.187"),
-                HotelId = Guid.Parse("B7535EAC-A5B4-49BB-1269-08DC29A09A1F")
+                HotelId = Guid.Parse("98123CA9-624E-4743-1268-08DC29A09A1F")
             },
             new Room
             {
@@ -591,7 +609,7 @@ private static void SeedUsers(ModelBuilder modelBuilder)
                 PricePerNight = 75,
                 CreationDate = DateTime.Parse("2025-01-19 14:34:10.187"),
                 ModificationDate = DateTime.Parse("2025-01-19 14:34:10.187"),
-                HotelId = Guid.Parse("B7535EAC-A5B4-49BB-1269-08DC29A09A1F")
+                HotelId = Guid.Parse("98123CA9-624E-4743-1268-08DC29A09A1F")
             },
 
             new Room
@@ -630,7 +648,7 @@ private static void SeedUsers(ModelBuilder modelBuilder)
                 PricePerNight = 220,
                 CreationDate = DateTime.Parse("2025-01-19 14:34:10.187"),
                 ModificationDate = DateTime.Parse("2025-01-19 14:34:10.187"),
-                HotelId = Guid.Parse("B7535EAC-A5B4-49BB-1269-08DC29A09A1F")
+                HotelId = Guid.Parse("98123CA9-624E-4743-1268-08DC29A09A1F")
             }
 
         };
