@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using TABP.Domain.Models.User;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Net.Http.Headers;
 using TABP.Infrastructure;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Json;
 
@@ -32,8 +30,8 @@ public class HotelBookingFactory
         var client = _factory.CreateClient();
         var userLoginDTO = new UserLoginDTO
         {
-            Username = "v12",
-            Password = "12345678"
+            Username = "user",
+            Password = "12345678Aa@_"
         };
 
         var response = await client.PostAsJsonAsync("/api/auth/user-login", userLoginDTO);
@@ -50,7 +48,7 @@ public class HotelBookingFactory
         var userLoginDTO = new UserLoginDTO
         {
             Username = "admin",
-            Password = "12345678"
+            Password = "12345678Aa@_"
         };
 
         var response = await admin.PostAsJsonAsync("/api/auth/user-login", userLoginDTO);
@@ -66,8 +64,8 @@ public class HotelBookingFactory
         var client = _factory.CreateClient();
         var userLoginDTO = new UserLoginDTO
         {
-            Username = "v123",
-            Password = "12345678"
+            Username = "v1rushb",
+            Password = "12345678Aa@_"
         };
 
         var response = await client.PostAsJsonAsync("/api/auth/user-login", userLoginDTO);
@@ -85,8 +83,8 @@ public class HotelBookingFactory
         var client = _factory.CreateClient();
         var userLoginDTO = new UserLoginDTO
         {
-            Username = "user",
-            Password = "12345678"
+            Username = "user2",
+            Password = "12345678Aa@_"
         };
 
         var response = await client.PostAsJsonAsync("/api/auth/user-login", userLoginDTO);
