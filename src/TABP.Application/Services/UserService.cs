@@ -51,9 +51,12 @@ public class UserService : IUserService
         var role = await _roleRepository.GetByNameAsync(nameof(RoleType.User));
         newUser.Roles.Add(role); // should never be null
 
-        await SendWelcomeEmailAsync(newUser);
 
-        return await _userRepository.AddAsync(newUser);
+        var id = await _userRepository
+            .AddAsync(newUser);
+
+        await SendWelcomeEmailAsync(newUser);
+        return id;
     }
 
     public async Task<string> AuthenticateAsync(UserLoginDTO userLoginCredentials)
