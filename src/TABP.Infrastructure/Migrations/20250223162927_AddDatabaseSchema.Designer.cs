@@ -12,7 +12,7 @@ using TABP.Infrastructure;
 namespace TABP.Infrastructure.Migrations
 {
     [DbContext(typeof(HotelBookingDbContext))]
-    [Migration("20250223160413_AddDatabaseSchema")]
+    [Migration("20250223162927_AddDatabaseSchema")]
     partial class AddDatabaseSchema
     {
         /// <inheritdoc />
