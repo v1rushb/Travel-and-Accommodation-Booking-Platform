@@ -6,21 +6,29 @@ using FluentAssertions;
 
 namespace TABP.API.IT;
 
-public class ReviewAdminControllerTests : IClassFixture<HotelBookingFactory>
+public class ReviewAdminControllerTests : IClassFixture<HotelBookingFactory>, IAsyncLifetime
 {
-    private readonly HttpClient _guest;
-    private readonly HttpClient _user;
-    private readonly HttpClient _admin;
-    private readonly HttpClient _loggedOutAdmin;
+    private readonly HotelBookingFactory _factory;
+    private HttpClient _guest;
+    private HttpClient _user;
+    private HttpClient _admin;
+    private HttpClient _loggedOutAdmin;
     private readonly Fixture _fixture = new();
 
     public ReviewAdminControllerTests(HotelBookingFactory factory)
     {
-        _guest = factory.GetGuestClient();
-        _user = factory.GetAuthenticatedUserClientAsync().Result;
-        _admin = factory.GetAuthenticatedAdminClientAsync().Result;
-        _loggedOutAdmin = factory.GetLoggedOutAdminClientAsync().Result;
+        _factory = factory;
     }
+
+    public async Task InitializeAsync()
+    {
+        _guest = await _factory.GetGuestClient();
+        _user = await _factory.GetAuthenticatedUserClientAsync();
+        _admin = await _factory.GetAuthenticatedAdminClientAsync();
+        _loggedOutAdmin = await _factory.GetLoggedOutAdminClientAsync();
+    }
+
+    public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
     public async Task Requests_ReturnsUnauthorizedFor_Guests()

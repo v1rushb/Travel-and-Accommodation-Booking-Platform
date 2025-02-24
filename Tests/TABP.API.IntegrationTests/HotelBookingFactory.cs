@@ -23,7 +23,12 @@ public class HotelBookingFactory
             });
     }
 
-    public HttpClient GetGuestClient() => _factory.CreateClient();
+    public async Task<HttpClient> GetGuestClient() 
+    {
+        return await Task
+            .FromResult(_factory.CreateClient());
+    }
+
 
     public async Task<HttpClient> GetAuthenticatedUserClientAsync()
     {

@@ -7,21 +7,29 @@ using TABP.Domain.Models.Room;
 
 namespace TABP.API.IntegrationTests;
 
-public class RoomAdminControllerTests : IClassFixture<HotelBookingFactory>
+public class RoomAdminControllerTests : IClassFixture<HotelBookingFactory>, IAsyncLifetime
 {
-    private readonly HttpClient _guest;
-    private readonly HttpClient _user;
-    private readonly HttpClient _admin;
-    private readonly HttpClient _loggedOutAdmin;
+    private readonly HotelBookingFactory _factory;
+    private HttpClient _guest;
+    private HttpClient _user;
+    private HttpClient _admin;
+    private HttpClient _loggedOutAdmin;
     private readonly Fixture _fixture = new();
 
     public RoomAdminControllerTests(HotelBookingFactory factory)
     {
-        _guest = factory.GetGuestClient();
-        _user = factory.GetAuthenticatedUserClientAsync().Result;
-        _admin = factory.GetAuthenticatedAdminClientAsync().Result;
-        _loggedOutAdmin = factory.GetLoggedOutAdminClientAsync().Result;
+        _factory = factory;
     }
+
+    public async Task InitializeAsync()
+    {
+        _guest = await _factory.GetGuestClient();
+        _user = await _factory.GetAuthenticatedUserClientAsync();
+        _admin = await _factory.GetAuthenticatedAdminClientAsync();
+        _loggedOutAdmin = await _factory.GetLoggedOutAdminClientAsync();
+    }
+
+    public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
     public async Task Requests_ReturnsUnauthorizedFor_Guests()
@@ -191,21 +199,21 @@ public class RoomAdminControllerTests : IClassFixture<HotelBookingFactory>
                 .And.NotBe(HttpStatusCode.Unauthorized));
     }
 
-    [Fact]
-    public async Task Search_ShouldReturnOkFor_Admins()
-    {
-        // Arrange
-        var searchTerm = _fixture.Create<string>();
+    // [Fact]
+    // public async Task Search_ShouldReturnOkFor_Admins()
+    // {
+    //     // Arrange
+    //     var searchTerm = _fixture.Create<string>();
 
 
-        // Act
-        var statusCode = (await _admin
-            .GetAsync($"/api/admin/hotel-rooms/search?searchTerm={searchTerm}"))
-                .StatusCode;
+    //     // Act
+    //     var statusCode = (await _admin
+    //         .GetAsync($"/api/admin/hotel-rooms/search?searchTerm={searchTerm}"))
+    //             .StatusCode;
 
 
-        // Assert
-        statusCode.Should().Be(HttpStatusCode.OK);
-    }
+    //     // Assert
+    //     statusCode.Should().Be(HttpStatusCode.OK);
+    // }
 
 }

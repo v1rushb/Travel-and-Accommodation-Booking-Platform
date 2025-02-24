@@ -5,23 +5,31 @@ using Xunit;
 
 namespace TABP.API.IntegrationTests;
 
-public class HotelControllerTests : IClassFixture<HotelBookingFactory>
+public class HotelControllerTests : IClassFixture<HotelBookingFactory>, IAsyncLifetime
 {
-    private readonly HttpClient _guest;
-    private readonly HttpClient _user;
-    private readonly HttpClient _admin;
-    private readonly HttpClient _loggedOutUser;
-    private readonly HttpClient _loggedOutAdmin;
+    private readonly HotelBookingFactory _factory;
+    private HttpClient _guest;
+    private HttpClient _user;
+    private HttpClient _admin;
+    private HttpClient _loggedOutUser;
+    private HttpClient _loggedOutAdmin;
     private readonly Fixture _fixture = new();
     
-    public HotelControllerTests(HotelBookingFactory _factory)
+    public HotelControllerTests(HotelBookingFactory factory)
     {
-        _guest = _factory.GetGuestClient();
-        _user = _factory.GetAuthenticatedUserClientAsync().Result;
-        _admin = _factory.GetAuthenticatedAdminClientAsync().Result;
-        _loggedOutUser = _factory.GetLoggedOutUserClientAsync().Result;
-        _loggedOutAdmin = _factory.GetLoggedOutAdminClientAsync().Result;
+        _factory = factory;
     }
+
+    public async Task InitializeAsync()
+    {
+        _guest = await _factory.GetGuestClient();
+        _user = await _factory.GetAuthenticatedUserClientAsync();
+        _admin = await _factory.GetAuthenticatedAdminClientAsync();
+        _loggedOutUser = await _factory.GetLoggedOutUserClientAsync();
+        _loggedOutAdmin = await _factory.GetLoggedOutAdminClientAsync();
+    }
+
+    public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
     public async Task Requests_ReturnsUnauthorizedFor_Guests()
