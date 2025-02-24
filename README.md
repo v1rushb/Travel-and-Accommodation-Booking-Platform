@@ -82,7 +82,7 @@ It exposes endpoints for booking operations, user interactions and an admin dash
 - Adheres to industry best practices with clean, maintainable code and API documentation, which results in an ease of development in the future.
 
 ## System Architecture & Design
-    ![Alt text](HelperImages/system-architecture.png)
+![Alt text](HelperImages/system-architecture.png)
 
 ### Core Layers:
 - Domain Layer:
@@ -144,7 +144,7 @@ It exposes endpoints for booking operations, user interactions and an admin dash
 - NetArchTest
 
 ## Database Schema
-    ![Alt text](HelperImages/database-schema.png)
+![Alt text](HelperImages/database-schema.png)
 
 ## Getting Started (How to run)
 ### Prerequisits:
